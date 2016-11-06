@@ -1,0 +1,100 @@
+//13071079_卢嵩_C0文法测试程序
+const int ca=+15,cb=-20, cg = 9;	//常量说明部分完全覆盖
+const char cc='a',cd='+',ce='*';
+const char cf='_'	;
+int va,vd,vb[4];			//变量说明部分完全覆盖
+char vc[3];
+
+int func1(int a,int b){	//有int返回值的函数定义
+	int c;
+	c=+a-b-3*2;
+	c=-a/c*b;	;
+	return c;	//return语句有返回值覆盖
+}
+
+char func3(char d){		//有char返回值的函数定义
+	char c;
+	c=d;
+	return c;
+}
+
+void fprintf(){				//无返回值函数定义,遍历printf分支	
+	printf(" !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
+	printf(ca+cb);
+	printf("hello",cf);
+}
+
+int f(int n){		//达成递归条件
+	if (n <= 0){
+		printf("error!");
+		return;	//return语句无返回值覆盖
+	}
+	if (n == 1)
+		return 1;
+	if (n == 2)
+		return 1;
+	return (f(n-1) + f(n-2));
+}
+
+void relationcover(int n){	//测试所有关系运算符
+	const char ch = 'b'
+	if (n <=0) {
+		if (ch < 6)
+			printf('<');
+		if (ch <= 7)
+			printf('<=');
+		if (ch == 8)
+			printf('==')
+		if (ch > 11)
+			printf('>');
+		if (ch >= 11)
+			printf('>=');
+		if (ch != 11)
+			printf('!=');
+	}
+}
+
+void whiletest(){	//覆盖while循环语句
+	int temp;
+	int i;
+	i = 0;
+	while (i < 4){
+		vb[i] = i;
+		i= i+1;
+	}
+	while (i < 4){
+		temp = vb[i];
+		i = i +1;
+		printf(temp);
+	}	
+}
+
+void main(){			//主函数
+	int flag;
+	int re;
+	scanf(flag);		//遍历所有scanf分支
+	scanf(va,vd);
+	vc[0] = 1;
+		
+	if (flag == 3)
+		fprintf();
+	if (a-vd){
+		vd=func1(va,vd);
+		printf(vd);
+	}	
+	swtich(flag){		//switch覆盖,没有default
+		case 0 : {
+			switch(va){	//继续switch覆盖,有default
+				case 0: ;
+				case 1: va = func3(cc + 1);
+						printf(va)
+				case 2: whiletest();
+				default: va = f(va);
+						printf(va);
+			}
+		}
+		case 1 : relationcover(va);	//关系运算符覆盖
+	}
+	re = va;	
+	return re;
+}
