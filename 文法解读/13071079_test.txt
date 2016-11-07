@@ -9,13 +9,13 @@ int func1(int a,int b){	//有int返回值的函数定义
 	int c;
 	c=+a-b-3*2;
 	c=-a/c*b;	;
-	return c;	//return语句有返回值覆盖
+	return (c);	//return语句有返回值覆盖
 }
 
 char func3(char d){		//有char返回值的函数定义
 	char c;
 	c=d;
-	return c;
+	return (c);
 }
 
 void fprintf(){				//无返回值函数定义,遍历printf分支	
@@ -30,9 +30,9 @@ int f(int n){		//达成递归条件
 		return;	//return语句无返回值覆盖
 	}
 	if (n == 1)
-		return 1;
+		return (1);
 	if (n == 2)
-		return 1;
+		return (1);
 	return (f(n-1) + f(n-2));
 }
 
@@ -96,5 +96,5 @@ void main(){			//主函数
 		case 1 : relationcover(va);	//关系运算符覆盖
 	}
 	re = va;	
-	return re;
+	return (re);
 }
