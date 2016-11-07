@@ -27,20 +27,23 @@
 
 //符号值类型
 #define		IDSYM		23	//单词是标识符
-#define		INTTY		24	//单词是整数（int type）
-#define		CHARTY		25	//单词是字符(char type)
+#define		NUMTY		24	//单词是整数(num type)
+#define		CHARTY		25	//单词是字母(char type)
 #define		STRING		26	//单词是字符串
 
-//保留字类型
-#define		MAINSYM		27
-#define		INTSYM		28
-#define		CHARSYM		29
-#define		
-#define 
-#define 
-#define 
-#define 
-#define 
-#define 
+//保留字
+#define		MAINSYM		27	//main
+#define		INTSYM		28	//int
+#define		CHARSYM		29	//char
+#define		CONSTSYM	30	//const
+#define		VOIDSYM		31	//void
+#define		IFSYM		32	//if
+#define		WHILESYM	33	//else
+#define		SWITCHSYM	34	//switch
+#define		CASESYM		35	//case
+#define		DEFAULTSYM	36	//default
+#define		SCANFSYM	37	//scanf
+#define		PRINTFSYM	38	//printf
+#define		RETURNSYM	39	//return
 
 #endif
