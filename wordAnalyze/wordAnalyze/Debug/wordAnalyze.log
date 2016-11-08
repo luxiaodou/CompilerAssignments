@@ -1,4 +1,4 @@
-﻿生成启动时间为 2016/11/8 1:55:36。
+﻿生成启动时间为 2016/11/8 16:20:02。
      1>项目“E:\Lessons\Git\CompilerAssignments\wordAnalyze\wordAnalyze\wordAnalyze.vcxproj”在节点 2 上(build 个目标)。
      1>InitializeBuildStatus:
          正在创建“Debug\wordAnalyze.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
@@ -6,8 +6,6 @@
          所有输出均为最新。
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\wordAnalyze.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt wordAnalyze.cpp
          wordAnalyze.cpp
-     1>e:\lessons\git\compilerassignments\wordanalyze\wordanalyze\wordanalyze.cpp(29): warning C4018: “<”: 有符号/无符号不匹配
-     1>e:\lessons\git\compilerassignments\wordanalyze\wordanalyze\wordanalyze.cpp(85): warning C4101: “result”: 未引用的局部变量
        ManifestResourceCompile:
          所有输出均为最新。
        Link:
@@ -27,4 +25,4 @@
 
 生成成功。
 
-已用时间 00:00:01.32
+已用时间 00:00:00.95

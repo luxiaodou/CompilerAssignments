@@ -27,7 +27,7 @@
 
 //符号值类型
 #define		IDSYM		23	//单词是标识符
-#define		NUMTY		24	//单词是整数(num type)
+#define		NUMSYM		24	//单词是整数(num type)
 #define		CHARTY		25	//单词是字母(char type)
 #define		STRING		26	//单词是字符串
 
