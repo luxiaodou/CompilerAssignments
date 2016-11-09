@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "symDef.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
 using namespace std;
@@ -13,8 +14,13 @@ string token;
 int sym;
 int num;
 string input;
-int index = -1;
+string path;
+int index = 0;
 int count = 1;
+ofstream outfile("output.txt");
+fstream inputfile;
+
+void output();
 
 void getinput(){		//获取输入并存入input中备用
 	string temp = "";
@@ -23,18 +29,34 @@ void getinput(){		//获取输入并存入input中备用
 	}
 }
 
+void getpath()
+{
+	cin >> path;
+}
+
 void clearToken() {
 	token = "";
 }
 
-void getch() {	//从input中获得下一个字符
-	if (index < int(input.length())-1)
+//void getch() {	//从input中获得下一个字符
+//	if (index < int(input.length()))
+//	{
+//		ch = input.at(index++);
+//	}
+//	else
+//	{
+//		ch = 0;
+//		index ++;
+//	}	
+//}
+
+void getch()
+{
+	inputfile.get(ch);
+	if (inputfile.eof())
 	{
-		ch = input.at(++index);
-	}
-	else {
-		printf("Word Analyze complete\n");
-		exit(0);
+		ch =0;
+		sym = 0;
 	}
 }
 
@@ -43,7 +65,7 @@ void catToken() {
 }
 
 void skip(){
-	if (ch == ' ' || ch == '\n' || ch == '\t')
+	while (ch == ' ' || ch == '\n' || ch == '\t')
 	{
 		getch();
 	} 
@@ -65,8 +87,7 @@ bool isDigit() {
 }
 
 void retract() {
-	if (index >0)
-		index --;
+	inputfile.unget();
 }
 
 int isreserve() {
@@ -96,7 +117,7 @@ int isreserve() {
 		return PRINTFSYM;
 	else if (token == "return")
 		return RETURNSYM;
-	else return -1;
+	else return 0;
 }
 
 bool isStringCon()
@@ -107,6 +128,7 @@ bool isStringCon()
 }
 
 int getsym() {
+	sym = 0;
 	clearToken();
 	getch();
 	skip();
@@ -123,15 +145,48 @@ int getsym() {
 			sym = IDSYM;
 		else sym = result;
 	}
-	else if (isDigit() && ch != '0')	//第一个数字不为零
+	else if (isDigit())	
 	{
-		while (isDigit())
+		while (isDigit() && ch != 0)
 		{
-			catToken();
-			getch();
+			if (ch == '0')
+			{
+				catToken();
+				getch();
+				if (isDigit())
+				{
+					cout << "zero cannot be the first digit of number! " << endl;
+					while (isDigit())
+					{
+						getch();
+					}
+					sym = 0;
+					return 0;
+				}
+				else
+				{
+					num = 0;
+					sym = NUMSYM;
+				}
+			} 
+			else
+			{
+				catToken();
+				getch();
+			}			
 		}
+		if (isDigit() || isLetter())
+		{
+			while (isLetter() || isDigit())
+			{
+				getch();
+			}
+			cout << "IDENT cannot start with numbers!" << endl;
+			sym = 0;
+			return 0;
+		}		
 		retract();
-		if (token.length() > 30)
+		if (token.length() > 30)		//数字不超过30位
 		{
 			cout << "integer is out of limit! " << endl;
 			exit(1);
@@ -139,10 +194,66 @@ int getsym() {
 		num = stoi(token);
 		sym = NUMSYM;
 	}
-	else if (ch == '\'')
-		sym = QUOTE;
+	else if (ch == '\'')	//处理字符
+	{
+		sym = QUOTE;		
+		getch();
+		if (isLetter() || ch == '+' || ch == '-' || ch == '*' || ch == '/' || isDigit())
+		{
+			output();
+			sym = CHARTY;
+			catToken();
+			getch();
+			if (ch != '\'')
+			{
+				retract();
+				cout << "char type error! missing ' !" << endl;
+			}
+			else
+			{
+				output();
+				sym = QUOTE;
+			}
+		}
+		else
+		{
+			retract();
+			cout << "char type error! The content is not acceptable! " << endl;
+		}
+	}
 	else if(ch == '\"')
+	{
 		sym = DOUQUOTE;
+		output();
+		getch();
+		if (ch == '\"')
+		{
+			sym = DOUQUOTE;
+			return 0;
+		}
+		while(ch != '\"' && isStringCon() && ch != 0)
+		{
+			catToken();
+			getch();
+		}
+		if (ch == '\"')
+		{
+			sym = STRING;
+			output();
+			sym = DOUQUOTE;
+		}
+		else
+		{
+			cout<<"string content error! Please check your input! " << endl;
+			sym = 0;
+			/*	if (ch == 0)
+			{
+			return 0;
+			}			*/
+			while(ch != '\"' && ch !=0)
+				getch();	//跳过无用字符
+		}
+	}
 	else if (ch == '+')
 		sym = PLUSSYM;
 	else if (ch == '-')
@@ -180,7 +291,7 @@ int getsym() {
 		}
 	}
 	else if (ch == ',')
-		return COMMA;
+		sym =  COMMA;
 	else if (ch == '<')
 	{
 		skip();
@@ -213,8 +324,8 @@ int getsym() {
 		if(ch == '=')
 			sym = NEQUAL;
 		else {
-			retract();
-			cout<< "error using '!' " << endl;
+		retract();
+		cout<< "error using '!' " << endl;
 		}
 	}
 	return 0;
@@ -223,90 +334,107 @@ int getsym() {
 void output(){
 	switch(sym) {
 	case IDSYM:	
-		cout<< count++ <<" IDSYM "+ token + ";"<< endl;
-		break;
+		outfile<< count++ <<" IDSYM "+ token + ";"<< endl;	break;
 	case NUMSYM:
-		cout << count++ << " NUMSYM  ;" << endl;
-		break;
+		outfile << count++ << " NUMSYM  " << num << ";"<< endl;	 break;
+	case CHARTY:
+		outfile << count++ << " CHARTY " << token << ";" << endl; break;
+	case STRING:
+		outfile << count++ << " STRING " << token << ";" << endl; break;
 	case PLUSSYM:
-		cout << count++ << " PLUSSYM ;" << endl;
+		outfile << count++ << " PLUSSYM ;" << endl; break;
 	case MINUSSYM:
-		cout << count++ << " MINUSSYM ;" << endl;
+		outfile << count++ << " MINUSSYM ;" << endl; break;
 	case MULTISYM:
-		cout << count++ << " MULTISYM ;" << endl;
+		outfile << count++ << " MULTISYM ;" << endl; break;
 	case DEVIDESYM:
-		cout << count++ << " DEVIDESYM ;" << endl;
+		outfile << count++ << " DEVIDESYM ;" << endl; break;
 	case QUOTE:
-		cout << count++ << " QUOTE  ;" << endl;
+		outfile << count++ << " QUOTE  ;" << endl; break;
 	case LBRACK:
-		cout << count++ << " LBRACK  ;" << endl;
+		outfile << count++ << " LBRACK  ;" << endl; break;
 	case RBRACK:
-		cout << count++ << " RBRACK  ;" << endl;
+		outfile << count++ << " RBRACK  ;" << endl; break;
 	case LPARENT:
-		cout << count++ << " LPARENT  ;" << endl;
+		outfile << count++ << " LPARENT  ;" << endl; break;
 	case RPARENT:
-		cout << count++ << " RPARENT  ;" << endl;
+		outfile << count++ << " RPARENT  ;" << endl; break;
 	case LBRACE:
-		cout << count++ << " LBRACE  ;" << endl;
+		outfile << count++ << " LBRACE  ;" << endl; break;
+	case RBRACE:
+		outfile << count++ << " RBRACE  ;"<< endl; break;
 	case COLON:
-		cout << count++ << " COLON  ;" << endl;
+		outfile << count++ << " COLON  ;" << endl; break;
 	case COMMA:
-		cout << count++ << " COMMA  ;" << endl;
+		outfile << count++ << " COMMA  ;" << endl; break;
 	case SEMICOLON:
-		cout << count++ << " SEMICOLON  ;" << endl;
+		outfile << count++ << " SEMICOLON  ;" << endl; break;
 	case EQUAL:
-		cout << count++ << " EQUAL  ;" << endl;
+		outfile << count++ << " EQUAL  ;" << endl; break;
 	case ASSIGN:
-		cout << count++ << " ASSIGN  ;" << endl;
+		outfile << count++ << " ASSIGN  ;" << endl; break;
 	case LESS:
-		cout << count++ << " LESS  ;" << endl;
+		outfile << count++ << " LESS  ;" << endl; break;
 	case LESSEQU:
-		cout << count++ << " LESSEQU  ;" << endl;
+		outfile << count++ << " LESSEQU  ;" << endl; break;
 	case GREAT:
-		cout << count++ << " GREAT  ;" << endl;
+		outfile << count++ << " GREAT  ;" << endl; break;
 	case GREATEQU:
-		cout << count++ << " GREATEQU  ;" << endl;
+		outfile << count++ << " GREATEQU  ;" << endl; break;
 	case NEQUAL:
-		cout << count++ << " NEQUAL  ;" << endl;
+		outfile << count++ << " NEQUAL  ;" << endl; break;
 	case DOUQUOTE:
-		cout << count++ << " DOUQUOTE  ;" << endl;
+		outfile << count++ << " DOUQUOTE  ;" << endl; break;
 	case MAINSYM:
-		cout << count++ << " MAINSYM  ;" << endl;
+		outfile << count++ << " MAINSYM  ;" << endl; break;
 	case INTSYM:
-		cout << count++ << " INTSYM  ;" << endl;
+		outfile << count++ << " INTSYM  ;" << endl; break;
 	case CHARSYM:
-		cout << count++ << " CHARSYM  ;" << endl;
+		outfile << count++ << " CHARSYM  ;" << endl; break;
 	case CONSTSYM:
-		cout << count++ << " CONSTSYM  ;" << endl;
+		outfile << count++ << " CONSTSYM  ;" << endl; break;
 	case VOIDSYM:
-		cout << count++ << " VOIDSYM  ;" << endl;
+		outfile << count++ << " VOIDSYM  ;" << endl; break;
 	case IFSYM:
-		cout << count++ << " IFSYM  ;" << endl;
+		outfile << count++ << " IFSYM  ;" << endl; break;
 	case WHILESYM:
-		cout << count++ << " WHILESYM  ;" << endl;
+		outfile << count++ << " WHILESYM  ;" << endl; break;
 	case SWITCHSYM:
-		cout << count++ << " SWITCHSYM  ;" << endl;
+		outfile << count++ << " SWITCHSYM  ;" << endl; break;
 	case CASESYM:
-		cout << count++ << " CASESYM  ;" << endl;
+		outfile << count++ << " CASESYM  ;" << endl; break;
 	case DEFAULTSYM:
-		cout << count++ << " DEFAULTSYM  ;" << endl;
+		outfile << count++ << " DEFAULTSYM  ;" << endl; break;
 	case SCANFSYM:
-		cout << count++ << " SCANFSYM  ;" << endl;
+		outfile << count++ << " SCANFSYM  ;" << endl; break;
 	case PRINTFSYM:
-		cout << count++ << " PRINTFSYM  ;" << endl;
+		outfile << count++ << " PRINTFSYM  ;" << endl; break;
 	case RETURNSYM:
-		cout << count++ << " RETURNSYM  ;" << endl;	
+		outfile << count++ << " RETURNSYM  ;" << endl; break;	
+	case 0:
+		break;
+	default: outfile << "sym type not defined!" << endl;		 
 	}
 }
 
 int _tmain(int argc, _TCHAR* argv[])
-{	
-	//getinput();
-	input = "main ";
-	while (index < int(input.length())){
+{		
+	//cin >> path;
+	//path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
+	path = "C:/Users/luxiaodou/Desktop/a.txt";
+	inputfile.open(path,ios::in);
+	while (!inputfile.eof())
+	{
 		getsym();
-		cout << sym << endl;
-		//output();
+		/*if (ch == 0)
+		{
+		continue;
+		}*/
+		output();
 	}
+	inputfile.close();
+	cout << "Word Analyze complete!" << endl;
+	outfile.close();
+	return 0;
 }
 

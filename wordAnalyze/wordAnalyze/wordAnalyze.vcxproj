@@ -78,6 +78,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="symDef.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="typDef.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
