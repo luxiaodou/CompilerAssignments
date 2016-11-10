@@ -1,8 +1,9 @@
 // wordAnalyze.cpp : 定义控制台应用程序的入口点。
-//
+//	词法分析主程序
 
 #include "stdafx.h"
 #include "symDef.h"
+#include "typDef.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -19,37 +20,20 @@ int index = 0;
 int count = 1;
 ofstream outfile("output.txt");
 fstream inputfile;
-
 void output();
 
-void getinput(){		//获取输入并存入input中备用
-	string temp = "";
-	while (cin >> temp){
-		input  = input.append(temp.append("\n")) ;
-	}
-}
-
+//用来获取输入文件的路径
 void getpath()
 {
 	cin >> path;
 }
 
+//清空token
 void clearToken() {
 	token = "";
 }
 
-//void getch() {	//从input中获得下一个字符
-//	if (index < int(input.length()))
-//	{
-//		ch = input.at(index++);
-//	}
-//	else
-//	{
-//		ch = 0;
-//		index ++;
-//	}	
-//}
-
+//获得下一个输入字符，当读到文件末尾的时候返回空字符
 void getch()
 {
 	inputfile.get(ch);
@@ -60,10 +44,12 @@ void getch()
 	}
 }
 
+//拼接token
 void catToken() {
 	token += ch;
 }
 
+//跳过无意义的空白字符，本文法中针对空格，换行符以及水平制表符
 void skip(){
 	while (ch == ' ' || ch == '\n' || ch == '\t')
 	{
@@ -71,6 +57,7 @@ void skip(){
 	} 
 }
 
+//判断当前ch是否是字母类型，注意根据文法定义下划线'_'也算作字母
 bool isLetter(){
 	if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch == '_')
 	{
@@ -79,6 +66,7 @@ bool isLetter(){
 	return false;
 }
 
+//判断ch是否是数字
 bool isDigit() {
 	if (ch >= '0' && ch <= '9'){
 		return true;		
@@ -86,10 +74,12 @@ bool isDigit() {
 	return false;
 }
 
+//读字符的指针退格
 void retract() {
 	inputfile.unget();
 }
 
+//分辨当前标识符是否是保留字，是的话返回对应的sym，不是返回0说明是标识符
 int isreserve() {
 	if (token == "main")
 		return MAINSYM;
@@ -120,6 +110,7 @@ int isreserve() {
 	else return 0;
 }
 
+//检查当前ch是不是组成字符串的合法元素，文法定义为“十进制编码为32,33,35-126的ASCII字符”
 bool isStringCon()
 {
 	if ((ch >=32 || ch <= 126) && ch != 34)
@@ -127,8 +118,9 @@ bool isStringCon()
 	else return false;
 }
 
+//词法分析主要部分，判别当前单词的类型
 int getsym() {
-	sym = 0;
+	sym = 0;	//默认sym为0，在output()中不作处理
 	clearToken();
 	getch();
 	skip();
@@ -138,44 +130,51 @@ int getsym() {
 			catToken();
 			getch();
 		}
-		retract();
+		retract();	//注意这里预读了下一个ch，为了防止下次执行getsym时读过，需要退格
+		if (token.length() > IDENT_MAXLENGTH)	//判断标识符长度是否超过限制， 超过则报错
+		{
+			cout << "your ident is too long, please make it short!" << endl;
+			sym = 0;
+			return 0;
+		}
 		int result;
 		result = isreserve();
 		if(result == 0)
 			sym = IDSYM;
 		else sym = result;
 	}
-	else if (isDigit())	
+	else if (isDigit())	//处理数字
 	{
-		while (isDigit() && ch != 0)
+		if (ch == '0')	//零开头的时候需要注意，因为文法不支持前导零
 		{
-			if (ch == '0')
+			catToken();
+			getch();
+			if (isDigit())
 			{
-				catToken();
-				getch();
-				if (isDigit())
+				cout << "zero cannot be the first digit of number! " << endl;
+				while (isDigit() || isLetter())
 				{
-					cout << "zero cannot be the first digit of number! " << endl;
-					while (isDigit())
-					{
-						getch();
-					}
-					sym = 0;
-					return 0;
+					getch();
 				}
-				else
-				{
-					num = 0;
-					sym = NUMSYM;
-				}
-			} 
+				sym = 0;
+				return 0;
+			}
 			else
 			{
+				num = 0;
+				sym = NUMSYM;
+			}
+		} 
+		else
+		{
+			while (isDigit() && ch != 0)
+			{
 				catToken();
 				getch();
-			}			
+			}
 		}
-		if (isDigit() || isLetter())
+		
+		if (isDigit() || isLetter())		//检查后面是否接了字母表示标识符
 		{
 			while (isLetter() || isDigit())
 			{
@@ -186,10 +185,10 @@ int getsym() {
 			return 0;
 		}		
 		retract();
-		if (token.length() > 30)		//数字不超过30位
+		if (token.length() > NUM_MAXLENGTH)		//数字不超过30位
 		{
 			cout << "integer is out of limit! " << endl;
-			exit(1);
+			return 0;
 		}
 		num = stoi(token);
 		sym = NUMSYM;
@@ -238,6 +237,12 @@ int getsym() {
 		}
 		if (ch == '\"')
 		{
+			if (token.length() > STRING_MAXLENGTH)
+			{
+				cout << "Your String is too long, please make it short!" << endl;
+				sym = 0;
+				return 0;
+			}
 			sym = STRING;
 			output();
 			sym = DOUQUOTE;
@@ -419,9 +424,9 @@ void output(){
 
 int _tmain(int argc, _TCHAR* argv[])
 {		
-	//cin >> path;
+	getpath();
 	//path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
-	path = "C:/Users/luxiaodou/Desktop/a.txt";
+	//path = "C:/Users/luxiaodou/Desktop/a.txt";
 	inputfile.open(path,ios::in);
 	while (!inputfile.eof())
 	{
@@ -437,4 +442,3 @@ int _tmain(int argc, _TCHAR* argv[])
 	outfile.close();
 	return 0;
 }
-
