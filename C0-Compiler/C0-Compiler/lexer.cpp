@@ -428,16 +428,15 @@ void output() {
 		outfile << count++ << " RETURNSYM  ;" << endl; break;
 	case 0:
 		break;
-	default: outfile << "sym type not defined!" << endl;
 	}
 }
 
-int lexer()
-{		
+void  lexer()
+{
 	//getpath();
 	//path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
 	path = "C:/Users/luxiaodou/Desktop/a.txt";
-	infile.open(path,ios :: in);
+	infile.open(path, ios::in);
 	while (infile.good()) {
 		getsym();
 		output();
@@ -445,5 +444,4 @@ int lexer()
 	cout << "Word Analyze complete!" << endl;
 	infile.close();
 	outfile.close();
-	return 0;
 }
