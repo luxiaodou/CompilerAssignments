@@ -35,7 +35,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="wordAnalyze.cpp">
+    <ClCompile Include="lex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

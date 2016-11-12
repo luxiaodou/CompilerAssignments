@@ -20,7 +20,7 @@ char func3(char d){
 }
 
 void fprintf(){					
-	printf(" !#$%&'()*+,-./0123456789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
+	printf(" !#$%&'()*+,-./012345	6789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
 	printf(+ca+cb);
 	printf("hello world",cf);
 }
@@ -45,7 +45,7 @@ void relationcover(int n){
 		if (ch <= 7)
 			printf("LESSEQU");
 		if (ch == 8)
-			printf("EQU")
+			printf("EQU");
 		if (ch > 11)
 			printf("GREAT");
 		if (ch >= 11)
