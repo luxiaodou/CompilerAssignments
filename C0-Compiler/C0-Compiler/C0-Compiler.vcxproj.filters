@@ -21,10 +21,13 @@
     <ClInclude Include="stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="global.h">
+    <ClInclude Include="error.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -36,6 +39,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="lexer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="syntax.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="error.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="quad.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="quad2asm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="opt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

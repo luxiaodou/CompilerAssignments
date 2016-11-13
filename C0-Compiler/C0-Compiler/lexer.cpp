@@ -1,4 +1,3 @@
-// lexer.cpp : 定义控制台应用程序的入口点。
 //	词法分析主程序
 #include "stdafx.h"
 #include "global.h"
@@ -343,6 +342,9 @@ int getsym() {
 			cout << "Lex Error: line " << line << ": error using '!' " << endl;
 		}
 	}
+	else {
+		sym = -1;
+	}
 	return 0;
 }
 
@@ -428,20 +430,23 @@ void output() {
 		outfile << count++ << " RETURNSYM  ;" << endl; break;
 	case 0:
 		break;
+	default:
+			cout << "undefined sym type detected!!" << endl;
 	}
 }
 
-void  lexer()
-{
-	//getpath();
-	//path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
-	path = "C:/Users/luxiaodou/Desktop/a.txt";
-	infile.open(path, ios::in);
-	while (infile.good()) {
-		getsym();
-		output();
-	}
-	cout << "Word Analyze complete!" << endl;
-	infile.close();
-	outfile.close();
-}
+//模块测试程序
+//void  lexer()
+//{
+//	//getpath();
+//	//path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
+//	path = "C:/Users/luxiaodou/Desktop/a.txt";
+//	infile.open(path, ios::in);
+//	while (infile.good()) {
+//		getsym();
+//		output();
+//	}
+//	cout << "Word Analyze complete!" << endl;
+//	infile.close();
+//	outfile.close();
+//}
