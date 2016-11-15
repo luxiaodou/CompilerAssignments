@@ -11,6 +11,9 @@ string path;
 int line = 0, count = 1, ll = 0, lc = 0;
 ifstream infile;
 ofstream outfile("output.txt");
+streampos bookmark;
+int bline, bcount, bll, blc,bsym;
+string binputline;
 
 //用来获取输入文件的路径
 void getpath() {
@@ -55,6 +58,26 @@ void getch()
 		sym = 0;
 		ch = 0;
 	}
+}
+
+void backup() {	//保存现场
+	bookmark = infile.tellg();
+	bline = line;
+	bll = ll;
+	blc = lc;
+	bcount = count;
+	binputline = inputline;
+	bsym = sym;
+}
+
+void retrieve() {	//恢复现场
+	infile.seekg(bookmark);
+	line = bline;
+	ll = bll;
+	lc = blc;
+	count = bcount;
+	inputline = binputline;
+	sym = bsym;
 }
 
 //拼接token
@@ -430,8 +453,8 @@ void output() {
 		outfile << count++ << " RETURNSYM  ;" << endl; break;
 	case 0:
 		break;
-	default:
-			cout << "undefined sym type detected!!" << endl;
+	//default:
+	//		cout << "undefined sym type detected!!" << endl;
 	}
 }
 
