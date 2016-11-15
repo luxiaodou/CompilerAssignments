@@ -7,6 +7,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	//getpath();
 	path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
+
 	bool flag = false;
 	bool nflag = true;
 	//path = "C:/Users/luxiaodou/Desktop/a.txt";
