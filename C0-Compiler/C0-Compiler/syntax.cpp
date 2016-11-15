@@ -2,22 +2,27 @@
 #include "global.h"
 
 void enter();		//将符号存入符号表
+void inttype();	//解析整数的递归子程序
+void consttype();	//解析常量类型的递归子程序
 void program();	//处理程序的递归子程序
 void conststate();		//处理常量说明的递归子程序
 void constdef();	//处理常量定义的递归子程序
 void varstate();		//处理变量声明的递归子程序
 void vardef();		//处理变量定义的递归子程序
-void headdef();	//处理头声明的递归子程序
 void paralist();		//处理函数声明时参数表的递归子程序
-void funcdef();	//处理函数声明的递归子程序
+void funcdef();	//处理有返回值函数声明的递归子程序
+void voidfdef();	//处理无返回值的函数声明的递归子程序
 void statement();		//处理语句的递归子程序
 void expression();	//处理表达式的递归子程序
 void term();	//处理项的递归子程序
 void factor();	//处理因子的递归子程序
 void assignstate();	//处理赋值语句的递归子程序
 void ifstate();	//处理if语句的递归子程序
+void condition();	//处理条件语句的递归子程序
 void whilestate();	//处理while循环语句的递归子程序
 void switchstate();	//处理switch的递归子程序
+void casestate();	//处理case的递归子程序
+void defaultstate();	//处理default的递归子程序
 void printfstate();		//处理printf的递归子程序
 void scanfstate();		//处理scanf的递归子程序
 void returnstate();	//处理return的递归子程序
@@ -47,9 +52,11 @@ void program() {
 		getsym();
 
 		if (sym == COMMA || sym == LBRACK) {		//变量
+			retrieve();
 			varstate();		//所有变量声明理应在这里处理完毕
 		}
 		else if (sym == LPARENT) {
+			retrieve();
 			funcdef();		//注意这里只处理了一个有返回值的函数
 		}
 	}
@@ -59,7 +66,25 @@ void program() {
 
 	//处理函数声明
 	while (sym == INTSYM || sym == CHARSYM || sym == VOIDSYM) {
-		backup();
+		if (sym == VOIDSYM) {
+			backup();
+			getsym();
+			if (sym == MAINSYM) {
+				break;
+			}
+			if (sym != IDSYM) {
+				error(MISSING_IDENT);
+			}
+		}
+		else {
+			backup();
+			getsym();
+			if (sym != IDSYM) {
+				error(MISSING_IDENT);
+			}
+
+		}
+		/*backup();
 		getsym();
 		if (sym == MAINSYM) {
 			retrieve();
@@ -70,11 +95,12 @@ void program() {
 		}
 		getsym();
 		if (sym == LPARENT) {
+
 			funcdef();
 		}
 		else {
 
-		}
+		}*/
 
 	}
 
@@ -117,10 +143,10 @@ void constdef() {
 		}
 		getsym();
 		if (sym == PLUSSYM) {	//＜加法运算符＞ ::= +｜-
-			
+
 		}
 		if (sym == NUMSYM) {		//＜整数＞::= ［＋｜－］＜无符号整数＞｜０
-			
+
 		}
 		else
 		{
@@ -178,7 +204,6 @@ void constdef() {
 
 //＜变量说明＞ ::= ＜变量定义＞;{＜变量定义＞;}
 void varstate() {
-	retrieve();
 	vardef();
 	if (sym != SEMICOLON) {
 		error(MISSING_SEMICOLON);
@@ -197,7 +222,7 @@ void varstate() {
 		}
 		else if (sym == LPARENT || sym == VOIDSYM) {	//不再是变量声明
 			retrieve();
-			return;	
+			return;
 		}
 		if (sym != SEMICOLON) {
 			error(MISSING_SEMICOLON);
@@ -205,7 +230,6 @@ void varstate() {
 	}
 	cout << "This is a var state!" << endl;
 }
-
 
 //＜变量定义＞  ::= ＜类型标识符＞(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’){,(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’ )}
 void vardef() {
@@ -261,3 +285,213 @@ void vardef() {
 	}
 }
 
+//＜语句＞    :: = ＜条件语句＞｜＜循环语句＞ | ‘{ ’＜语句列＞‘ }’｜＜有返回值函数调用语句＞;
+//| ＜无返回值函数调用语句＞; ｜＜赋值语句＞; ｜＜读语句＞; ｜＜写语句＞; ｜＜空＞; | ＜情况语句＞｜＜返回语句＞;
+void statement() {
+	cout << "This is a statement statement!" << endl;
+}
+
+//＜条件语句＞:: = if ‘(’＜条件＞‘)’＜语句＞
+void ifstate() {
+	if (sym != IFSYM) {
+		error(0);
+	}
+	getsym();
+	if (sym != LPARENT) {
+		error(MISSING_LPARENT);
+	}
+	getsym();
+	condition();
+	getsym();
+	if (sym != RPARENT) {
+		error(MISSING_RPARENT);
+	}
+	statement();
+	cout << "This is an if statement!" << endl;
+}
+
+//＜条件＞::=  ＜表达式＞＜关系运算符＞＜表达式＞｜＜表达式＞ //表达式为0条件为假，否则为真
+void condition()
+{
+	cout << "This is a condition statement!" << endl;
+}
+
+
+//＜赋值语句＞:: = ＜标识符＞＝＜表达式＞ | ＜标识符＞‘[’＜表达式＞‘]’ = ＜表达式＞
+void assignstate() {
+	if (sym != IDSYM) {
+		error(MISSING_IDENT);
+	}
+	getsym();
+	if (sym == LBRACK) {
+		getsym();
+		expression();
+		getsym();
+		if (sym != RBRACK) {
+			error(MISSING_RBRACK);
+		}
+	}
+	getsym();
+	if (sym != EQUAL) {
+		error(0);
+	}
+	getsym();
+	expression();
+	cout << "This is an assign statement!" << endl;
+}
+
+//＜循环语句＞:: = while ‘(’＜条件＞‘)’＜语句＞
+void whilestate() {
+	if (sym != WHILESYM) {
+		error(0);
+	}
+	getsym();
+	if (sym != LPARENT) {
+		error(MISSING_LPARENT);
+	}
+	getsym();
+	condition();
+	getsym();
+	if (sym != RPARENT) {
+		error(MISSING_RPARENT);
+	}
+	statement();
+	cout << "This is a while statement!" << endl;
+}
+
+//＜情况语句＞:: = switch ‘(’＜表达式＞‘)’ ‘ { ’＜情况表＞＜缺省＞ ‘ }’
+void switchstate() {
+	if (sym != SWITCHSYM) {
+		error(0);
+	}
+	getsym();
+	if (sym != LPARENT) {
+		error(MISSING_LPARENT);
+	}
+	getsym();
+	expression();
+	getsym();
+	if (sym != RPARENT) {
+		error(MISSING_RPARENT);
+	}
+	getsym();
+	if (sym == LBRACE) {		//＜情况表＞::=  ＜情况子语句＞{＜情况子语句＞}
+		getsym();
+		while (sym == CASESYM) {
+			casestate();
+			getsym();
+		}
+		defaultstate();
+	}
+	getsym();
+	if (sym != RBRACE) {
+		error(MISSING_RBRACE);
+	}
+	cout << "This is a switch statement!" << endl;
+}
+
+//＜情况子语句＞:: = case＜常量＞：＜语句＞
+void casestate() {
+	if (sym == CASESYM) {
+		getsym();
+		if (sym != NUMSYM || sym != CHARTY) {	//这里有问题//////////////////////////////////
+			error(WRONG_TYPE);
+		}
+		getsym();
+		if (sym != COLON) {
+			error(MISSING_COLON);
+		}
+		statement();
+	}
+	else
+	{
+		error(0);	//没有case
+	}
+	cout << "This is a case statement!" << endl;
+}
+
+//＜缺省＞::=  default : ＜语句＞|＜空＞
+void defaultstate() {
+	if (sym == DEFAULTSYM) {
+		getsym();
+
+	}
+	cout << "This is a default statement!" << endl;
+}
+
+//＜读语句＞::=  scanf ‘(’＜标识符＞{,＜标识符＞}‘)’
+void scanfstate() {
+	if (sym == SCANFSYM) {
+		getsym();
+		if (sym == LPARENT) {
+			getsym();
+			if (sym != IDSYM) {
+				error(MISSING_IDENT);
+			}
+			getsym();
+			while (sym == COMMA) {
+				getsym();
+				if (sym != IDSYM) {
+					error(MISSING_IDENT);
+				}
+				getsym();
+			}
+			if (sym != RPARENT) {
+				error(MISSING_RPARENT);
+			}
+		}
+		else
+		{
+			error(MISSING_LPARENT);
+		}
+	}
+	else
+	{
+		error(0);
+	}
+	cout << "This is a scanf statement!" << endl;
+}
+
+//＜写语句＞::= printf ‘(’ ＜字符串＞,＜表达式＞ ‘)’| printf ‘(’＜字符串＞ ‘)’
+//				| printf ‘(’＜表达式＞‘)’
+void printfstate() {
+	if (sym != PRINTFSYM) {
+		error(0);
+	}
+	getsym();
+	if (sym != LPARENT) {
+		error(MISSING_LPARENT);
+	}
+	getsym();
+	if (sym == STRING) {
+		getsym();
+		if (sym == COMMA) {
+			getsym();
+			expression();
+		}
+	}
+	else if (sym == PLUSSYM || sym == IDSYM) {
+		expression();
+	}
+	if (sym != RPARENT) {
+		error(MISSING_RPARENT);
+	}
+	cout << "This is a printf statement!" << endl;
+}
+
+//＜返回语句＞::=  return[‘(’＜表达式＞‘)’]     
+void returnstate() {
+	if (sym != RETURNSYM) {
+		error(0);
+	}
+	getsym();
+	if (sym == LPARENT) {
+		getsym();
+		expression();
+		getsym();
+		if (sym != RPARENT) {
+			error(MISSING_RPARENT);
+		}
+	}
+	cout << "This is a return statement!" << endl;
+}
