@@ -1,7 +1,15 @@
 #include "stdafx.h"
 #include "global.h"
 
+int tab = 0;
 
+void tabf() {
+	int i = 0;
+	while (i < tab) {
+		cout << "|---";
+		i++;
+	}
+}
 
 int ttype = 0, tident = 0;
 
@@ -11,8 +19,11 @@ void enter() {
 
 //＜程序＞::= ［＜常量说明＞］［＜变量说明＞］{＜有返回值函数定义＞|＜无返回值函数定义＞}＜主函数＞
 void program() {
-	getsym();
+	tab += 1;
+	tabf();
+	cout << "program" << endl;
 
+	getsym();
 	//处理常量声明
 	if (sym == CONSTSYM) {
 		conststate();
@@ -88,11 +99,15 @@ void program() {
 		error(0);
 	}
 
-	cout << "This is a program!" << endl;
+	//cout << "This is a program!" << endl;
+	tab--;
 }
 
 //＜常量说明＞ ::=  const＜常量定义＞;{ const＜常量定义＞;}
 void conststate() {
+	tab++;
+	tabf();
+	cout << "const statement!" << endl;
 	do
 	{
 		if (sym != CONSTSYM) {
@@ -105,12 +120,16 @@ void conststate() {
 		}
 		getsym();
 	} while (sym == CONSTSYM);
-	cout << "this is a const statement!" << endl;
+	tab--;
+	//cout << "this is a const statement!" << endl;
 }
 
 //＜常量定义＞ ::=   int＜标识符＞＝＜整数＞{,＜标识符＞＝＜整数＞}
 //					| char＜标识符＞＝＜字符＞{ ,＜标识符＞＝＜字符＞ }
 void constdef() {
+	tab++;
+	tabf();
+	cout << "const defination" << endl;
 	if (sym == INTSYM) {
 		getsym();
 		if (sym != IDSYM) {
@@ -181,11 +200,15 @@ void constdef() {
 			getsym();
 		}
 	}
-	cout << "this is a const defination!" << endl;
+	tab--;
+	//cout << "this is a const defination!" << endl;
 }
 
 //＜变量说明＞ ::= ＜变量定义＞;{＜变量定义＞;}
 void varstate() {
+	tab++;
+	tabf();
+	cout << "var statement" << endl;
 	vardef();
 	if (sym != SEMICOLON) {
 		error(MISSING_SEMICOLON);
@@ -211,11 +234,15 @@ void varstate() {
 		}
 		getsym();
 	}
-	cout << "This is a var state!" << endl;
+	tab--;
+	//cout << "This is a var state!" << endl;
 }
 
 //＜变量定义＞::= ＜类型标识符＞(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’){,(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’ )}
 void vardef() {
+	tab++;
+	tabf();
+	cout << "var defination" << endl;
 	if (sym == INTSYM || sym == CHARSYM) {
 		getsym();
 		if (sym == IDSYM) {
@@ -266,11 +293,15 @@ void vardef() {
 	else {
 		error(0);
 	}
-	cout << "This is a var defination" << endl;
+	tab--;
+	//cout << "This is a var defination" << endl;
 }
 
 //＜参数表＞ ::=  ＜类型标识符＞＜标识符＞{,＜类型标识符＞＜标识符＞}| ＜空＞
 void paralist() {
+	tab++;
+	tabf();
+	cout << "paralist" << endl;
 	if (sym == INTSYM || sym == CHARSYM) {
 		getsym();
 		if (sym == IDSYM) {
@@ -292,11 +323,15 @@ void paralist() {
 			}
 		}
 	}
-	cout << "This is a paralist!" << endl;
+	tab--;
+	//cout << "This is a paralist!" << endl;
 }
 
 //＜复合语句＞ ::= ［＜常量说明＞］［＜变量说明＞］＜语句列＞
 void compound() {
+	tab++;
+	tabf();
+	cout << "compound" << endl;
 	if (sym == CONSTSYM) {
 		conststate();
 	}
@@ -307,11 +342,15 @@ void compound() {
 		|| sym == IDSYM || sym == PRINTFSYM || sym == SCANFSYM || sym == RETURNSYM || sym == SEMICOLON || sym == SWITCHSYM) {
 		statement();
 	}
-	cout << "This is a compound statement!" << endl;
+	tab --;
+	//cout << "This is a compound statement!" << endl;
 }
 
 //＜有返回值函数定义＞:: = ＜声明头部＞‘(’＜参数表＞‘)’ ‘ { ’＜复合语句＞‘ }’
 void funcdef() {
+	tab++;
+	tabf();
+	cout << "funcdef" << endl;
 	if (sym == INTSYM || sym == CHARSYM) {
 		getsym();
 		if (sym != IDSYM) {
@@ -341,11 +380,15 @@ void funcdef() {
 	{
 		error(WRONG_TYPE);
 	}
-	cout << "This is a fuction defination!" << endl;
+	tab--;
+	//cout << "This is a fuction defination!" << endl;
 }
 
 //＜无返回值函数定义＞:: = void＜标识符＞‘(’＜参数表＞‘)’‘ { ’＜复合语句＞‘ }’
 void voidfdef() {
+	tab++;
+	tabf();
+	cout << "voidfdef" << endl;
 	if (sym != VOIDSYM) {
 		error(MISSING_VOID);
 	}
@@ -375,11 +418,15 @@ void voidfdef() {
 	{
 		error(MISSING_IDENT);
 	}
-	cout << "This is a void function define!" << endl;
+	tab--;
+	//cout << "This is a void function define!" << endl;
 }
 
 //＜主函数＞ ::= void main‘(’‘)’‘{’＜复合语句＞‘}’
 void mainfdef() {
+	tab++;
+	tabf();
+	cout << "main" << endl;
 	if (sym != VOIDSYM) {
 		error(MISSING_VOID);
 	}
@@ -403,13 +450,17 @@ void mainfdef() {
 	if (sym != RBRACE) {
 		error(MISSING_RBRACE);
 	}
-	cout << "This is a main function" << endl;
+	//cout << "This is a main function" << endl;
+	tab --;
 }
 
 
 //＜语句＞:: = ＜条件语句＞｜＜循环语句＞ | ‘{ ’＜语句列＞‘ }’｜＜有返回值函数调用语句＞;
 //				| ＜无返回值函数调用语句＞; ｜＜赋值语句＞; ｜＜读语句＞; ｜＜写语句＞; ｜＜空＞; | ＜情况语句＞｜＜返回语句＞;
 void statement() {
+	tab++;
+	tabf();
+	cout << "statement" << endl;
 	switch (sym)
 	{
 	case IFSYM: //ifstate
@@ -481,11 +532,15 @@ void statement() {
 	default:
 		break;
 	}
-	cout << "This is a statement statement!" << endl;
+	//cout << "This is a statement statement!" << endl;
+	tab--;
 }
 
 //＜表达式＞ ::= ［＋｜－］＜项＞{＜加法运算符＞＜项＞}
 void expression() {
+	tab++;
+	tabf();
+	cout << "expression" << endl;
 	if (sym == PLUSSYM || sym == MINUSSYM) {
 		getsym();
 	}
@@ -494,21 +549,29 @@ void expression() {
 		getsym();
 		term();
 	}
-	cout << "This is a expression!" << endl;
+	//cout << "This is a expression!" << endl;
+	tab--;
 }
 
 //＜项＞ ::= ＜因子＞{＜乘法运算符＞＜因子＞}
 void term() {
+	tab++;
+	tabf();
+	cout << "term" << endl;
 	factor();
 	while (sym == MULTISYM || sym == DEVIDESYM) {
 		getsym();
 		factor();
 	}
-	cout << "This is a term!" << endl;
+	//cout << "This is a term!" << endl;
+	tab--;
 }
 
 //＜因子＞ ::= ＜标识符＞｜＜标识符＞‘[’＜表达式＞‘]’|‘(’＜表达式＞‘)’｜＜整数＞|＜字符＞｜＜有返回值函数调用语句＞ 
 void factor() {
+	tab++;
+	tabf();
+	cout << "factor" << endl;
 	switch (sym)
 	{
 	case IDSYM:
@@ -572,11 +635,15 @@ void factor() {
 		error(0);
 		break;
 	}
-	cout << "This is a factor!" << endl;
+	//cout << "This is a factor!" << endl;
+	tab--;
 }
 
 //＜条件语句＞:: = if ‘(’＜条件＞‘)’＜语句＞
 void ifstate() {
+	tab++;
+	tabf();
+	cout << "if statement" << endl;
 	if (sym != IFSYM) {
 		error(0);
 	}
@@ -591,12 +658,16 @@ void ifstate() {
 	}
 	getsym();
 	statement();
-	cout << "This is an if statement!" << endl;
+	//cout << "This is an if statement!" << endl;
+	tab--;
 }
 
 //＜条件＞::=  ＜表达式＞＜关系运算符＞＜表达式＞｜＜表达式＞ //表达式为0条件为假，否则为真
 void condition()
 {
+	tab++;
+	tabf();
+	cout << "condition" << endl;
 	expression();
 	if (sym == LESS || sym == LESSEQU || sym == GREAT || sym == GREATEQU || sym == NEQUAL || sym == EQUAL) {
 		getsym();
@@ -606,11 +677,15 @@ void condition()
 	{
 		error(0);
 	}
-	cout << "This is a condition statement!" << endl;
+	//cout << "This is a condition statement!" << endl;
+	tab--;
 }
 
 //＜赋值语句＞:: = ＜标识符＞＝＜表达式＞ | ＜标识符＞‘[’＜表达式＞‘]’ = ＜表达式＞
 void assignstate() {
+	tab++;
+	tabf();
+	cout << "assign statement" << endl;
 	if (sym != IDSYM) {
 		error(MISSING_IDENT);
 	}
@@ -629,11 +704,15 @@ void assignstate() {
 	}
 	getsym();
 	expression();
-	cout << "This is an assign statement!" << endl;
+	//cout << "This is an assign statement!" << endl;
+	tab--;
 }
 
 //＜循环语句＞:: = while ‘(’＜条件＞‘)’＜语句＞
 void whilestate() {
+	tab++;
+	tabf();
+	cout << "while statement" << endl;
 	if (sym != WHILESYM) {
 		error(0);
 	}
@@ -648,11 +727,15 @@ void whilestate() {
 		error(MISSING_RPARENT);
 	}
 	statement();
-	cout << "This is a while statement!" << endl;
+	//cout << "This is a while statement!" << endl;
+	tab--;
 }
 
 //＜情况语句＞:: = switch ‘(’＜表达式＞‘)’ ‘ { ’＜情况表＞＜缺省＞ ‘ }’
 void switchstate() {
+	tab++;
+	tabf();
+	cout << "switch statement" << endl;
 	if (sym != SWITCHSYM) {
 		error(0);
 	}
@@ -679,11 +762,15 @@ void switchstate() {
 	if (sym != RBRACE) {
 		error(MISSING_RBRACE);
 	}
-	cout << "This is a switch statement!" << endl;
+	//cout << "This is a switch statement!" << endl;
+	tab--;
 }
 
 //＜情况子语句＞:: = case＜常量＞：＜语句＞
 void casestate() {
+	tab++;
+	tabf();
+	cout << "case statement" << endl;
 	if (sym == CASESYM) {
 		getsym();
 		if (sym != NUMSYM && sym != QUOTE && sym != PLUSSYM && sym != MINUSSYM) {		//＜常量＞ ::= ＜整数＞|＜字符＞
@@ -699,20 +786,28 @@ void casestate() {
 	{
 		error(0);	//没有case
 	}
-	cout << "This is a case statement!" << endl;
+	//cout << "This is a case statement!" << endl;
+	tab--;
 }
 
 //＜缺省＞::=  default : ＜语句＞|＜空＞
 void defaultstate() {
+	tab++;
+	tabf();
+	cout << "default statement" << endl;
 	if (sym == DEFAULTSYM) {
 		getsym();
 
 	}
-	cout << "This is a default statement!" << endl;
+	//cout << "This is a default statement!" << endl;
+	tab--;
 }
 
 //＜读语句＞::=  scanf ‘(’＜标识符＞{,＜标识符＞}‘)’
 void scanfstate() {
+	tab++;
+	tabf();
+	cout << "scanf statement" << endl;
 	if (sym == SCANFSYM) {
 		getsym();
 		if (sym == LPARENT) {
@@ -741,12 +836,16 @@ void scanfstate() {
 	{
 		error(0);
 	}
-	cout << "This is a scanf statement!" << endl;
+	//cout << "This is a scanf statement!" << endl;
+	tab--;
 }
 
 //＜写语句＞::= printf ‘(’ ＜字符串＞,＜表达式＞ ‘)’| printf ‘(’＜字符串＞ ‘)’
 //				| printf ‘(’＜表达式＞‘)’
 void printfstate() {
+	tab++;
+	tabf();
+	cout << "printf statement" << endl;
 	if (sym != PRINTFSYM) {
 		error(0);
 	}
@@ -769,11 +868,15 @@ void printfstate() {
 		error(MISSING_RPARENT);
 	}
 	getsym();
-	cout << "This is a printf statement!" << endl;
+	//cout << "This is a printf statement!" << endl;
+	tab--;
 }
 
 //＜返回语句＞::=  return[‘(’＜表达式＞‘)’]     
 void returnstate() {
+	tab++;
+	tabf();
+	cout << "return statement" << endl;
 	if (sym != RETURNSYM) {
 		error(0);
 	}
@@ -786,5 +889,6 @@ void returnstate() {
 		}
 		getsym();
 	}
-	cout << "This is a return statement!" << endl;
+	//cout << "This is a return statement!" << endl;
+	tab--;
 }
