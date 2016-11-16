@@ -49,7 +49,7 @@ using namespace std;
 #define		CONSTSYM	30	//const
 #define		VOIDSYM		31	//void
 #define		IFSYM		32	//if
-#define		WHILESYM	33	//else
+#define		WHILESYM	33	//while
 #define		SWITCHSYM	34	//switch
 #define		CASESYM		35	//case
 #define		DEFAULTSYM	36	//default
@@ -121,6 +121,7 @@ void defaultstate();	//处理default的递归子程序
 void printfstate();		//处理printf的递归子程序
 void scanfstate();		//处理scanf的递归子程序
 void returnstate();	//处理return的递归子程序
+
 
 ///////////////////////////error.cpp//////////////////////////////////
 void error(int errid);

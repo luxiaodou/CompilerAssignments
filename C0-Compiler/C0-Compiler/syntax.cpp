@@ -57,6 +57,7 @@ void program() {
 			backup();
 			getsym();
 			if (sym == MAINSYM) {
+				retrieve();
 				break;
 			}
 			if (sym != IDSYM) {
@@ -221,7 +222,7 @@ void varstate() {
 			error(MISSING_IDENT);
 		}
 		getsym();
-		if (sym == COMMA || sym == LBRACK) {
+		if (sym == COMMA || sym == LBRACK || sym == SEMICOLON) {	//not proved
 			retrieve();
 			vardef();
 		}
@@ -342,7 +343,7 @@ void compound() {
 		|| sym == IDSYM || sym == PRINTFSYM || sym == SCANFSYM || sym == RETURNSYM || sym == SEMICOLON || sym == SWITCHSYM) {
 		statement();
 	}
-	tab --;
+	tab--;
 	//cout << "This is a compound statement!" << endl;
 }
 
@@ -446,12 +447,13 @@ void mainfdef() {
 	if (sym != LBRACE) {
 		error(MISSING_LBRACE);
 	}
+	getsym();
 	compound();
 	if (sym != RBRACE) {
 		error(MISSING_RBRACE);
 	}
 	//cout << "This is a main function" << endl;
-	tab --;
+	tab--;
 }
 
 
@@ -480,19 +482,30 @@ void statement() {
 		}
 		getsym();
 		break;
-	case INTSYM:	//func with value
-	case CHARSYM:
-		funcdef();
-		break;
-	case VOIDSYM:	//void func
-		voidfdef();
-		if (sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
-		}
+	case IDSYM:	//assignment or callfunc
+		backup();
 		getsym();
-		break;
-	case IDSYM:	//assignment
-		assignstate();
+		//＜有返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
+		//＜无返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
+		//＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
+		if (sym == LPARENT) {
+			getsym();
+			if (sym == IDSYM || sym == PLUSSYM || sym == MINUSSYM) {
+				expression();
+				while (sym == COMMA) {
+					expression();
+				}
+			}
+			if (sym != RPARENT) {
+				error(MISSING_RPARENT);
+			}
+			getsym();
+		}
+		else
+		{
+			retrieve();
+			assignstate();			
+		}
 		if (sym != SEMICOLON) {
 			error(MISSING_SEMICOLON);
 		}
@@ -588,12 +601,16 @@ void factor() {
 			getsym();	//＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
 			if (sym == IDSYM || sym == PLUSSYM || sym == MINUSSYM) {
 				expression();
-				getsym();
 				while (sym == COMMA) {
-					expression();
 					getsym();
+					expression();
 				}
-			}			
+				if (sym != RPARENT)
+				{
+					error(MISSING_RPARENT);
+				}
+				getsym();
+			}
 		}
 		break;
 	case LPARENT:
@@ -602,6 +619,7 @@ void factor() {
 		if (sym != RPARENT) {
 			error(MISSING_RPARENT);
 		}
+		getsym();
 		break;
 	case PLUSSYM:
 	case MINUSSYM:
@@ -745,7 +763,6 @@ void switchstate() {
 	}
 	getsym();
 	expression();
-	getsym();
 	if (sym != RPARENT) {
 		error(MISSING_RPARENT);
 	}
@@ -754,11 +771,9 @@ void switchstate() {
 		getsym();
 		while (sym == CASESYM) {
 			casestate();
-			getsym();
 		}
 		defaultstate();
 	}
-	getsym();
 	if (sym != RBRACE) {
 		error(MISSING_RBRACE);
 	}
@@ -780,6 +795,7 @@ void casestate() {
 		if (sym != COLON) {
 			error(MISSING_COLON);
 		}
+		getsym();
 		statement();
 	}
 	else
@@ -797,8 +813,13 @@ void defaultstate() {
 	cout << "default statement" << endl;
 	if (sym == DEFAULTSYM) {
 		getsym();
-
+		if (sym != COLON) {
+			error(MISSING_COLON);
+		}
+		getsym();
+		statement();
 	}
+
 	//cout << "This is a default statement!" << endl;
 	tab--;
 }
@@ -826,6 +847,7 @@ void scanfstate() {
 			if (sym != RPARENT) {
 				error(MISSING_RPARENT);
 			}
+			getsym();
 		}
 		else
 		{
@@ -861,7 +883,7 @@ void printfstate() {
 			expression();
 		}
 	}
-	else if (sym == PLUSSYM || sym == MINUSSYM || sym == IDSYM) {
+	else if (sym == PLUSSYM || sym == MINUSSYM || sym == IDSYM || sym == LPARENT) {
 		expression();
 	}
 	if (sym != RPARENT) {

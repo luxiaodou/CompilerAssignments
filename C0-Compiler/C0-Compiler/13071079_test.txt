@@ -20,7 +20,7 @@ char func3(char d){
 }
 
 void fprintf(){					
-	printf(" !#$%&'()*+,-./012345	6789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
+	printf(" !#$%&'()*+,-./0123456789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
 	printf(+ca+cb);
 	printf("hello world",cf);
 }
@@ -89,13 +89,13 @@ void main(){
 		vd=func1(va,vd);
 		printf(-vd);
 	}	
-	swtich(flag){		
+	switch(flag){		
 		case 0 : {
 			switch(va) {	
 				case 0: 
 				case 1:	{
 					va = func3(cc + 1);
-					printf(va)
+					printf(va);
 				}
 				case 2: whiletest();
 				default: {
