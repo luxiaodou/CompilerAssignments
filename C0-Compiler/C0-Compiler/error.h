@@ -39,3 +39,4 @@
 #define	MISSING_ASSIGN 37	//¶ªÊ§µÈºÅ
 #define MISSING_COLON 38	//¶ªÊ§Ã°ºÅ
 #define MISSING_VOID	39	//¶ªÊ§VOID
+#define MISSING_DOUQUOTE	40	//¶ªÊ§Ë«ÒýºÅ

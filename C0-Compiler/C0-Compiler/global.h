@@ -12,7 +12,6 @@
 using namespace std;
 
 ///////////////////////////lexer.cpp//////////////////////////////////
-
 //符号运算符类型
 #define		PLUSSYM		1	// +
 #define		MINUSSYM	2	// -
@@ -97,7 +96,31 @@ typedef struct		//定义符号表
 }symtable;
 
 //////////////////////////syntax.cpp//////////////////////////////////
-
+void enter();		//将符号存入符号表
+void program();	//处理程序的递归子程序
+void conststate();		//处理常量说明的递归子程序
+void constdef();	//处理常量定义的递归子程序
+void varstate();		//处理变量声明的递归子程序
+void vardef();		//处理变量定义的递归子程序
+void paralist();		//处理函数声明时参数表的递归子程序
+void compound();	//处理符合语句的递归子程序
+void funcdef();	//处理有返回值函数声明的递归子程序
+void voidfdef();	//处理无返回值的函数声明的递归子程序
+void mainfdef();	//处理主函数声明的递归子程序
+void statement();		//处理语句的递归子程序
+void expression();	//处理表达式的递归子程序
+void term();	//处理项的递归子程序
+void factor();	//处理因子的递归子程序
+void assignstate();	//处理赋值语句的递归子程序
+void ifstate();	//处理if语句的递归子程序
+void condition();	//处理条件语句的递归子程序
+void whilestate();	//处理while循环语句的递归子程序
+void switchstate();	//处理switch的递归子程序
+void casestate();	//处理case的递归子程序
+void defaultstate();	//处理default的递归子程序
+void printfstate();		//处理printf的递归子程序
+void scanfstate();		//处理scanf的递归子程序
+void returnstate();	//处理return的递归子程序
 
 ///////////////////////////error.cpp//////////////////////////////////
 void error(int errid);

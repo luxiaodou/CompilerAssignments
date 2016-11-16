@@ -263,7 +263,7 @@ int getsym() {
 		getch();
 		if (ch == '\"')
 		{
-			sym = DOUQUOTE;
+			sym = STRING;
 			return 0;
 		}
 		while (ch != '\"' && isStringCon() && ch != 0)
@@ -280,8 +280,8 @@ int getsym() {
 				return 0;
 			}
 			sym = STRING;
-			output();
-			sym = DOUQUOTE;
+			/*output();
+			sym = DOUQUOTE;*/
 		}
 		else
 		{

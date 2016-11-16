@@ -12,20 +12,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool nflag = true;
 	//path = "C:/Users/luxiaodou/Desktop/a.txt";
 	infile.open(path, ios::in);
-	while (infile.good()) {
-		getsym();
-
-		if (line == 1 && nflag) {
-			backup();
-			nflag = false;
-		}
-		if (line == 3 && !flag) {
-			retrieve();
-			flag = true;
-		}
-		output();
-	}
-	cout << "Word Analyze complete!" << endl;
+	program();
+	cout << "Syntax Analyze complete!" << endl;
 	infile.close();
 	outfile.close();
 	return 0;
