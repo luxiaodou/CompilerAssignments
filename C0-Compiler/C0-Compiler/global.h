@@ -58,16 +58,19 @@ using namespace std;
 #define		PRINTFSYM	38	//printf
 #define		RETURNSYM	39	//return
 
+//类型限制定义
 #define NUM_MAXLENGTH 9
 #define STRING_MAXLENGTH 500
 #define IDENT_MAXLENGTH 100
 
+//词法分析需要用到的全局变量
 extern char ch;
 extern string token,inputline, path;
 extern int sym, num, line, count, ll, lc;
 extern ifstream infile;
 extern ofstream outfile;
 
+//词法分析所共享的函数
 void output();
 int getsym();
 void backup();

@@ -2,8 +2,6 @@
 #include "global.h"
 
 void enter();		//将符号存入符号表
-void inttype();	//解析整数的递归子程序
-void consttype();	//解析常量类型的递归子程序
 void program();	//处理程序的递归子程序
 void conststate();		//处理常量说明的递归子程序
 void constdef();	//处理常量定义的递归子程序
@@ -13,6 +11,7 @@ void paralist();		//处理函数声明时参数表的递归子程序
 void compound();	//处理符合语句的递归子程序
 void funcdef();	//处理有返回值函数声明的递归子程序
 void voidfdef();	//处理无返回值的函数声明的递归子程序
+void mainfdef();	//处理主函数声明的递归子程序
 void statement();		//处理语句的递归子程序
 void expression();	//处理表达式的递归子程序
 void term();	//处理项的递归子程序
@@ -284,6 +283,7 @@ void vardef() {
 	else {
 		error(0);
 	}
+	cout << "This is a var defination" << endl;
 }
 
 //＜参数表＞ ::=  ＜类型标识符＞＜标识符＞{,＜类型标识符＞＜标识符＞}| ＜空＞
@@ -319,7 +319,8 @@ void compound() {
 	if (sym == INTSYM || sym == CHARSYM) {
 		varstate();
 	}
-	while (sym==IFSYM || sym == WHILESYM	) {			//not finished!!!!!!!!//////////////////
+	while (sym == IFSYM || sym == WHILESYM || sym == LBRACE || sym == INTSYM || sym == CHARSYM || sym == VOIDSYM
+		|| sym == IDSYM || sym == PRINTFSYM || sym == SCANFSYM || sym == RETURNSYM || sym == SEMICOLON || sym == SWITCHSYM) {
 		statement();
 	}
 	cout << "This is a compound statement!" << endl;
@@ -392,9 +393,109 @@ void voidfdef() {
 	cout << "This is a void function define!" << endl;
 }
 
+//＜主函数＞ ::= void main‘(’‘)’‘{’＜复合语句＞‘}’
+void mainfdef() {
+	if (sym != VOIDSYM) {
+		error(MISSING_VOID);
+	}
+	getsym();
+	if (sym != MAINSYM) {
+		error(0);
+	}
+	getsym();
+	if (sym != LPARENT) {
+		error(MISSING_LPARENT);
+	}
+	getsym();
+	if (sym != RPARENT) {
+		error(MISSING_RPARENT);
+	}
+	getsym();
+	if (sym != LBRACE) {
+		error(MISSING_LBRACE);
+	}
+	compound();
+	if (sym != RBRACE) {
+		error(MISSING_RBRACE);
+	}
+	cout << "This is a main function" << endl;
+}
+
+
 //＜语句＞:: = ＜条件语句＞｜＜循环语句＞ | ‘{ ’＜语句列＞‘ }’｜＜有返回值函数调用语句＞;
-//| ＜无返回值函数调用语句＞; ｜＜赋值语句＞; ｜＜读语句＞; ｜＜写语句＞; ｜＜空＞; | ＜情况语句＞｜＜返回语句＞;
+//				| ＜无返回值函数调用语句＞; ｜＜赋值语句＞; ｜＜读语句＞; ｜＜写语句＞; ｜＜空＞; | ＜情况语句＞｜＜返回语句＞;
 void statement() {
+	switch (sym)
+	{
+	case IFSYM: //ifstate
+		ifstate();
+		break;
+	case WHILESYM:	//while state
+		whilestate();
+		break;
+	case LBRACE:	//statement list
+		getsym();
+		while (sym == IFSYM || sym == WHILESYM || sym == LBRACE || sym == INTSYM || sym == CHARSYM || sym == VOIDSYM
+			|| sym == IDSYM || sym == PRINTFSYM || sym == SCANFSYM || sym == RETURNSYM || sym == SEMICOLON || sym == SWITCHSYM) {
+			statement();
+			getsym();
+			
+		}
+		if (sym != RBRACE) {
+			error(MISSING_RBRACE);
+		}
+		break;
+	case INTSYM:	//func with value
+	case CHARSYM:
+		funcdef();
+		break;
+	case VOIDSYM:	//void func
+		voidfdef();
+		if (sym != SEMICOLON) {
+			error(MISSING_SEMICOLON);
+		}
+		getsym();
+		break;
+	case IDSYM:	//assignment
+		assignstate();
+		if (sym != SEMICOLON) {
+			error(MISSING_SEMICOLON);
+		}
+		getsym();
+		break;
+	case PRINTFSYM:
+		printfstate();
+		if (sym != SEMICOLON) {
+			error(MISSING_SEMICOLON);
+		}
+		getsym();
+		break;
+	case SCANFSYM:
+		scanfstate();
+		if (sym != SEMICOLON) {
+			error(MISSING_SEMICOLON);
+		}
+		getsym();
+		break;
+	case SEMICOLON:
+		break;
+	case SWITCHSYM:
+		switchstate();
+		if (sym != SEMICOLON) {
+			error(MISSING_SEMICOLON);
+		}
+		getsym();
+		break;
+	case RETURNSYM:
+		returnstate();
+		if (sym != SEMICOLON) {
+			error(MISSING_SEMICOLON);
+		}
+		getsym();
+		break;
+	default:
+		break;
+	}
 	cout << "This is a statement statement!" << endl;
 }
 
@@ -443,6 +544,15 @@ void ifstate() {
 //＜条件＞::=  ＜表达式＞＜关系运算符＞＜表达式＞｜＜表达式＞ //表达式为0条件为假，否则为真
 void condition()
 {
+	expression();
+	if (sym == LESS || sym == LESSEQU || sym == GREAT || sym == GREATEQU || sym == NEQUAL || sym == EQUAL) {
+		getsym();
+		expression();
+	}
+	else
+	{
+		error(0);
+	}
 	cout << "This is a condition statement!" << endl;
 }
 
@@ -523,7 +633,7 @@ void switchstate() {
 void casestate() {
 	if (sym == CASESYM) {
 		getsym();
-		if (sym != NUMSYM || sym != CHARTY) {	//这里有问题//////////////////////////////////
+		if (sym != NUMSYM && sym != QUOTE && sym !=PLUSSYM) {		//＜常量＞ ::= ＜整数＞|＜字符＞
 			error(WRONG_TYPE);
 		}
 		getsym();
