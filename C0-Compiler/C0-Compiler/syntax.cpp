@@ -10,6 +10,7 @@ void constdef();	//处理常量定义的递归子程序
 void varstate();		//处理变量声明的递归子程序
 void vardef();		//处理变量定义的递归子程序
 void paralist();		//处理函数声明时参数表的递归子程序
+void compound();	//处理符合语句的递归子程序
 void funcdef();	//处理有返回值函数声明的递归子程序
 void voidfdef();	//处理无返回值的函数声明的递归子程序
 void statement();		//处理语句的递归子程序
@@ -231,7 +232,7 @@ void varstate() {
 	cout << "This is a var state!" << endl;
 }
 
-//＜变量定义＞  ::= ＜类型标识符＞(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’){,(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’ )}
+//＜变量定义＞::= ＜类型标识符＞(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’){,(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’ )}
 void vardef() {
 	if (sym == INTSYM || sym == CHARSYM) {
 		getsym();
@@ -285,10 +286,139 @@ void vardef() {
 	}
 }
 
-//＜语句＞    :: = ＜条件语句＞｜＜循环语句＞ | ‘{ ’＜语句列＞‘ }’｜＜有返回值函数调用语句＞;
+//＜参数表＞ ::=  ＜类型标识符＞＜标识符＞{,＜类型标识符＞＜标识符＞}| ＜空＞
+void paralist() {
+	if (sym == INTSYM || sym == CHARSYM) {
+		getsym();
+		if (sym == IDSYM) {
+			getsym();
+			while (sym == COMMA) {
+				if (sym != INTSYM && sym != CHARSYM) {
+					error(WRONG_TYPE);
+				}
+				getsym();
+				if (sym == IDSYM) {
+					//not implemented
+				}
+				else
+				{
+					error(MISSING_IDENT);
+				}
+				getsym();
+			}
+		}
+	}
+	cout << "This is a paralist!" << endl;
+}
+
+//＜复合语句＞ ::= ［＜常量说明＞］［＜变量说明＞］＜语句列＞
+void compound() {
+	if (sym == CONSTSYM) {
+		conststate();
+	}
+	if (sym == INTSYM || sym == CHARSYM) {
+		varstate();
+	}
+	while (sym==IFSYM || sym == WHILESYM	) {			//not finished!!!!!!!!//////////////////
+		statement();
+	}
+	cout << "This is a compound statement!" << endl;
+}
+
+//＜有返回值函数定义＞:: = ＜声明头部＞‘(’＜参数表＞‘)’ ‘ { ’＜复合语句＞‘ }’
+void funcdef() {
+	if (sym == INTSYM || sym == CHARSYM) {
+		getsym();
+		if (sym != IDSYM) {
+			error(MISSING_IDENT);
+		}
+		getsym();
+		if (sym != LPARENT) {
+			error(MISSING_LPARENT);
+		}
+		getsym();
+		paralist();
+		if (sym != RPARENT) {
+			error(MISSING_RPARENT);
+		}
+		getsym();
+		if (sym != LBRACE) {
+			error(MISSING_LBRACE);
+		}
+		getsym();
+		compound();
+		if (sym != RBRACE) {
+			error(MISSING_RBRACE);
+		}
+	}
+	else
+	{
+		error(WRONG_TYPE);
+	}
+	cout << "This is a fuction defination!" << endl;
+}
+
+//＜无返回值函数定义＞:: = void＜标识符＞‘(’＜参数表＞‘)’‘ { ’＜复合语句＞‘ }’
+void voidfdef() {
+	if (sym != VOIDSYM) {
+		error(MISSING_VOID);
+	}
+	getsym();
+	if (sym == IDSYM) {
+		getsym();
+		if (sym != LPARENT) {
+			error(MISSING_LPARENT);
+		}
+		getsym();
+		paralist();
+		if (sym != RPARENT) {
+			error(MISSING_RPARENT);
+		}
+		getsym();
+		if (sym != LBRACE) {
+			error(MISSING_LBRACE);
+		}
+		compound();
+		getsym();
+		if (sym != RBRACE) {
+			error(MISSING_RBRACE);
+		}
+		getsym();
+	}
+	else
+	{
+		error(MISSING_IDENT);
+	}
+	cout << "This is a void function define!" << endl;
+}
+
+//＜语句＞:: = ＜条件语句＞｜＜循环语句＞ | ‘{ ’＜语句列＞‘ }’｜＜有返回值函数调用语句＞;
 //| ＜无返回值函数调用语句＞; ｜＜赋值语句＞; ｜＜读语句＞; ｜＜写语句＞; ｜＜空＞; | ＜情况语句＞｜＜返回语句＞;
 void statement() {
 	cout << "This is a statement statement!" << endl;
+}
+
+//＜表达式＞ ::= ［＋｜－］＜项＞{＜加法运算符＞＜项＞}
+void expression() {
+	if (sym == PLUSSYM) {
+		getsym();
+	}
+	term();
+	while (sym == PLUSSYM) {
+		getsym();
+		term();
+	}
+	cout << "This is a expression!" << endl;
+}
+
+//＜项＞ ::= ＜因子＞{＜乘法运算符＞＜因子＞}
+void term() {
+	cout << "This is a term!" << endl;
+}
+
+//＜因子＞ ::= ＜标识符＞｜＜标识符＞‘[’＜表达式＞‘]’|‘(’＜表达式＞‘)’｜＜整数＞|＜字符＞｜＜有返回值函数调用语句＞ 
+void factor() {
+	cout << "This is a factor!" << endl;
 }
 
 //＜条件语句＞:: = if ‘(’＜条件＞‘)’＜语句＞
@@ -315,7 +445,6 @@ void condition()
 {
 	cout << "This is a condition statement!" << endl;
 }
-
 
 //＜赋值语句＞:: = ＜标识符＞＝＜表达式＞ | ＜标识符＞‘[’＜表达式＞‘]’ = ＜表达式＞
 void assignstate() {

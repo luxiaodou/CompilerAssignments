@@ -38,3 +38,4 @@
 #define	WRONG_TYPE		36		//声明类型错误
 #define	MISSING_ASSIGN 37	//丢失等号
 #define MISSING_COLON 38	//丢失冒号
+#define MISSING_VOID	39	//丢失VOID
