@@ -19,7 +19,7 @@ void enter() {
 
 //＜程序＞::= ［＜常量说明＞］［＜变量说明＞］{＜有返回值函数定义＞|＜无返回值函数定义＞}＜主函数＞
 void program() {
-	tab += 1;
+	/*tab += 1;*/
 	tabf();
 	cout << "program" << endl;
 
@@ -101,7 +101,7 @@ void program() {
 	}
 
 	//cout << "This is a program!" << endl;
-	tab--;
+	//tab--;
 }
 
 //＜常量说明＞ ::=  const＜常量定义＞;{ const＜常量定义＞;}
@@ -485,21 +485,9 @@ void statement() {
 	case IDSYM:	//assignment or callfunc
 		backup();
 		getsym();
-		//＜有返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
-		//＜无返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
-		//＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
 		if (sym == LPARENT) {
-			getsym();
-			if (sym == IDSYM || sym == PLUSSYM || sym == MINUSSYM) {
-				expression();
-				while (sym == COMMA) {
-					expression();
-				}
-			}
-			if (sym != RPARENT) {
-				error(MISSING_RPARENT);
-			}
-			getsym();
+			retrieve();
+			calfunc();
 		}
 		else
 		{
@@ -588,6 +576,7 @@ void factor() {
 	switch (sym)
 	{
 	case IDSYM:
+		backup();
 		getsym();
 		if (sym == LBRACK) {
 			getsym();
@@ -598,19 +587,21 @@ void factor() {
 			getsym();
 		}
 		else if (sym == LPARENT) {	//＜有返回值函数调用语句＞ ::= ＜标识符＞‘(’＜值参数表＞‘)’
-			getsym();	//＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
-			if (sym == IDSYM || sym == PLUSSYM || sym == MINUSSYM) {
-				expression();
-				while (sym == COMMA) {
-					getsym();
-					expression();
-				}
-				if (sym != RPARENT)
-				{
-					error(MISSING_RPARENT);
-				}
-				getsym();
-			}
+			//getsym();	//＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
+			//if (sym == IDSYM || sym == PLUSSYM || sym == MINUSSYM) {
+			//	expression();
+			//	while (sym == COMMA) {
+			//		getsym();
+			//		expression();
+			//	}
+			//	if (sym != RPARENT)
+			//	{
+			//		error(MISSING_RPARENT);
+			//	}
+			//	getsym();
+			//}
+			retrieve();
+			calfunc();
 		}
 		break;
 	case LPARENT:
@@ -711,7 +702,6 @@ void assignstate() {
 	if (sym == LBRACK) {
 		getsym();
 		expression();
-		getsym();
 		if (sym != RBRACK) {
 			error(MISSING_RBRACK);
 		}
@@ -740,10 +730,10 @@ void whilestate() {
 	}
 	getsym();
 	condition();
-	getsym();
 	if (sym != RPARENT) {
 		error(MISSING_RPARENT);
 	}
+	getsym();
 	statement();
 	//cout << "This is a while statement!" << endl;
 	tab--;
@@ -912,5 +902,37 @@ void returnstate() {
 		getsym();
 	}
 	//cout << "This is a return statement!" << endl;
+	tab--;
+}
+
+//＜有返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
+//＜无返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
+//＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
+void calfunc() {
+	tab++;
+	tabf();
+	cout << "call function" << endl;
+	if (sym ==IDSYM) {
+		getsym();
+		if (sym != LPARENT) {
+			error(MISSING_LPARENT);
+		}
+		getsym();
+		if (sym == IDSYM || sym == PLUSSYM || sym == MINUSSYM ||sym == LPARENT || sym == QUOTE) {
+			expression();
+			while (sym == COMMA) {
+				getsym();
+				expression();
+			}
+		}
+		if (sym != RPARENT) {
+			error(MISSING_RPARENT);
+		}
+		getsym();
+	}
+	else
+	{
+		error(0);
+	}
 	tab--;
 }

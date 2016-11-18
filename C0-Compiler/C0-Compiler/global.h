@@ -121,7 +121,7 @@ void defaultstate();	//处理default的递归子程序
 void printfstate();		//处理printf的递归子程序
 void scanfstate();		//处理scanf的递归子程序
 void returnstate();	//处理return的递归子程序
-
+void calfunc();	//处理函数调用的递归子程序
 
 ///////////////////////////error.cpp//////////////////////////////////
 void error(int errid);
