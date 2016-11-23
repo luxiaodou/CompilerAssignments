@@ -2,20 +2,19 @@
 //
 #include "stdafx.h"
 #include "global.h"
+#include "Lexer.h"
+#include "Parser.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//getpath();
-	//path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
-	path = "13071079_test.txt";
-	bool flag = false;
-	bool nflag = true;
+	//Lexer::getpath();
+	//Lexer::path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
+	Lexer::path = "13071079_test.txt";
 	//path = "C:/Users/luxiaodou/Desktop/a.txt";
-	infile.open(path, ios::in);
-	program();
+	Lexer::init();
+	Parser::program();
 	cout << "Syntax Analyze complete!" << endl;
-	infile.close();
-	outfile.close();
+	Lexer::close();
 	return 0;
 }
 

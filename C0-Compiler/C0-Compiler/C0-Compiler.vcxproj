@@ -75,23 +75,28 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="defination.h" />
     <ClInclude Include="global.h" />
+    <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Table.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="error.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C0-Compiler.cpp" />
     <ClCompile Include="error.cpp" />
-    <ClCompile Include="lexer.cpp" />
-    <ClCompile Include="opt.cpp" />
-    <ClCompile Include="quad.cpp" />
-    <ClCompile Include="quad2asm.cpp" />
+    <ClCompile Include="Lexer.cpp" />
+    <ClCompile Include="Optimizer.cpp" />
+    <ClCompile Include="Midcode.cpp" />
+    <ClCompile Include="Generator.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="syntax.cpp" />
+    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Table.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,31 +1,48 @@
 //	词法分析主程序
 #include "stdafx.h"
 #include "global.h"
+#include "Lexer.h"
 
-char ch;
-string token;
-int sym;
-int num;
-string inputline;
-string path;
-int line = 0, count = 1, ll = 0, lc = 0;
-ifstream infile;
-ofstream outfile("output.txt");
-streampos bookmark;
-int bline, bcount, bll, blc,bsym;
-string binputline;
+char Lexer::ch;
+string Lexer::token;
+int Lexer::sym;
+int Lexer::num;
+string Lexer::inputline;
+string Lexer::path;
+int Lexer::line, Lexer::count, Lexer::ll, Lexer::lc;
+ifstream Lexer::infile;
+//ofstream Lexer::outfile("output.txt");
+ofstream Lexer::outfile;
+streampos Lexer::bookmark;
+int Lexer::bline, Lexer::bcount, Lexer::bll, Lexer::blc, Lexer::bsym;
+string Lexer::binputline;
+
+void Lexer::init() {
+	line = 0;
+	count = 1;
+	ll = 0;
+	lc = 0;
+	outfile.open("output.txt");
+	infile.open(path,ios::in);
+}
+
+void Lexer::close()
+{
+	infile.close();
+	outfile.close();
+}
 
 //用来获取输入文件的路径
-void getpath() {
+void Lexer::getpath() {
 	cin >> path;
 }
 
 //清空token
-void clearToken() {
+void Lexer::clearToken() {
 	token = "";
 }
 
-void getnextline() {
+void Lexer::getnextline() {
 	getline(infile, inputline);
 	inputline += '\n';
 	line += 1;
@@ -34,7 +51,7 @@ void getnextline() {
 }
 
 //获得下一个输入字符，当读到文件末尾的时候返回空字符
-void getch()
+void Lexer::getch()
 {
 
 	while (ll == 0 || lc >= ll)
@@ -60,7 +77,7 @@ void getch()
 	}
 }
 
-void backup() {	//保存现场
+void Lexer::backup() {	//保存现场
 	bookmark = infile.tellg();
 	bline = line;
 	bll = ll;
@@ -70,7 +87,7 @@ void backup() {	//保存现场
 	bsym = sym;
 }
 
-void retrieve() {	//恢复现场
+void Lexer::retrieve() {	//恢复现场
 	infile.seekg(bookmark);
 	line = bline;
 	ll = bll;
@@ -81,12 +98,12 @@ void retrieve() {	//恢复现场
 }
 
 //拼接token
-void catToken() {
+void Lexer::catToken() {
 	token += ch;
 }
 
 //跳过无意义的空白字符，本文法中针对空格，换行符以及水平制表符
-void skip() {
+void Lexer::skip() {
 	while (ch == ' ' || ch == '\n' || ch == '\t')
 	{
 		getch();
@@ -94,7 +111,7 @@ void skip() {
 }
 
 //判断当前ch是否是字母类型，注意根据文法定义下划线'_'也算作字母
-bool isLetter() {
+bool Lexer::isLetter() {
 	if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch == '_')
 	{
 		return true;
@@ -103,7 +120,7 @@ bool isLetter() {
 }
 
 //判断ch是否是数字
-bool isDigit() {
+bool Lexer::isDigit() {
 	if (ch >= '0' && ch <= '9') {
 		return true;
 	}
@@ -111,12 +128,12 @@ bool isDigit() {
 }
 
 //读字符的指针退格
-void retract() {
+void Lexer::retract() {
 	lc -= 1;
 }
 
 //分辨当前标识符是否是保留字，是的话返回对应的sym，不是返回0说明是标识符
-int isreserve() {
+int Lexer::isreserve() {
 	if (token == "main")
 		return MAINSYM;
 	else if (token == "int")
@@ -147,7 +164,7 @@ int isreserve() {
 }
 
 //检查当前ch是不是组成字符串的合法元素，文法定义为“十进制编码为32,33,35-126的ASCII字符”
-bool isStringCon()
+bool Lexer::isStringCon()
 {
 	if (ch >= 32 && ch <= 126 && ch != 34)
 		return true;
@@ -155,7 +172,7 @@ bool isStringCon()
 }
 
 //词法分析主要部分，判别当前单词的类型
-int getsym() {
+int Lexer::getsym() {
 	sym = 0;	//默认sym为0，在output()中不作处理
 	clearToken();
 	getch();
@@ -371,7 +388,7 @@ int getsym() {
 	return 0;
 }
 
-void output() {
+void Lexer::output() {
 	switch (sym) {
 	case IDSYM:
 		outfile << count++ << " IDSYM " + token + ";" << endl;	break;

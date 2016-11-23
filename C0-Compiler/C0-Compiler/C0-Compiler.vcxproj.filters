@@ -30,6 +30,18 @@
     <ClInclude Include="error.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Lexer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Table.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="defination.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Parser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -38,22 +50,25 @@
     <ClCompile Include="C0-Compiler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="lexer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="syntax.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="error.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="quad.cpp">
+    <ClCompile Include="Lexer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="quad2asm.cpp">
+    <ClCompile Include="Midcode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="opt.cpp">
+    <ClCompile Include="Optimizer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Generator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Parser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Table.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
