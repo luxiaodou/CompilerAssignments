@@ -2,6 +2,7 @@
 #include "global.h"
 #include "Parser.h"
 #include "Lexer.h"
+#include "defination.h"
 
 int tab = 0;
 
@@ -15,8 +16,122 @@ void tabf() {
 
 int ttype = 0, tident = 0;
 
-void Parser::enter() {
-
+void Parser::error(int errorid)
+{
+	switch (errorid)
+	{
+	case UNDEF_ID:
+		cout << "使用了未定义标识符！" << endl;
+		break;
+	case MULTI_DEF:
+		cout << "重定义标识符！" << endl;
+		break;
+	case ID_TOO_LONG:
+		cout << "标识符过长!" << endl;
+		break;
+	case PROGRAM_ERROR:
+		cout << "程序结构错误!" << endl;
+		break;
+	case STR_CONTENT_ERROR:
+		cout << "字符串出现非法内容!" << endl;
+		break;
+	case STR_TOO_LONG:
+		cout << "字符串超长,最长请不要超过" << STRING_MAXLENGTH << "个字符!" << endl;
+		break;
+	case ZERO_HEAD_NUM:
+		cout << "非零数字不能有前导零!" << endl;
+		break;
+	case NUM_HEAD_IDENT:
+		cout << "标识符不能以数字开头!" << endl;
+		break;
+	case NUM_TOO_LARGE:
+		cout << "数字过大! 请不要超过32位立即数的最大范围!" << endl;
+		break;
+	/*case UNDEF_INPUT:
+		cout << "不合法输入!" << endl;
+		break;*/
+	case CHAR_MISS_QUOTE:
+		cout << "字符类型丢失后一个单引号!" << endl;
+		break;
+	case CHAR_CONTENT_ERROR:
+		cout << "字符内容不合法!" << endl;
+		break;
+	case CHAR_OVERFLOW:
+		cout << "字符ascii码溢出!" << endl;
+		break;
+	case NEQUAL_MISS:
+		cout << "错误使用不等号! 应使用'!='" << endl;
+		break;
+	case MISSING_SEMI:
+		cout << "丢失分号! 请检查分号是否匹配!" << endl;
+		break;
+	case MISSING_RPARENT:
+		cout << "丢失右括号!" << endl;
+		break;
+	case MISSING_RBRACK:
+		cout << "丢失右中括号!" << endl; 
+		break;
+	case MISSING_RBRACE:
+		cout << "丢失右大括号!" << endl;
+		break;
+	case MISSING_IDENT:
+		cout << "丢失标识符!" << endl;
+		break;
+	case MISSING_LPARENT:
+		cout << "丢失左括号!" << endl;
+		break;
+	case MISSING_LBRACK:
+		cout << "丢失左中括号!" << endl;
+		break;
+	case MISSING_LBRACE:
+		cout << "丢失左大括号!" << endl;
+		break;
+	case MISSING_PLUS:
+		cout << "丢失加号或减号!" << endl;
+		break;
+	case MISSING_MULTI:
+		cout << "丢失乘号或除号!" << endl;
+		break;
+	case ASSIGN_ERROR:
+		cout << "赋值时发生错误!" << endl;
+		break;
+	case RETURN_ERROR:
+		cout << "返回值错误!" << endl;
+		break;
+	case MISSING_MAIN:
+		cout << "丢失main函数!" << endl;
+		break;
+	case MISSING_RETURN:
+		cout << "丢失return语句!" << endl;
+		break;
+	case EXPRESSION_ERROR:
+		cout << "表达式错误!" << endl;
+		break;
+	case OUT_OF_TABLE:
+		cout << "符号表满了!" << endl;
+		break;
+	case OUT_OF_ARRAY:
+		cout << "数组溢出!" << endl;
+		break;
+	case WRONG_TYPE:
+		cout << "声明类型错误!" << endl;
+		break;
+	case MISSING_ASSIGN:
+		cout << "丢失等号!" << endl;
+		break;
+	case MISSING_COLON:
+		cout << "丢失冒号!" << endl;
+		break;
+	case MISSING_VOID:
+		cout << "丢失void关键字!" << endl;
+		break;
+	case MISSING_DOUQUOTE:
+		cout << "引号缺失!" << endl;
+		break;
+	default:
+		cout << "未知错误,理论上永远不可能执行到这里" << endl;
+		break;
+	}
 }
 
 //＜程序＞::= ［＜常量说明＞］［＜变量说明＞］{＜有返回值函数定义＞|＜无返回值函数定义＞}＜主函数＞
@@ -119,7 +234,7 @@ void Parser::conststate() {
 		Lexer::getsym();
 		constdef();
 		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
+			error(MISSING_SEMI);
 		}
 		Lexer::getsym();
 	} while (Lexer::sym == CONSTSYM);
@@ -214,7 +329,7 @@ void Parser::varstate() {
 	cout << "var statement" << endl;
 	vardef();
 	if (Lexer::sym != SEMICOLON) {
-		error(MISSING_SEMICOLON);
+		error(MISSING_SEMI);
 	}
 	Lexer::getsym();
 	while (Lexer::sym == INTSYM || Lexer::sym == CHARSYM) {
@@ -233,7 +348,7 @@ void Parser::varstate() {
 			break;
 		}
 		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
+			error(MISSING_SEMI);
 		}
 		Lexer::getsym();
 	}
@@ -494,24 +609,24 @@ void Parser::statement() {
 		else
 		{
 			Lexer::retrieve();
-			assignstate();			
+			assignstate();
 		}
 		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
+			error(MISSING_SEMI);
 		}
 		Lexer::getsym();
 		break;
 	case PRINTFSYM:
 		printfstate();
 		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
+			error(MISSING_SEMI);
 		}
 		Lexer::getsym();
 		break;
 	case SCANFSYM:
 		scanfstate();
 		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
+			error(MISSING_SEMI);
 		}
 		Lexer::getsym();
 		break;
@@ -521,14 +636,14 @@ void Parser::statement() {
 	case SWITCHSYM:
 		switchstate();
 		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
+			error(MISSING_SEMI);
 		}
 		Lexer::getsym();
 		break;
 	case RETURNSYM:
 		returnstate();
 		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMICOLON);
+			error(MISSING_SEMI);
 		}
 		Lexer::getsym();
 		break;
@@ -914,13 +1029,13 @@ void Parser::calfunc() {
 	tab++;
 	tabf();
 	cout << "call function" << endl;
-	if (Lexer::sym ==IDSYM) {
+	if (Lexer::sym == IDSYM) {
 		Lexer::getsym();
 		if (Lexer::sym != LPARENT) {
 			error(MISSING_LPARENT);
 		}
 		Lexer::getsym();
-		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM ||Lexer::sym == LPARENT || Lexer::sym == QUOTE) {
+		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == QUOTE) {
 			expression();
 			while (Lexer::sym == COMMA) {
 				Lexer::getsym();

@@ -8,6 +8,7 @@ class Parser {
 public:
 	static void program();	//处理程序的递归子程序
 private:
+	static void error(int errorid);
 	static void enter();		//将符号存入符号表
 	static void conststate();		//处理常量说明的递归子程序
 	static void constdef();	//处理常量定义的递归子程序
