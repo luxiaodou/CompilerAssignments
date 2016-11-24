@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _Parcer_H_
-#define _Parcer_H_
 #include "defination.h"
 #include "error.h"
 using namespace std;
@@ -9,7 +7,7 @@ public:
 	static void program();	//处理程序的递归子程序
 private:
 	static void error(int errorid);
-	static void enter();		//将符号存入符号表
+	//static void enter();		//todo: 修改文档,说明此方法已被转移
 	static void conststate();		//处理常量说明的递归子程序
 	static void constdef();	//处理常量定义的递归子程序
 	static void varstate();		//处理变量声明的递归子程序
@@ -35,4 +33,3 @@ private:
 	static void returnstate();	//处理return的递归子程序
 	static void calfunc();	//处理函数调用的递归子程序
 };
-#endif

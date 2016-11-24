@@ -1,15 +1,17 @@
 #pragma once
-#ifndef _Lexer_H_
-#define _Lexer_H_
+#include <string>
+#include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include "error.h"
 #include "defination.h"
 using namespace std;
 class Lexer {
 public:
 	static char ch;
 	static string token, inputline, path;
-	static int sym, num, line, count, ll, lc;
+	static int sym, value, line, count, ll, lc;
 	static ifstream infile;
 	static ofstream outfile;
 	static void output();
@@ -22,6 +24,7 @@ private:
 	static streampos bookmark;
 	static int bline, bcount, bll, blc, bsym;
 	static string binputline;
+	static bool inquote;
 	static void getpath();
 	static void clearToken();
 	static void getnextline();
@@ -34,4 +37,3 @@ private:
 	static int	isreserve();
 	static bool isStringCon();
 };
-#endif

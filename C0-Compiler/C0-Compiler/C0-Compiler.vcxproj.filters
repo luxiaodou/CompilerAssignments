@@ -42,6 +42,15 @@
     <ClInclude Include="Parser.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TableItem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Quadruple.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Generator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -56,19 +65,22 @@
     <ClCompile Include="Lexer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Midcode.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Optimizer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Generator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Parser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Table.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Quadruple.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TableItem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Generator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,12 +1,11 @@
 //	词法分析主程序
 #include "stdafx.h"
-#include "global.h"
 #include "Lexer.h"
 
 char Lexer::ch;
 string Lexer::token;
 int Lexer::sym;
-int Lexer::num;
+int Lexer::value;
 string Lexer::inputline;
 string Lexer::path;
 int Lexer::line, Lexer::count, Lexer::ll, Lexer::lc;
@@ -16,6 +15,7 @@ ofstream Lexer::outfile;
 streampos Lexer::bookmark;
 int Lexer::bline, Lexer::bcount, Lexer::bll, Lexer::blc, Lexer::bsym;
 string Lexer::binputline;
+bool Lexer::inquote = false;
 
 void Lexer::init() {
 	line = 0;
@@ -214,7 +214,7 @@ int Lexer::getsym() {
 			}
 			else
 			{
-				num = 0;
+				value = 0;
 				sym = NUMSYM;
 			}
 		}
@@ -243,17 +243,17 @@ int Lexer::getsym() {
 			cout << "Lex Error: line " << line << ": integer is out of limit! " << endl;
 			return 0;
 		}
-		num = stoi(token);
+		value = stoi(token);
 		sym = NUMSYM;
 	}
 	else if (ch == '\'')	//处理字符
 	{
-		sym = QUOTE;
+		catToken();
 		getch();
 		if (isLetter() || ch == '+' || ch == '-' || ch == '*' || ch == '/' || isDigit())
 		{
-			output();
 			sym = CHARTY;
+			value = ch;
 			catToken();
 			getch();
 			if (ch != '\'')
@@ -263,8 +263,8 @@ int Lexer::getsym() {
 			}
 			else
 			{
+				catToken();
 				output();
-				sym = QUOTE;
 			}
 		}
 		else
@@ -393,7 +393,7 @@ void Lexer::output() {
 	case IDSYM:
 		outfile << count++ << " IDSYM " + token + ";" << endl;	break;
 	case NUMSYM:
-		outfile << count++ << " NUMSYM  " << num << ";" << endl;	 break;
+		outfile << count++ << " NUMSYM  " << value << ";" << endl;	 break;
 	case CHARTY:
 		outfile << count++ << " CHARTY " << token << ";" << endl; break;
 	case STRING:

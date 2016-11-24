@@ -3,9 +3,12 @@
 #include "Parser.h"
 #include "Lexer.h"
 #include "defination.h"
+#include "Quadruple.h"
 
 int tab = 0;
+//int ttype = 0, tident = 0;
 
+//没有实际意义的函数,只是为了console输出更美观,缩进功能
 void tabf() {
 	int i = 0;
 	while (i < tab) {
@@ -14,122 +17,125 @@ void tabf() {
 	}
 }
 
-int ttype = 0, tident = 0;
 
+//TODO:是否error单做一类
+//用来输出错误信息的函数,在考虑是否需要单做一类	
 void Parser::error(int errorid)
 {
-	switch (errorid)
-	{
+	switch (errorid) {
+	case CASE_TYPE_ERROR:
+		cout << "Parser Error: line" << Lexer::line << ":" << "case的声明出错,标识符类型不正确!" << endl;
+		break;
 	case UNDEF_ID:
-		cout << "使用了未定义标识符！" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "使用了未定义的标识符" << Lexer::token<<endl;
 		break;
 	case MULTI_DEF:
-		cout << "重定义标识符！" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "重定义标识符" << Lexer::token << endl;
 		break;
 	case ID_TOO_LONG:
-		cout << "标识符过长!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "标识符过长!" << endl;
 		break;
 	case PROGRAM_ERROR:
-		cout << "程序结构错误!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "程序结构错误!" << endl;
 		break;
 	case STR_CONTENT_ERROR:
-		cout << "字符串出现非法内容!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "字符串出现非法内容!" << endl;
 		break;
 	case STR_TOO_LONG:
-		cout << "字符串超长,最长请不要超过" << STRING_MAXLENGTH << "个字符!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "字符串超长,最长请不要超过" << STRING_MAXLENGTH << "个字符!" << endl;
 		break;
 	case ZERO_HEAD_NUM:
-		cout << "非零数字不能有前导零!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "非零数字不能有前导零!" << endl;
 		break;
 	case NUM_HEAD_IDENT:
-		cout << "标识符不能以数字开头!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "标识符不能以数字开头!" << endl;
 		break;
 	case NUM_TOO_LARGE:
-		cout << "数字过大! 请不要超过32位立即数的最大范围!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "数字过大! 请不要超过32位立即数的最大范围!" << endl;
 		break;
-	/*case UNDEF_INPUT:
-		cout << "不合法输入!" << endl;
-		break;*/
+		/*case UNDEF_INPUT:
+			cout << "Parser Error: line" << Lexer::line << ":"  << "不合法输入!" << endl;
+			break;*/
 	case CHAR_MISS_QUOTE:
-		cout << "字符类型丢失后一个单引号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "字符类型丢失单引号!" << endl;
 		break;
 	case CHAR_CONTENT_ERROR:
-		cout << "字符内容不合法!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "字符内容不合法!" << endl;
 		break;
 	case CHAR_OVERFLOW:
-		cout << "字符ascii码溢出!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "字符ascii码溢出!" << endl;
 		break;
 	case NEQUAL_MISS:
-		cout << "错误使用不等号! 应使用'!='" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "错误使用不等号! 应使用'!='" << endl;
 		break;
 	case MISSING_SEMI:
-		cout << "丢失分号! 请检查分号是否匹配!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失分号! 请检查分号是否匹配!" << endl;
 		break;
 	case MISSING_RPARENT:
-		cout << "丢失右括号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失右括号!" << endl;
 		break;
 	case MISSING_RBRACK:
-		cout << "丢失右中括号!" << endl; 
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失右中括号!" << endl;
 		break;
 	case MISSING_RBRACE:
-		cout << "丢失右大括号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失右大括号!" << endl;
 		break;
 	case MISSING_IDENT:
-		cout << "丢失标识符!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失标识符!" << endl;
 		break;
 	case MISSING_LPARENT:
-		cout << "丢失左括号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失左括号!" << endl;
 		break;
 	case MISSING_LBRACK:
-		cout << "丢失左中括号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失左中括号!" << endl;
 		break;
 	case MISSING_LBRACE:
-		cout << "丢失左大括号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失左大括号!" << endl;
 		break;
 	case MISSING_PLUS:
-		cout << "丢失加号或减号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失加号或减号!" << endl;
 		break;
 	case MISSING_MULTI:
-		cout << "丢失乘号或除号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失乘号或除号!" << endl;
 		break;
 	case ASSIGN_ERROR:
-		cout << "赋值时发生错误!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "赋值时发生错误!" << endl;
 		break;
 	case RETURN_ERROR:
-		cout << "返回值错误!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "返回值错误!" << endl;
 		break;
 	case MISSING_MAIN:
-		cout << "丢失main函数!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失main函数!" << endl;
 		break;
 	case MISSING_RETURN:
-		cout << "丢失return语句!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失return语句!" << endl;
 		break;
 	case EXPRESSION_ERROR:
-		cout << "表达式错误!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "表达式错误!" << endl;
 		break;
 	case OUT_OF_TABLE:
-		cout << "符号表满了!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "符号表满了!" << endl;
 		break;
 	case OUT_OF_ARRAY:
-		cout << "数组溢出!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "数组溢出!" << endl;
 		break;
 	case WRONG_TYPE:
-		cout << "声明类型错误!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "声明类型错误!" << endl;
 		break;
 	case MISSING_ASSIGN:
-		cout << "丢失等号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失等号!" << endl;
 		break;
 	case MISSING_COLON:
-		cout << "丢失冒号!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失冒号!" << endl;
 		break;
 	case MISSING_VOID:
-		cout << "丢失void关键字!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "丢失void关键字!" << endl;
 		break;
 	case MISSING_DOUQUOTE:
-		cout << "引号缺失!" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "引号缺失!" << endl;
 		break;
 	default:
-		cout << "未知错误,理论上永远不可能执行到这里" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "发生了未知错误!" << endl;	//理论上永远不可能执行到这里
 		break;
 	}
 }
@@ -185,8 +191,7 @@ void Parser::program() {
 				Lexer::retrieve();
 				voidfdef();
 			}
-			else
-			{
+			else {
 				error(MISSING_LPARENT);
 			}
 		}
@@ -201,8 +206,7 @@ void Parser::program() {
 				Lexer::retrieve();
 				funcdef();
 			}
-			else
-			{
+			else {
 				error(MISSING_LPARENT);
 			}
 		}
@@ -212,13 +216,9 @@ void Parser::program() {
 	if (Lexer::sym == VOIDSYM) {
 		mainfdef();
 	}
-	else
-	{
+	else {
 		error(0);
 	}
-
-	//cout << "This is a program!" << endl;
-	//tab--;
 }
 
 //＜常量说明＞ ::=  const＜常量定义＞;{ const＜常量定义＞;}
@@ -226,8 +226,7 @@ void Parser::conststate() {
 	tab++;
 	tabf();
 	cout << "const statement!" << endl;
-	do
-	{
+	do {
 		if (Lexer::sym != CONSTSYM) {
 			error(0);
 		}
@@ -264,8 +263,7 @@ void Parser::constdef() {
 		if (Lexer::sym == NUMSYM) {		//＜整数＞::= ［＋｜－］＜无符号整数＞｜０
 
 		}
-		else
-		{
+		else {
 			error(WRONG_TYPE);
 		}
 		Lexer::getsym();
@@ -370,13 +368,11 @@ void Parser::vardef() {
 				if (Lexer::sym != NUMSYM) {
 					error(WRONG_TYPE);
 				}
-				else
-				{
+				else {
 					//处理无符号整数
 				}
 				Lexer::getsym();
-				if (Lexer::sym != RBRACK)
-				{
+				if (Lexer::sym != RBRACK) {
 					error(MISSING_RBRACK);
 				}
 				Lexer::getsym();
@@ -433,8 +429,7 @@ void Parser::paralist() {
 				if (Lexer::sym == IDSYM) {
 					//not implemented
 				}
-				else
-				{
+				else {
 					error(MISSING_IDENT);
 				}
 				Lexer::getsym();
@@ -494,8 +489,7 @@ void Parser::funcdef() {
 		}
 		Lexer::getsym();
 	}
-	else
-	{
+	else {
 		error(WRONG_TYPE);
 	}
 	tab--;
@@ -532,8 +526,7 @@ void Parser::voidfdef() {
 		}
 		Lexer::getsym();
 	}
-	else
-	{
+	else {
 		error(MISSING_IDENT);
 	}
 	tab--;
@@ -580,8 +573,7 @@ void Parser::statement() {
 	tab++;
 	tabf();
 	cout << "statement" << endl;
-	switch (Lexer::sym)
-	{
+	switch (Lexer::sym) {
 	case IFSYM: //ifstate
 		ifstate();
 		break;
@@ -606,8 +598,7 @@ void Parser::statement() {
 			Lexer::retrieve();
 			calfunc();
 		}
-		else
-		{
+		else {
 			Lexer::retrieve();
 			assignstate();
 		}
@@ -690,8 +681,7 @@ void Parser::factor() {
 	tab++;
 	tabf();
 	cout << "factor" << endl;
-	switch (Lexer::sym)
-	{
+	switch (Lexer::sym) {
 	case IDSYM:
 		Lexer::backup();
 		Lexer::getsym();
@@ -703,20 +693,7 @@ void Parser::factor() {
 			}
 			Lexer::getsym();
 		}
-		else if (Lexer::sym == LPARENT) {	//＜有返回值函数调用语句＞ ::= ＜标识符＞‘(’＜值参数表＞‘)’
-			//Lexer::getsym();	//＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
-			//if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
-			//	expression();
-			//	while (Lexer::sym == COMMA) {
-			//		Lexer::getsym();
-			//		expression();
-			//	}
-			//	if (Lexer::sym != RPARENT)
-			//	{
-			//		error(MISSING_RPARENT);
-			//	}
-			//	Lexer::getsym();
-			//}
+		else if (Lexer::sym == LPARENT) {
 			Lexer::retrieve();
 			calfunc();
 		}
@@ -735,26 +712,18 @@ void Parser::factor() {
 		if (Lexer::sym == NUMSYM) {
 			//not implement yet!
 		}
-		else
-		{
+		else {
 			error(WRONG_TYPE);
 		}
 		Lexer::getsym();
 		break;
 		break;
 	case NUMSYM:
-		//not implement!
+		//todo:implement!
 		Lexer::getsym();
 		break;
-	case QUOTE:
-		Lexer::getsym();
-		if (Lexer::sym != CHARTY) {
-			error(WRONG_TYPE);
-		}
-		Lexer::getsym();
-		if (Lexer::sym != QUOTE) {
-			error(CHAR_MISS_QUOTE);
-		}
+	case CHARTY:
+		//todo:implement!
 		Lexer::getsym();
 		break;
 	default:
@@ -799,8 +768,7 @@ void Parser::condition()
 		Lexer::getsym();
 		expression();
 	}
-	else
-	{
+	else {
 		error(0);
 	}
 	//cout << "This is a condition statement!" << endl;
@@ -895,18 +863,31 @@ void Parser::casestate() {
 	cout << "case statement" << endl;
 	if (Lexer::sym == CASESYM) {
 		Lexer::getsym();
-		if (Lexer::sym != NUMSYM && Lexer::sym != QUOTE && Lexer::sym != PLUSSYM && Lexer::sym != MINUSSYM) {		//＜常量＞ ::= ＜整数＞|＜字符＞
-			error(WRONG_TYPE);
+		//if (Lexer::sym != NUMSYM && Lexer::sym != QUOTE && Lexer::sym != PLUSSYM && Lexer::sym != MINUSSYM) {		//＜常量＞ ::= ＜整数＞|＜字符＞
+		//	error(WRONG_TYPE);
+		//}
+		if (Lexer::sym == NUMSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
+			if (Lexer::sym == PLUSSYM) {
+				Lexer::getsym();
+			}
+			else if (Lexer::sym == MINUSSYM) {
+				Lexer::getsym();
+			}
+			Lexer::getsym();
 		}
-		Lexer::getsym();
+		else if (Lexer::sym == CHARTY) {
+			Lexer::getsym();
+		}
+		else {
+			error(CASE_TYPE_ERROR);
+		}
 		if (Lexer::sym != COLON) {
 			error(MISSING_COLON);
 		}
 		Lexer::getsym();
 		statement();
 	}
-	else
-	{
+	else {
 		error(0);	//没有case
 	}
 	//cout << "This is a case statement!" << endl;
@@ -956,13 +937,11 @@ void Parser::scanfstate() {
 			}
 			Lexer::getsym();
 		}
-		else
-		{
+		else {
 			error(MISSING_LPARENT);
 		}
 	}
-	else
-	{
+	else {
 		error(0);
 	}
 	//cout << "This is a scanf statement!" << endl;
@@ -975,28 +954,41 @@ void Parser::printfstate() {
 	tab++;
 	tabf();
 	cout << "printf statement" << endl;
+	string str, exp, type;
+	Quadruple q;
 	if (Lexer::sym != PRINTFSYM) {
-		error(0);
+		error(-1);	//正常情况不可能走到此分支
 	}
 	Lexer::getsym();
 	if (Lexer::sym != LPARENT) {
-		error(MISSING_LPARENT);
+		error(MISSING_LPARENT);	//丢失大括号就不getsym了,尽量不影响后面的语句分析
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	if (Lexer::sym == STRING) {
+		//todo:创建一个字符串常量在table中,需要能够访问到他的位置
+		//note:同一个字符串常量不应该被创建两次,如果表中已经有相同的字符串则停止创建
+		type = "0";
 		Lexer::getsym();
 		if (Lexer::sym == COMMA) {
+			type = "2";
 			Lexer::getsym();
 			expression();
 		}
 	}
-	else if (Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == IDSYM || Lexer::sym == LPARENT) {
+	else {
+		type = "1";
 		expression();
 	}
 	if (Lexer::sym != RPARENT) {
-		error(MISSING_RPARENT);
+		error(MISSING_RPARENT);	//容错处理
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
+	q.fill("PRT", str, exp, type);
+	//quadtable.push_back(q);
 	//cout << "This is a printf statement!" << endl;
 	tab--;
 }
@@ -1035,7 +1027,7 @@ void Parser::calfunc() {
 			error(MISSING_LPARENT);
 		}
 		Lexer::getsym();
-		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == QUOTE) {
+		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == CHARTY) {
 			expression();
 			while (Lexer::sym == COMMA) {
 				Lexer::getsym();
@@ -1047,8 +1039,7 @@ void Parser::calfunc() {
 		}
 		Lexer::getsym();
 	}
-	else
-	{
+	else {
 		error(0);
 	}
 	tab--;

@@ -9,7 +9,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	//Lexer::getpath();
 	//Lexer::path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
-	Lexer::path = "13071079_test.txt";
+	Lexer::path = "14061055_test.txt";
 	//path = "C:/Users/luxiaodou/Desktop/a.txt";
 	Lexer::init();
 	Parser::program();

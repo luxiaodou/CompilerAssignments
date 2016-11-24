@@ -40,3 +40,4 @@
 #define MISSING_COLON		38		//丢失冒号
 #define MISSING_VOID		39		//丢失VOID
 #define MISSING_DOUQUOTE	40		//丢失双引号
+#define CASE_TYPE_ERROR		41		//case的声明出错,标识符类型不正确
