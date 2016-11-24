@@ -23,7 +23,7 @@ void Lexer::init() {
 	ll = 0;
 	lc = 0;
 	outfile.open("output.txt");
-	infile.open(path,ios::in);
+	infile.open(path, ios::in);
 }
 
 void Lexer::close()
@@ -54,24 +54,19 @@ void Lexer::getnextline() {
 void Lexer::getch()
 {
 
-	while (ll == 0 || lc >= ll)
-	{
-		if (infile.good())
-		{
+	while (ll == 0 || lc >= ll) {
+		if (infile.good()) {
 			getnextline();
 		}
-		else
-		{
+		else {
 			ll = 0;
 			break;
 		}
 	}
-	if (ll > lc)
-	{
+	if (ll > lc) {
 		ch = inputline.at(lc++);
 	}
-	else
-	{
+	else {
 		sym = 0;
 		ch = 0;
 	}
@@ -104,16 +99,14 @@ void Lexer::catToken() {
 
 //跳过无意义的空白字符，本文法中针对空格，换行符以及水平制表符
 void Lexer::skip() {
-	while (ch == ' ' || ch == '\n' || ch == '\t')
-	{
+	while (ch == ' ' || ch == '\n' || ch == '\t') {
 		getch();
 	}
 }
 
 //判断当前ch是否是字母类型，注意根据文法定义下划线'_'也算作字母
 bool Lexer::isLetter() {
-	if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch == '_')
-	{
+	if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch == '_') {
 		return true;
 	}
 	return false;
@@ -177,8 +170,7 @@ int Lexer::getsym() {
 	clearToken();
 	getch();
 	skip();
-	if (isLetter())
-	{
+	if (isLetter()) {
 		while (isLetter() || isDigit()) {
 			catToken();
 			getch();
@@ -202,26 +194,21 @@ int Lexer::getsym() {
 		{
 			catToken();
 			getch();
-			if (isDigit())
-			{
+			if (isDigit()) {
 				cout << "Lex Error: line " << line << ": zero cannot be the first digit of number! " << endl;
-				while (isDigit() || isLetter())
-				{
+				while (isDigit() || isLetter()) {
 					getch();
 				}
 				sym = 0;
 				return 0;
 			}
-			else
-			{
+			else {
 				value = 0;
 				sym = NUMSYM;
 			}
 		}
-		else
-		{
-			while (isDigit() && ch != 0)
-			{
+		else {
+			while (isDigit() && ch != 0) {
 				catToken();
 				getch();
 			}
@@ -229,8 +216,7 @@ int Lexer::getsym() {
 
 		if (isDigit() || isLetter())		//检查后面是否接了字母表示标识符
 		{
-			while (isLetter() || isDigit())
-			{
+			while (isLetter() || isDigit()) {
 				getch();
 			}
 			cout << "Lex Error: line " << line << ": IDENT cannot start with numbers!" << endl;
@@ -250,48 +236,39 @@ int Lexer::getsym() {
 	{
 		catToken();
 		getch();
-		if (isLetter() || ch == '+' || ch == '-' || ch == '*' || ch == '/' || isDigit())
-		{
+		if (isLetter() || ch == '+' || ch == '-' || ch == '*' || ch == '/' || isDigit()) {
 			sym = CHARTY;
 			value = ch;
 			catToken();
 			getch();
-			if (ch != '\'')
-			{
+			if (ch != '\'') {
 				retract();
 				cout << "Lex Error: line " << line << ": char type missing quote ' !" << endl;
 			}
-			else
-			{
+			else {
 				catToken();
 				output();
 			}
 		}
-		else
-		{
+		else {
 			retract();
 			cout << "Lex Error: line " << line << ": char type error! The content is not acceptable! " << endl;
 		}
 	}
-	else if (ch == '\"')
-	{
+	else if (ch == '\"') {
 		sym = DOUQUOTE;
 		output();
 		getch();
-		if (ch == '\"')
-		{
+		if (ch == '\"') {
 			sym = STRING;
 			return 0;
 		}
-		while (ch != '\"' && isStringCon() && ch != 0)
-		{
+		while (ch != '\"' && isStringCon() && ch != 0) {
 			catToken();
 			getch();
 		}
-		if (ch == '\"')
-		{
-			if (token.length() > STRING_MAXLENGTH)
-			{
+		if (ch == '\"') {
+			if (token.length() > STRING_MAXLENGTH) {
 				cout << "Lex Error: line " << line << ": Your String is too long, please make it short!" << endl;
 				sym = 0;
 				return 0;
@@ -300,8 +277,7 @@ int Lexer::getsym() {
 			/*output();
 			sym = DOUQUOTE;*/
 		}
-		else
-		{
+		else {
 			cout << "Lex Error: line " << line << ": string content error! Please check your input! " << endl;
 			sym = 0;
 			while (ch != '\"' && ch != 0)
@@ -332,42 +308,35 @@ int Lexer::getsym() {
 		sym = COLON;
 	else if (ch == ';')
 		sym = SEMICOLON;
-	else if (ch == '=')
-	{
+	else if (ch == '=') {
 		skip();
 		getch();
 		if (ch == '=')
 			sym = EQUAL;
-		else
-		{
+		else {
 			retract();
 			sym = ASSIGN;
 		}
 	}
 	else if (ch == ',')
 		sym = COMMA;
-	else if (ch == '<')
-	{
+	else if (ch == '<') {
 		skip();
 		getch();
-		if (ch == '=')
-		{
+		if (ch == '=') {
 			sym = LESSEQU;
 		}
-		else
-		{
+		else {
 			retract();
 			sym = LESS;
 		}
 	}
-	else if (ch == '>')
-	{
+	else if (ch == '>') {
 		skip();
 		getch();
 		if (ch == '=')
 			sym = GREATEQU;
-		else
-		{
+		else {
 			retract();
 			sym = GREAT;
 		}
@@ -470,8 +439,8 @@ void Lexer::output() {
 		outfile << count++ << " RETURNSYM  ;" << endl; break;
 	case 0:
 		break;
-	//default:
-	//		cout << "undefined sym type detected!!" << endl;
+		//default:
+		//		cout << "undefined sym type detected!!" << endl;
 	}
 }
 

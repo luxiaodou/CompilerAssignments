@@ -6,6 +6,7 @@
 #include <sstream>
 #include "error.h"
 #include "defination.h"
+
 using namespace std;
 class Lexer {
 public:

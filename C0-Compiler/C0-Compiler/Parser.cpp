@@ -22,6 +22,7 @@ void tabf() {
 //用来输出错误信息的函数,在考虑是否需要单做一类	
 void Parser::error(int errorid)
 {
+	errornum++;
 	switch (errorid) {
 	case CASE_TYPE_ERROR:
 		cout << "Parser Error: line" << Lexer::line << ":" << "case的声明出错,标识符类型不正确!" << endl;
@@ -169,9 +170,6 @@ void Parser::program() {
 			Lexer::retrieve();
 			funcdef();		//注意这里只处理了一个有返回值的函数
 		}
-	}
-	else {
-		error(0);
 	}
 
 	//处理函数声明
@@ -626,9 +624,6 @@ void Parser::statement() {
 		break;
 	case SWITCHSYM:
 		switchstate();
-		if (Lexer::sym != SEMICOLON) {
-			error(MISSING_SEMI);
-		}
 		Lexer::getsym();
 		break;
 	case RETURNSYM:
@@ -767,9 +762,6 @@ void Parser::condition()
 	if (Lexer::sym == LESS || Lexer::sym == LESSEQU || Lexer::sym == GREAT || Lexer::sym == GREATEQU || Lexer::sym == NEQUAL || Lexer::sym == EQUAL) {
 		Lexer::getsym();
 		expression();
-	}
-	else {
-		error(0);
 	}
 	//cout << "This is a condition statement!" << endl;
 	tab--;
@@ -1027,7 +1019,7 @@ void Parser::calfunc() {
 			error(MISSING_LPARENT);
 		}
 		Lexer::getsym();
-		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == CHARTY) {
+		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT ||Lexer::sym == NUMSYM || Lexer::sym == CHARTY) {
 			expression();
 			while (Lexer::sym == COMMA) {
 				Lexer::getsym();

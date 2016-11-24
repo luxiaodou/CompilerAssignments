@@ -46,6 +46,6 @@
 #define		RETURNSYM	39	//return
 
 //类型限制定义
-#define NUM_MAXLENGTH 9
+#define NUM_MAXLENGTH 10
 #define STRING_MAXLENGTH 500
 #define IDENT_MAXLENGTH 100
