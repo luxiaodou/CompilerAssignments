@@ -1,6 +1,7 @@
 #pragma once
 #include "defination.h"
 #include "error.h"
+#include <set>
 using namespace std;
 class Parser {
 public:
@@ -8,6 +9,7 @@ public:
 private:
 	static void error(int errorid);
 	//static void enter();		//todo: 修改文档,说明此方法已被转移
+	static void skip(set<int> symset);	//错误处理的跳读方法
 	static void conststate();		//处理常量说明的递归子程序
 	static void constdef();	//处理常量定义的递归子程序
 	static void varstate();		//处理变量声明的递归子程序

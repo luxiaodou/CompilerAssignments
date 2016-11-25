@@ -7,10 +7,15 @@
 
 int errornum;
 vector<Quadruple> quadtable;
+map<string, string> strtable;
+int stbindex;
+Table constTable("consttab");
+Table symbolTable("symtab");
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	errornum = 0;
+	stbindex = 0;
 	//Lexer::getpath();
 	//Lexer::path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
 	Lexer::path = "13071079_test.txt";

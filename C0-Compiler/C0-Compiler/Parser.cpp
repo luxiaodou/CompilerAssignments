@@ -219,6 +219,14 @@ void Parser::program() {
 	}
 }
 
+//错误处理的跳读函数,输入需要跳读的符号集,跳过所有符号集中的字符
+void Parser::skip(set<int> symset)
+{
+	while (symset.count(Lexer::sym)) {
+		Lexer::getsym();
+	}
+}
+
 //＜常量说明＞ ::=  const＜常量定义＞;{ const＜常量定义＞;}
 void Parser::conststate() {
 	tab++;
@@ -961,6 +969,7 @@ void Parser::printfstate() {
 	if (Lexer::sym == STRING) {
 		//todo:创建一个字符串常量在table中,需要能够访问到他的位置
 		//note:同一个字符串常量不应该被创建两次,如果表中已经有相同的字符串则停止创建
+		
 		type = "0";
 		Lexer::getsym();
 		if (Lexer::sym == COMMA) {
@@ -980,7 +989,7 @@ void Parser::printfstate() {
 		Lexer::getsym();
 	}
 	q.fill("PRT", str, exp, type);
-	//quadtable.push_back(q);
+	quadtable.push_back(q);
 	//cout << "This is a printf statement!" << endl;
 	tab--;
 }

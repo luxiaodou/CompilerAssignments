@@ -12,7 +12,8 @@ Generator::~Generator()
 
 void Generator::quad2asm(Quadruple quad)
 {
-	//todo:finish quad2asm
+	//todo:先把.data写进去,然后在完成.text
+	//.data需要写入consttab和strtable中的内容
 	if (quad.op	== "PRT") {
 		if (quad.para3 == "0") {	//只用string
 		}
