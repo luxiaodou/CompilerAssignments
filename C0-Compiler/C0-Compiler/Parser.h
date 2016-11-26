@@ -20,9 +20,9 @@ private:
 	static void voidfdef();	//处理无返回值的函数声明的递归子程序
 	static void mainfdef();	//处理主函数声明的递归子程序
 	static void statement();		//处理语句的递归子程序
-	static void expression();	//处理表达式的递归子程序
-	static void term();	//处理项的递归子程序
-	static void factor();	//处理因子的递归子程序
+	static void expression(string &, int &);	//处理表达式的递归子程序
+	static void term(string &,int &);	//处理项的递归子程序
+	static void factor(string &,int &);	//处理因子的递归子程序
 	static void assignstate();	//处理赋值语句的递归子程序
 	static void ifstate();	//处理if语句的递归子程序
 	static void condition();	//处理条件语句的递归子程序

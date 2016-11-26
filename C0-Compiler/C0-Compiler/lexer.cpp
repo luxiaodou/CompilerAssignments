@@ -204,7 +204,7 @@ int Lexer::getsym() {
 			}
 			else {
 				value = 0;
-				sym = NUMSYM;
+				sym = NUMTY;
 			}
 		}
 		else {
@@ -230,7 +230,7 @@ int Lexer::getsym() {
 			return 0;
 		}
 		value = stoi(token);
-		sym = NUMSYM;
+		sym = NUMTY;
 	}
 	else if (ch == '\'')	//´¦Àí×Ö·û
 	{
@@ -361,7 +361,7 @@ void Lexer::output() {
 	switch (sym) {
 	case IDSYM:
 		outfile << count++ << " IDSYM " + token + ";" << endl;	break;
-	case NUMSYM:
+	case NUMTY:
 		outfile << count++ << " NUMSYM  " << value << ";" << endl;	 break;
 	case CHARTY:
 		outfile << count++ << " CHARTY " << token << ";" << endl; break;

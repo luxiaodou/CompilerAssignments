@@ -26,7 +26,7 @@
 
 //符号值类型
 #define		IDSYM		23	//单词是标识符
-#define		NUMSYM		24	//单词是整数(num type)
+#define		NUMTY		24	//单词是整数(num type)
 #define		CHARTY		25	//单词是字母(char type)
 #define		STRING		26	//单词是字符串
 
@@ -49,3 +49,11 @@
 #define NUM_MAXLENGTH 10
 #define STRING_MAXLENGTH 500
 #define IDENT_MAXLENGTH 100
+
+//符号表的类型 kind
+#define	CON		1
+#define VAR		2
+#define ARR		3
+#define FUNC	4
+#define	PARA	5
+#define TEMP	6

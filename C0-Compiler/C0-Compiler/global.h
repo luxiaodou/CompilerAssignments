@@ -11,12 +11,12 @@
 #include "Table.h"
 using namespace std;
 
-extern int errornum;
-extern int stbindex;
-extern vector<Quadruple> quadtable;
-extern map<string, string> strtable;
-extern Table constTable;
-extern Table symbolTable;
+extern int errorNum;
+extern int stbIndex;
+extern vector<Quadruple> quadTable;
+extern map<string, string> strTable;
+extern Table constTable("consttab");
+extern Table symbolTable("systab");
 
 
 

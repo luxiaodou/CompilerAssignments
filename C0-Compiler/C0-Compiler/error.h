@@ -41,3 +41,4 @@
 #define MISSING_VOID		39		//丢失VOID
 #define MISSING_DOUQUOTE	40		//丢失双引号
 #define CASE_TYPE_ERROR		41		//case的声明出错,标识符类型不正确
+#define CONST_TYPE_ERROR	42		//常量类型错误,常量只允许是int或者char类型
