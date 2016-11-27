@@ -16,7 +16,7 @@ extern int stbIndex;
 extern vector<Quadruple> quadTable;
 extern map<string, string> strTable;
 extern Table constTable("consttab");
-extern Table symbolTable("systab");
+extern Table symbolTable("symboltab");
 
 
 

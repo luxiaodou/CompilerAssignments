@@ -12,14 +12,14 @@ TableItem::TableItem()
 	this->number = 0;
 }
 
-TableItem::TableItem(string na, int add, int kin, int typ, int val, int num,int lev)
+TableItem::TableItem(string na, int add, int kin, int typ, int val, int num,string father)
 {
 	this->name = na;
 	this->addr = add;
 	this->type = typ;
 	this->value = val;
 	this->number = num;
-	this->level = lev;
+	this->father = father;
 }
 
 

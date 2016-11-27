@@ -4,10 +4,11 @@
 
 Table::Table(string name)
 {
-	size = 0;
-	tabtype = 0;
+	offset = 0;
 	curlevel = 0;
-	tablename = name;
+	topfunction = name;
+	curfunction = topfunction;
+	func_insert(curfunction, VOIDSYM,0);
 }
 
 
@@ -17,11 +18,6 @@ Table::~Table()
 
 bool Table::in_table(string iname)
 {
-	/*for (auto item : this->items) {
-		if (item.name == iname) {
-			return true;
-		}
-	}*/
 	for (int i = 0; i < items.size(); i++) {
 		if (items[i].name == iname) {
 			return true;
@@ -30,22 +26,18 @@ bool Table::in_table(string iname)
 	return false;
 }
 
-void Table::settype(int type)
-{
-	tabtype = type;
-}
-
-void Table::symbol_insert(TableItem item)
-{
-	items.push_back(item);
-}
-
+//todo:修改为逆序/分层查找
 TableItem Table::find(string name)
 {
 	TableItem item;
 	int length = items.size();
-	for (int i = 0; i < length; i++) {
+	int level = curlevel;
+	for (int i = length - 1; i >= 0; i--) {
 		item = items[i];
+		if (item.level < level) {
+			level--;
+			continue;
+		}
 		if (item.name == name) {
 			break;
 		}
@@ -147,6 +139,15 @@ int Table::setnum(string name,int number)
 	return 1;
 }
 
+int Table::setfuncsize(string name, int siz)
+{
+	if (!in_table(name)) {
+		return 1;
+	}
+	
+	return 0;
+}
+
 void Table::poplevel()
 {
 	for (int i = items.size(); i >= 0;i--) {
@@ -162,17 +163,19 @@ int Table::con_insert(string name, int type, int value)
 	if (in_table(name)) {
 		return 1;
 	}
-	this->items.push_back(TableItem(name, 0, CON, type, value, 0,curlevel));
+	offset += 4;
+	this->items.push_back(TableItem(name, offset, CON, type, value, 0, curfunction));
 	return 0;
 }
 
-
+//向符号表中插入变量
 int Table::var_insert(string name, int type)
 {
 	if (in_table(name)) {
 		return 1;
 	}
-	this->items.push_back(TableItem(name, 0, VAR, type, 0, 0, curlevel));
+	offset += 4;
+	this->items.push_back(TableItem(name, offset, VAR, type, 0, 0, curfunction));
 	return 0;
 }
 
@@ -181,7 +184,8 @@ int Table::arr_insert(string name, int type, int num)
 	if (in_table(name)) {
 		return 1;
 	}
-	this->items.push_back(TableItem(name, 0, ARR, type, 0, num, curlevel));
+	offset += 4;
+	this->items.push_back(TableItem(name, offset, ARR, type, 0, num, curfunction));
 	return 0;
 }
 
@@ -190,7 +194,7 @@ int Table::para_insert(string name, int type)
 	if (in_table(name)) {
 		return 1;
 	}
-	this->items.push_back(TableItem(name, 0, PARA, type, 0, 0, curlevel));
+	this->items.push_back(TableItem(name, offset, PARA, type, 0, 0, curfunction));
 	return 0;
 }
 
@@ -199,7 +203,7 @@ int Table::func_insert(string name, int type, int num)
 	if (in_table(name)) {
 		return 1;
 	}
-	this->items.push_back(TableItem(name, 0, FUNC, type,0, num, curlevel));
+	this->items.push_back(TableItem(name, 0, FUNC, type,0, num, curfunction));
 	return 0;
 }
 
@@ -208,7 +212,7 @@ int Table::temp_insert(string name, int type)
 	if (in_table(name)) {
 		return 1;
 			}
-	this->items.push_back(TableItem(name, 0, TEMP, type, 0, 0, curlevel));
+	this->items.push_back(TableItem(name, 0, TEMP, type, 0, 0, curfunction));
 	return 0;
 }
 

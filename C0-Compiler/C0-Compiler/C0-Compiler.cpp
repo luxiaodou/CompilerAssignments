@@ -10,7 +10,7 @@ vector<Quadruple> quadTable;
 map<string, string> strTable;
 int stbIndex;
 Table constTable("consttab");
-Table symbolTable("symtab");
+Table symbolTable("symboltab");	//ÉùÃ÷·ûºÅ±í
 
 int _tmain(int argc, _TCHAR* argv[])
 {
