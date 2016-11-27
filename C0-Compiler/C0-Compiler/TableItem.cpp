@@ -16,6 +16,7 @@ TableItem::TableItem(string na, int add, int kin, int typ, int val, int num,stri
 {
 	this->name = na;
 	this->addr = add;
+	this->kind = kin;
 	this->type = typ;
 	this->value = val;
 	this->number = num;

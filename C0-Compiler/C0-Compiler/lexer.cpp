@@ -14,7 +14,7 @@ ifstream Lexer::infile;
 ofstream Lexer::outfile;
 streampos Lexer::bookmark;
 int Lexer::bline, Lexer::bcount, Lexer::bll, Lexer::blc, Lexer::bsym;
-string Lexer::binputline;
+string Lexer::binputline,btoken;
 bool Lexer::inquote = false;
 
 void Lexer::init() {
@@ -80,6 +80,7 @@ void Lexer::backup() {	//保存现场
 	bcount = count;
 	binputline = inputline;
 	bsym = sym;
+	btoken = token;
 }
 
 void Lexer::retrieve() {	//恢复现场
@@ -90,6 +91,7 @@ void Lexer::retrieve() {	//恢复现场
 	count = bcount;
 	inputline = binputline;
 	sym = bsym;
+	token = btoken;
 }
 
 //拼接token

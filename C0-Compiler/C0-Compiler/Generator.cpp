@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Generator.h"
+#include "Table.h"
 Generator::Generator(string path)
 {
 	asmfile.open(path);
@@ -12,8 +13,7 @@ Generator::~Generator()
 
 void Generator::quad2asm(Quadruple quad)
 {
-	//todo:先把.data写进去,然后在完成.text
-	//.data需要写入consttab和strtable中的内容
+	//todo:先把.data写进去,然后再完成.text,.data需要写入consttab和strtable中的内容
 	//常量声明
 	if (quad.op == "CON") {	//para1 - name, para2 - type para3 - value. all string type
 		if (quad.para2 == "INT") {
@@ -44,6 +44,16 @@ void Generator::quad2asm(Quadruple quad)
 		if (quad.para2 == "INT") {
 			//todo:implement para generate, PARA存在运行栈中
 		}
+		else {
+
+		}
+	}
+	else if (quad.op == "FUNC") {
+		int funcsize = symbolTable.find(quad.para1).value;
+		string funcname = symbolTable.find(quad.para1).name;
+		asmfile << funcname << ":" << endl;		//给出label
+		asmfile << "subi $sp, $sp, " << funcsize << endl;	//开辟栈空间
+		asmfile << "sw $ra,0($sp)" << endl;		//保存ra
 	}
 	else if (quad.op == "+") {
 		asmfile << "la $t1, " << quad.para1 << endl;
@@ -65,8 +75,23 @@ void Generator::quad2asm(Quadruple quad)
 	else if (quad.op == "/") {
 		//todo:finish here
 	}
+	else if (quad.op == "=") {	//取地址→赋值→存回原地址
+		int addr1 = symbolTable.find(quad.para1).addr;
+		int addr2 = symbolTable.find(quad.para2).addr;
+		if (addr2) {
+
+		}
+		else {	//addr2为0,说明是全局变量
+
+		}
+		//asmfile << 
+	}
 	else if (quad.op == "PRT") {
 		if (quad.para3 == "0") {	//只用string
+			asmfile << "li $v0, 4" << endl;			//todo :check 输出字符串是不是v0 = 4
+			string sname = strTable[quad.para1];
+			asmfile << "la $a0," << sname << endl;
+			asmfile << "syscall" << endl;
 		}
 		else if (quad.para3 == "1") {	//只用exp
 		}
@@ -77,4 +102,41 @@ void Generator::quad2asm(Quadruple quad)
 			cout << "error PRT" << endl;
 		}
 	}
+	else if (quad.op == "CALL") {
+		asmfile << "jal " << quad.para1 << endl;
+	}
+	else if (quad.op == "END") {
+		asmfile << "lw $ra,0($sp)" << endl;
+		//todo: 将函数所开辟的空间退栈
+		asmfile << "jr $ra" << endl;
+	}
+	else if (quad.op == "LAB") {
+		asmfile << quad.para1 << ":" << endl;
+	}
+	else if (quad.op == "GLBEND") {
+		asmfile << ".text" << endl;
+		asmfile << "j main" << endl;;
+	}
+	else if (quad.op == "GLBSTR") {
+		asmfile << ".data" << endl;
+	}
+}
+
+void Generator::work()
+{
+	int index = 0;
+	int quadnum = quadTable.size();
+	bool global = true;
+	for (; index < quadnum; index++) {
+		Quadruple q = quadTable[index];
+		if (q.op == "GLBEND") {
+			global = false;
+		}
+		quad2asm(q);
+	}
+}
+
+void Generator::close()
+{
+	asmfile.close();
 }

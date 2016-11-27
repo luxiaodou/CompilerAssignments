@@ -89,7 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C0-Compiler.cpp" />
-    <ClCompile Include="error.cpp" />
     <ClCompile Include="Generator.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="Optimizer.cpp" />

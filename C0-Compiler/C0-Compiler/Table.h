@@ -8,16 +8,15 @@ class TableItem;
 class Quadruple;
 class Table
 {
-	int		leveladdr;			//符号在符号表中的偏移
 	int		curlevel;			//符号表当前层的起始位置
 	string	topfunction;			//全局层
 	string	curfunction;		//当前函数名
 	vector<TableItem> items;	//符号表表项
-	map<string, int>	funcloc;	//查找函数在符号表中对应的位置
 public:
 	Table(string name);															
 	~Table();
 	int		offset;				//符号在栈中的偏移
+	map<string, int>	funcloc;	//查找函数在符号表中对应的位置
 
 	//建表
 	bool in_table(string name);	//检查name是否已经存在于符号表中	//todo:改为存在于当前层的符号表中
@@ -41,12 +40,8 @@ public:
 	int gettype(string name);
 	int getvalue(string name);
 
-	int setnum(string name,int number);	//返回0表示设置成功,否则失败
-	int setfuncsize(string name, int siz);	//设置函数的所占用栈空间的大小
-	void poplevel();	//将函数体中的符号退栈
+	int setfuncnum(string name,int number);	//返回0表示设置成功,否则失败
+	int setfuncsize();	//设置函数的所占用栈空间的大小
 
-
-	void addlevel();
-	void decllevel();
 };
 

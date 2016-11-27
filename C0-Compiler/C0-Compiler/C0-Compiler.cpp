@@ -4,12 +4,12 @@
 #include "global.h"
 #include "Lexer.h"
 #include "Parser.h"
+#include "Generator.h"
 
 int errorNum;
+int stbIndex;
 vector<Quadruple> quadTable;
 map<string, string> strTable;
-int stbIndex;
-Table constTable("consttab");
 Table symbolTable("symboltab");	//ÉùÃ÷·ûºÅ±í
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -24,8 +24,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	Parser::program();
 	cout << "Syntax Analyze complete!" << endl;
 	cout << "err:" << errorNum << endl;
+	Generator gen("13071079_test_asm.txt");
+	gen.work();
 	Lexer::close();
-	
+	gen.close();
 	return 0;
 }
 

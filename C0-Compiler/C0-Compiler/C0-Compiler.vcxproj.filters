@@ -59,9 +59,6 @@
     <ClCompile Include="C0-Compiler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="error.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Lexer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

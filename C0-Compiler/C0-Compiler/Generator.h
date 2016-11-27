@@ -5,7 +5,7 @@
 using namespace std;
 
 class Generator {
-	//todo: check private and public 
+	//todo: check private and public,delete useless
 	void insertasmsym();	//生成汇编符号表
 	void findsym(const string &);	//找到符号在符号表中的位置
 	void pushstack(int len);	//进行压栈操作
@@ -25,6 +25,8 @@ public:
 	Generator(string asmfilepath);
 	~Generator();
 	void quad2asm(Quadruple quad);//将生成的四元式转化为汇编代码
+	void work();
+	void close();
 private:
 	ofstream asmfile;	//目标代码文件
 };
