@@ -28,7 +28,7 @@ private:
 	static void condition(string );	//处理条件语句的递归子程序
 	static void whilestate();	//处理while循环语句的递归子程序
 	static void switchstate();	//处理switch的递归子程序
-	static void casestate();	//处理case的递归子程序
+	static void casestate(string, string);	//处理case的递归子程序
 	static void defaultstate();	//处理default的递归子程序
 	static void printfstate();		//处理printf的递归子程序
 	static void scanfstate();		//处理scanf的递归子程序

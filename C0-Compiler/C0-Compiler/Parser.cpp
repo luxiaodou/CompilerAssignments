@@ -234,7 +234,7 @@ void Parser::program() {
 			funcdef();		//注意这里只处理了一个有返回值的函数
 		}
 	}
-	quadTable.push_back(Quadruple("GLBEND","","",""));
+	quadTable.push_back(Quadruple("GLBEND", "", "", ""));
 
 	//处理函数声明
 	while (Lexer::sym == INTSYM || Lexer::sym == CHARSYM || Lexer::sym == VOIDSYM) {
@@ -386,9 +386,9 @@ void Parser::constdef() {
 	else if (Lexer::sym == CHARSYM) {
 		Lexer::getsym();
 		if (Lexer::sym != IDSYM) {
-			name = Lexer::token;
 			error(MISSING_IDENT);
 		}
+		name = Lexer::token;
 		Lexer::getsym();
 		if (Lexer::sym != ASSIGN) {
 			error(MISSING_ASSIGN);
@@ -410,9 +410,9 @@ void Parser::constdef() {
 		while (Lexer::sym == COMMA) {
 			Lexer::getsym();
 			if (Lexer::sym != IDSYM) {
-				name = Lexer::token;
 				error(MISSING_IDENT);
 			}
+				name = Lexer::token;
 			Lexer::getsym();
 			if (Lexer::sym != ASSIGN) {
 				error(MISSING_ASSIGN);
@@ -870,10 +870,6 @@ void Parser::expression(string &exp_name, int &exp_type) {
 	string term_name1 = "", term_name2 = "";
 	int  term_type;
 
-	////将表达式的值存入符号表中,初值为0
-	//string exp_name = newtmpname();
-	//symbolTable.temp_insert(exp_name, exp_type);
-
 	//正式开始分析语义
 	if (Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
 		op = Lexer::sym;
@@ -896,7 +892,7 @@ void Parser::expression(string &exp_name, int &exp_type) {
 		}
 	}
 	tab--;
-	exp_name = term_name1;	
+	exp_name = term_name1;
 }
 
 //＜项＞ ::= ＜因子＞{＜乘法运算符＞＜因子＞}
@@ -928,6 +924,7 @@ void Parser::term(string &term_name, int &term_type) {
 }
 
 //＜因子＞ ::= ＜标识符＞｜＜标识符＞‘[’＜表达式＞‘]’|‘(’＜表达式＞‘)’｜＜整数＞|＜字符＞｜＜有返回值函数调用语句＞ 
+//todo: 修改删除temp_insert 方法
 void Parser::factor(string &factor_name, int &factor_type) {
 	if (debug) {
 		tab++;
@@ -963,7 +960,7 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		}
 		else {	//是单一变量
 			factor_name = newtmpname();
-			symbolTable.temp_insert(factor_name, NUMTY);
+			symbolTable.var_insert(factor_name, NUMTY);
 			quadTable.push_back(Quadruple("LOADV", factor_name, name, ""));		//将name的值保存到factor_name对应的临时变量中(位于Stack)
 		}
 		break;
@@ -979,8 +976,9 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		Lexer::getsym();
 		if (Lexer::sym == NUMTY) {
 			factor_name = newtmpname();
-			symbolTable.temp_insert(factor_name, NUMTY);
-			quadTable.push_back(Quadruple("LODI", factor_name, num2str(-Lexer::value), ""));	//注意需要传value的相反数
+			value = - Lexer::value;		//注意需要传value的相反数
+			symbolTable.var_insert(factor_name, NUMTY);
+			quadTable.push_back(Quadruple("LODI", factor_name, num2str(value), ""));	
 		}
 		else {
 			error(WRONG_TYPE);
@@ -990,13 +988,14 @@ void Parser::factor(string &factor_name, int &factor_type) {
 	case PLUSSYM:
 	case NUMTY:
 		factor_name = newtmpname();
-		symbolTable.temp_insert(factor_name, NUMTY);
-		quadTable.push_back(Quadruple("LODI", factor_name, num2str(Lexer::value), ""));
+		value = Lexer::value;
+		symbolTable.var_insert(factor_name, NUMTY);
+		quadTable.push_back(Quadruple("LODI", factor_name, num2str(value), ""));
 		Lexer::getsym();
 		break;
 	case CHARTY:
 		factor_name = newtmpname();
-		symbolTable.temp_insert(factor_name, CHARTY);
+		symbolTable.var_insert(factor_name, CHARTY);
 		quadTable.push_back(Quadruple("LODI", factor_name, num2str(Lexer::value), ""));
 		Lexer::getsym();
 		break;
@@ -1042,7 +1041,7 @@ void Parser::condition(string label)
 		cout << "condition" << endl;
 	}
 	int ctype;
-	string exp_name1 = "",exp_name2 = "";
+	string exp_name1 = "", exp_name2 = "";
 	expression(exp_name1, ctype);
 	if (Lexer::sym == LESS || Lexer::sym == LESSEQU || Lexer::sym == GREAT || Lexer::sym == GREATEQU || Lexer::sym == NEQUAL || Lexer::sym == EQUAL) {
 		int op = Lexer::sym;
@@ -1107,7 +1106,7 @@ void Parser::assignstate() {
 		Lexer::getsym();
 	}
 	else {
-		
+
 	}
 	if (Lexer::sym != ASSIGN) {
 		error(0);
@@ -1125,7 +1124,7 @@ void Parser::whilestate() {
 		tabf();
 		cout << "while statement" << endl;
 	}
-	string label1 = newlab(),label2= newlab();
+	string label1 = newlab(), label2 = newlab();
 	if (Lexer::sym != WHILESYM) {
 		error(0);	//此分支不可达
 	}
@@ -1156,6 +1155,7 @@ void Parser::switchstate() {
 	}
 	int exp_type;
 	string exp_name = "";
+	string labf = newlab();
 	if (Lexer::sym != SWITCHSYM) {
 		error(0);	//此分支不可达
 	}
@@ -1172,18 +1172,19 @@ void Parser::switchstate() {
 	if (Lexer::sym == LBRACE) {		//＜情况表＞::=  ＜情况子语句＞{＜情况子语句＞}
 		Lexer::getsym();
 		while (Lexer::sym == CASESYM) {
-			casestate();
+			casestate(exp_name, labf);
 		}
 		defaultstate();
 	}
 	if (Lexer::sym != RBRACE) {
 		error(MISSING_RBRACE);
 	}
+	quadTable.push_back(Quadruple("LAB", labf, "", ""));
 	tab--;
 }
 
 //＜情况子语句＞:: = case＜常量＞：＜语句＞
-void Parser::casestate() {
+void Parser::casestate(string exp_name, string label) {
 	if (debug) {
 		tab++;
 		tabf();
@@ -1191,9 +1192,6 @@ void Parser::casestate() {
 	}
 	if (Lexer::sym == CASESYM) {
 		Lexer::getsym();
-		//if (Lexer::sym != NUMSYM && Lexer::sym != QUOTE && Lexer::sym != PLUSSYM && Lexer::sym != MINUSSYM) {		//＜常量＞ ::= ＜整数＞|＜字符＞
-		//	error(WRONG_TYPE);
-		//}
 		if (Lexer::sym == NUMTY || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
 			if (Lexer::sym == PLUSSYM) {
 				Lexer::getsym();
@@ -1218,6 +1216,7 @@ void Parser::casestate() {
 	else {
 		error(0);	//没有case
 	}
+	quadTable.push_back(Quadruple("LAB", label, "", ""));
 	tab--;
 }
 
@@ -1236,7 +1235,6 @@ void Parser::defaultstate() {
 		Lexer::getsym();
 		statement();
 	}
-
 	tab--;
 }
 
@@ -1300,8 +1298,8 @@ void Parser::printfstate() {
 	}
 	if (Lexer::sym == STRING) {
 		bool exist = false;
-		map<string, string>::iterator it;
 		string key = "";
+		map<string, string>::iterator it;
 		for (it = strTable.begin(); it != strTable.end(); it++) {
 			if (Lexer::token == it->second) {
 				key = it->first;
@@ -1323,12 +1321,12 @@ void Parser::printfstate() {
 		if (Lexer::sym == COMMA) {
 			type = "2";
 			Lexer::getsym();
-			expression(exp_name,exp_type);
+			expression(exp_name, exp_type);
 		}
 	}
 	else {
 		type = "1";
-		expression(exp_name,exp_type);
+		expression(exp_name, exp_type);
 	}
 	if (Lexer::sym != RPARENT) {
 		error(MISSING_RPARENT);	//容错处理
@@ -1356,15 +1354,15 @@ void Parser::returnstate() {
 	Lexer::getsym();
 	if (Lexer::sym == LPARENT) {
 		Lexer::getsym();
-		expression(exp_name,exp_type);
+		expression(exp_name, exp_type);
 		if (Lexer::sym != RPARENT) {
 			error(MISSING_RPARENT);
 		}
-		quadTable.push_back(Quadruple("RET",exp_name,"",""));
+		quadTable.push_back(Quadruple("RET", exp_name, "", ""));
 		Lexer::getsym();
 	}
 	else {	//return后无表达式
-		quadTable.push_back(Quadruple("RET","","",""));
+		quadTable.push_back(Quadruple("RET", "", "", ""));
 	}
 	tab--;
 }
@@ -1386,10 +1384,10 @@ void Parser::calfunc(string &fac_value) {
 		}
 		Lexer::getsym();
 		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == NUMTY || Lexer::sym == CHARTY) {
-			expression(fac_value,exp_type);
+			expression(fac_value, exp_type);
 			while (Lexer::sym == COMMA) {
 				Lexer::getsym();
-				expression(fac_value,exp_type);
+				expression(fac_value, exp_type);
 			}
 		}
 		if (Lexer::sym != RPARENT) {

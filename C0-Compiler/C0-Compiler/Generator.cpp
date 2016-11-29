@@ -16,12 +16,7 @@ void Generator::quad2asm(Quadruple quad)
 	//todo:先把.data写进去,然后再完成.text,.data需要写入consttab和strtable中的内容
 	//常量声明
 	if (quad.op == "CON") {	//para1 - name, para2 - type para3 - value. all string type
-		if (quad.para2 == "INT") {
-			asmfile << quad.para1 << ": .word " << quad.para3 << endl;
-		}
-		else if (quad.para2 == "CHAR") {
-			asmfile << quad.para1 << ": .asciiz \"" << quad.para3 << "\"" << endl;
-		}
+		asmfile << quad.para1 << ": .word " << quad.para3 << endl;
 	}
 	//todo: 全局变量和局部变量应采取不同的处理方式,因为局部变量存在栈中
 	else if (quad.op == "VAR") {	//para1 - name, para2 - type, para3 - no_use
@@ -89,8 +84,7 @@ void Generator::quad2asm(Quadruple quad)
 	else if (quad.op == "PRT") {
 		if (quad.para3 == "0") {	//只用string
 			asmfile << "li $v0, 4" << endl;			//todo :check 输出字符串是不是v0 = 4
-			string sname = strTable[quad.para1];
-			asmfile << "la $a0," << sname << endl;
+			asmfile << "la $a0," << quad.para1 << endl;
 			asmfile << "syscall" << endl;
 		}
 		else if (quad.para3 == "1") {	//只用exp
@@ -114,6 +108,10 @@ void Generator::quad2asm(Quadruple quad)
 		asmfile << quad.para1 << ":" << endl;
 	}
 	else if (quad.op == "GLBEND") {
+		map<string, string>::iterator it;
+		for (it = strTable.begin(); it != strTable.end(); it++) {	//写入所有字符串常量
+			asmfile << it->first << ": .asciiz \"" << it->second << "\"" << endl;
+		}
 		asmfile << ".text" << endl;
 		asmfile << "j main" << endl;;
 	}
@@ -126,11 +124,11 @@ void Generator::work()
 {
 	int index = 0;
 	int quadnum = quadTable.size();
-	bool global = true;
+	bool global = true;		//声明全局变量
 	for (; index < quadnum; index++) {
 		Quadruple q = quadTable[index];
 		if (q.op == "GLBEND") {
-			global = false;
+			global = false;	//全局常变量声明结束
 		}
 		quad2asm(q);
 	}
