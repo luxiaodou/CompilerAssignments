@@ -5,6 +5,7 @@
 #include "Lexer.h"
 #include "Parser.h"
 #include "Generator.h"
+#include "Table.h"
 
 int errorNum;
 int stbIndex;
@@ -16,18 +17,26 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	errorNum = 0;
 	stbIndex = 0;
+	strTable["$enter"] = "\\n";
 	//Lexer::getpath();
 	//Lexer::path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
 	Lexer::path = "13071079_test.txt";
+	ofstream midfile;
+	midfile.open("13071079_test_mid.txt");
 	//path = "C:/Users/luxiaodou/Desktop/a.txt";
 	Lexer::init();
 	Parser::program();
 	cout << "Syntax Analyze complete!" << endl;
 	cout << "err:" << errorNum << endl;
+	for (int i = 0; i < quadTable.size(); i++) {
+		Quadruple q = quadTable[i];
+		midfile << q.op << " " << q.para1 << " "<< q.para2 << " "<< q.para3 << endl;
+	}
 	Generator gen("13071079_test_asm.txt");
 	gen.work();
 	Lexer::close();
 	gen.close();
+	midfile.close();
 	return 0;
 }
 

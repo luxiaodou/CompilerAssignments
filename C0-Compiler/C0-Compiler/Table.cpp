@@ -18,8 +18,16 @@ Table::~Table()
 
 bool Table::in_table(string iname)
 {
-	for (int i = 0; i < items.size(); i++) {
+	for (int i = curlevel; i < items.size();i++) {
 		if (items[i].name == iname) {
+			return true;
+		}
+		if (items[i].kind == FUNC && i != curlevel) {
+			break;
+		}
+	}
+	for (int i = 0; i < items.size(); i++) {
+		if (items[i].name == iname && items[i].father == topfunction) {
 			return true;
 		}
 	}
@@ -30,22 +38,20 @@ TableItem Table::find(string name)
 {
 	TableItem item;
 	int length = items.size();
-	for (int i = curlevel+1; i < length; i++) {	//查找当前层
+	for (int i = curlevel; i < length; i++) {	//查找当前层
 		item = items[i];
 		if (item.name == name) {
 			return item;
 		}
-		if (item.kind == FUNC) {
+		if (item.kind == FUNC && i != curlevel) {
 			break;
 		}
 	}
-	for (int i = 1; i < length; i++) {	//查找全局变量
-		if (items[i].name == name) {
-			return items[i];
-		}
-		if (items[i].kind == FUNC) {
-			break;
-		}
+	for (int i = 0; i < length; i++) {	//查找全局变量
+		item = items[i];
+		if (item.name == name && item.father == topfunction) {
+			return item;
+		}		
 	}
 	return item;
 }
@@ -147,7 +153,6 @@ int Table::setfuncnum(string name, int number)
 int Table::setfuncsize()
 {
 	items[curlevel].value = offset;
-
 	return 0;
 }
 
@@ -200,18 +205,9 @@ int Table::func_insert(string name, int type, int num)
 	}
 	funcloc[name] = items.size();
 	offset = 0;
+	items.push_back(TableItem(name, 0, FUNC, type, 0, num, topfunction));
 	curlevel = funcloc[name];
-	items.push_back(TableItem(name, 0, FUNC, type, 0, num, curfunction));
-	offset += 4;
-	return 0;
-}
-
-int Table::temp_insert(string name, int type)
-{
-	if (in_table(name)) {
-		return 1;
-	}
-	this->items.push_back(TableItem(name, offset, TEMP, type, 0, 0, curfunction));
+	curfunction = name;
 	offset += 4;
 	return 0;
 }

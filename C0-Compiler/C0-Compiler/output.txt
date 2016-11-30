@@ -1,1 +1,9 @@
-1 DOUQUOTE  ;
+1 CHARTY 'a';
+2 CHARTY '+';
+3 CHARTY '*';
+4 CHARTY '0';
+5 CHARTY '_';
+6 DOUQUOTE  ;
+7 DOUQUOTE  ;
+8 DOUQUOTE  ;
+9 CHARTY 'b';

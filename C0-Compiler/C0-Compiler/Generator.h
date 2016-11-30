@@ -3,7 +3,7 @@
 #include <fstream>
 #include "Quadruple.h"
 using namespace std;
-
+class Table;
 class Generator {
 	//todo: check private and public,delete useless
 	void insertasmsym();	//生成汇编符号表
@@ -21,6 +21,7 @@ class Generator {
 	void scanfasm();	//处理scanf
 	void printfasm();	//处理printf
 	void returnasm();	//生成return语句
+
 public:
 	Generator(string asmfilepath);
 	~Generator();
@@ -29,5 +30,6 @@ public:
 	void close();
 private:
 	ofstream asmfile;	//目标代码文件
+	bool global;
 };
 

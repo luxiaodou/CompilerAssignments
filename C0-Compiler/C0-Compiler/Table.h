@@ -8,15 +8,15 @@ class TableItem;
 class Quadruple;
 class Table
 {
-	int		curlevel;			//符号表当前层的起始位置
-	string	topfunction;			//全局层
-	string	curfunction;		//当前函数名
-	vector<TableItem> items;	//符号表表项
 public:
+	string	topfunction;			//全局层
+	vector<TableItem> items;	//符号表表项
 	Table(string name);															
 	~Table();
 	int		offset;				//符号在栈中的偏移
 	map<string, int>	funcloc;	//查找函数在符号表中对应的位置
+	int		curlevel;			//符号表当前层的起始位置
+	string	curfunction;		//当前函数名
 
 	//建表
 	bool in_table(string name);	//检查name是否已经存在于符号表中	//todo:改为存在于当前层的符号表中
@@ -26,7 +26,6 @@ public:
 	int arr_insert(string name, int type, int num);		//向符号表中插入数组变量,此文法中仅限一维数组
 	int para_insert(string name, int type);			//向符号表中插入参数
 	int func_insert(string name, int type, int num);	//向符号表中插入函数
-	int temp_insert(string name, int type);	//用来存放临时变量的值,例如表达式的值等等
 
 	TableItem find(string name);	//取出名字为name的表项
 
