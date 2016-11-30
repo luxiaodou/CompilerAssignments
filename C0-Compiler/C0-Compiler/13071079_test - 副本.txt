@@ -85,7 +85,7 @@ void main(){
 		printf("case sensitive!");
 	if (flag == 3)
 		fprintf();
-	if (a-vd){
+	if (va-vd){
 		vd=func1(va,vd);
 		printf(-vd);
 	}	

@@ -1,0 +1,40 @@
+void whiletest(){
+	int i;
+	i = 0;
+	while (i < 10){
+		i = i+1;
+		printf("in circle", i);
+	}
+}
+
+int switchtest(int a){
+	switch(a) {
+		case 1 : printf("reached 1");
+		case 2 : {
+			printf("into to brace");
+			return (50);
+		}
+		case 3 : {whiletest(); return(233);}
+		default : printf("default reached!");
+	}
+	return (0);
+}
+
+void main(){
+	int re1,para;
+	printf("start while test!");
+	whiletest();
+	printf("while test finished!\nbegin switchtest!");
+	para = 1;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	para = 2;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	para = 3;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	para = 4;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	}

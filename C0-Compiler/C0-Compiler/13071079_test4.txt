@@ -1,0 +1,96 @@
+char relationcover(char c) {
+	int a,count;
+	char b;
+	if(c == 'a') {
+		count = 0;
+		a = 97;
+		b = 'a';
+		if(a == c) {
+			printf("same?");
+			count = count +1;
+		}
+		if (b == c) {
+			printf("still same?");
+			count = count +1;
+		}
+		if(count == 2)
+			printf("EQU is good");
+		a = 111;
+	}
+	if (a != 110) {
+		count = 0;
+		if(c != b){
+			count = count +1;
+			printf("you cant see this");
+		}
+		if(a != 111){
+			count = count +1;
+			printf("cannot see this neither");
+		}
+		if(a != c){
+			count = count +1;
+			printf("maybe this is ok");
+		}
+		if(count == 1){
+		printf("NEQ is good");
+		}
+		a = 100;
+	}
+	if (a > 99) {
+		count =0;
+		if (a > count)
+			count = count +1;
+		if (a > c)
+			count = count +1;
+		if (a > 99)
+			if (a > 98)
+				count = count +1;
+		if(count == 3){
+			printf("Greater is good");
+		}			
+		a = 77;
+	}
+	if (a <88) {
+		count = 0;
+		if(a < c) 
+			count = count +1;
+		if(b < c)
+			count = count +1;
+		if(count < a)
+			count = count +1;
+		if(count == 2)
+			printf("Less is good");
+	}
+	if (a >=66){
+		count = 0;
+		if(a >= 50)
+			count = count +1;
+		if(a >= c)
+			count = count  +1;
+		if(b >=c)
+			count = count +1;
+		if(count ==2)
+			printf("GTE is good");
+	}
+	if (a <= 111) {
+		count = 0;
+		if(c <= a)
+			count =count +1;
+		if (b <=c)
+			count = count +1;
+		if(a <= 1000)
+			count = count +1;
+		if(count ==2)
+			printf("LTE is good");
+	}
+	return (c);
+}
+
+void main(){
+	int re1,para;
+	char c,re2;
+	printf("start relationcover!");
+	c = 'a';
+	re2 = relationcover(c);
+	printf(re2);
+}

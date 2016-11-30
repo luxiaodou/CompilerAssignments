@@ -12,7 +12,8 @@ class Lexer {
 public:
 	static char ch;
 	static string token, inputline, path;
-	static int sym, value, line, count, ll, lc;
+	static int sym, line, count, ll, lc;
+	static long long value;
 	static ifstream infile;
 	static ofstream outfile;
 	static void output();

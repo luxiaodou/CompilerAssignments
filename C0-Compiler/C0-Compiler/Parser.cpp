@@ -9,7 +9,9 @@ int tab = 0;
 bool debug = false;	//是否开启调试模式,检查Parser中的错误
 //int ttype = 0, tident = 0;
 string name = "";
-int addr, kind, type, value, number;
+string zeroname = "$value0";
+int addr, kind, type, number;
+long long value;
 int temp_index = 0, lab_index = 0;
 bool retsign = false;
 //debug用函数,只是为了console输出更美观,缩进功能
@@ -22,8 +24,8 @@ void tabf() {
 }
 
 //将整数转换为字符串,方便生成四元式
-string num2str(int n) {
-	return to_string(long long(n));
+string num2str(long long n) {
+	return to_string(n);
 }
 
 //生成一个随机的临时变量名,todo:注意这里可能需要修改
@@ -239,7 +241,9 @@ void Parser::program() {
 		}
 	}
 	quadTable.push_back(Quadruple("GLBEND", "", "", ""));
-
+	//存入一个固定量0
+	symbolTable.con_insert(zeroname, INTSYM,0);
+	symbolTable.setzero(zeroname);
 	//处理函数声明
 	while (Lexer::sym == INTSYM || Lexer::sym == CHARSYM || Lexer::sym == VOIDSYM) {
 		if (Lexer::sym == VOIDSYM) {
@@ -744,7 +748,7 @@ void Parser::voidfdef() {
 		error(MISSING_IDENT);
 	}
 	tab--;
-	if (retsign) {
+	if (!retsign) {
 		quadTable.push_back(Quadruple("END", "", "", ""));
 	}
 	symbolTable.setfuncsize();
@@ -819,7 +823,8 @@ void Parser::statement() {
 		if (Lexer::sym == LPARENT) {
 			Lexer::retrieve();
 			string temp = "";
-			calfunc(temp);
+			int temp_type = 0;
+			calfunc(temp, temp_type);
 		}
 		else {
 			Lexer::retrieve();
@@ -878,14 +883,14 @@ void Parser::expression(string &exp_name, int &exp_type) {
 	exp_name = "";
 
 	string term_name1 = "", term_name2 = "";
-	int  term_type;
+	int  term_type1=0, term_type2=0;
 
 	//正式开始分析语义
 	if (Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
 		op = Lexer::sym;
 		Lexer::getsym();
 	}
-	term(term_name1, term_type);
+	term(term_name1, term_type1);
 	if (op == MINUSSYM) {
 		quadTable.push_back(Quadruple("~", term_name1, "", ""));	//进行取反操作
 	}
@@ -893,13 +898,19 @@ void Parser::expression(string &exp_name, int &exp_type) {
 	while (Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
 		op = Lexer::sym;
 		Lexer::getsym();
-		term(term_name2, term_type);
+		term(term_name2, term_type2);
 		if (op == PLUSSYM) {
 			quadTable.push_back(Quadruple("+", term_name1, term_name2, term_name1));
 		}
 		else {
 			quadTable.push_back(Quadruple("-", term_name1, term_name2, term_name1));
 		}
+	}
+	if (term_type1 == INTSYM || term_type2 == INTSYM) {
+		exp_type = INTSYM;
+	}
+	else {
+		exp_type = CHARSYM;
 	}
 	tab--;
 	exp_name = term_name1;
@@ -913,21 +924,27 @@ void Parser::term(string &term_name, int &term_type) {
 		cout << "term" << endl;
 	}
 	string factor_name1 = "", factor_name2 = "";
-	int factor_type;
+	int factor_type1=0, factor_type2=0;
 	term_name = "";
 	term_type = 0;
 
-	factor(factor_name1, factor_type);
+	factor(factor_name1, factor_type1);
 	while (Lexer::sym == MULTISYM || Lexer::sym == DEVIDESYM) {
 		int sign = Lexer::sym;
 		Lexer::getsym();
-		factor(factor_name2, factor_type);
+		factor(factor_name2, factor_type2);
 		if (sign == MULTISYM) {
 			quadTable.push_back(Quadruple("*", factor_name1, factor_name2, factor_name1));
 		}
 		else {
 			quadTable.push_back(Quadruple("/", factor_name1, factor_name2, factor_name1));
 		}
+	}
+	if (factor_type1 == INTSYM || factor_type2 == INTSYM) {	//给定termtype, 注意只要不是两个CHARSYM相加,结果均为INT型
+		term_type = INTSYM;
+	}
+	else {
+		term_type = CHARSYM;
 	}
 	term_name = factor_name1;
 	tab--;
@@ -940,6 +957,7 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		tabf();
 		cout << "factor" << endl;
 	}
+	string name = "";
 	factor_name = "";
 	factor_type = 0;
 	switch (Lexer::sym) {
@@ -953,11 +971,12 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		if (Lexer::sym == LBRACK) {	//是数组
 			Lexer::getsym();
 			factor_name = newtmpname();
-			symbolTable.var_insert(factor_name, INTSYM);
+			factor_type = symbolTable.find(name).type;
+			symbolTable.var_insert(factor_name, factor_type);
 			string arrindex = "";
 			int arrtype;
 			expression(arrindex, arrtype);
-			quadTable.push_back(Quadruple("LODARR", factor_name, arrindex , name));	//将名为name的数组中第arrindex个元素的值存到factor_name对应的临时变量中
+			quadTable.push_back(Quadruple("LODARR", name, arrindex, factor_name));	//将名为name的数组中第arrindex个元素的值存到factor_name对应的临时变量中
 			if (Lexer::sym != RBRACK) {
 				error(MISSING_RBRACK);
 			}
@@ -965,11 +984,12 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		}
 		else if (Lexer::sym == LPARENT) {	//是函数,在calfunc中生成相关操作
 			Lexer::retrieve();
-			calfunc(factor_name);
+			calfunc(factor_name, factor_type);
 		}
-		else {	//是单一变量
+		else {	//是单一变量 //todo:这里可进行优化
 			factor_name = newtmpname();
-			symbolTable.var_insert(factor_name, INTSYM);
+			factor_type = symbolTable.find(name).type;
+			symbolTable.var_insert(factor_name, factor_type);
 			quadTable.push_back(Quadruple("LODV", factor_name, name, ""));		//将name的值保存到factor_name对应的临时变量中(位于Stack)
 		}
 		break;
@@ -985,7 +1005,8 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		Lexer::getsym();
 		if (Lexer::sym == NUMTY) {
 			factor_name = newtmpname();
-			value = -Lexer::value;		//注意需要传value的相反数
+			value = -1 * Lexer::value;		//注意需要传value的相反数
+			factor_type = INTSYM;
 			symbolTable.var_insert(factor_name, INTSYM);
 			quadTable.push_back(Quadruple("LODI", factor_name, num2str(value), ""));
 		}
@@ -995,15 +1016,18 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		Lexer::getsym();
 		break;
 	case PLUSSYM:
+		Lexer::getsym();
 	case NUMTY:
 		factor_name = newtmpname();
 		value = Lexer::value;
+		factor_type = INTSYM;
 		symbolTable.var_insert(factor_name, INTSYM);
 		quadTable.push_back(Quadruple("LODI", factor_name, num2str(value), ""));
 		Lexer::getsym();
 		break;
 	case CHARTY:
 		factor_name = newtmpname();
+		factor_type = CHARSYM;
 		symbolTable.var_insert(factor_name, CHARSYM);
 		quadTable.push_back(Quadruple("LODI", factor_name, num2str(Lexer::value), ""));
 		Lexer::getsym();
@@ -1035,9 +1059,9 @@ void Parser::ifstate() {
 	if (Lexer::sym != RPARENT) {
 		error(MISSING_RPARENT);
 	}
-	quadTable.push_back(Quadruple("LAB", label, "", ""));
 	Lexer::getsym();
 	statement();
+	quadTable.push_back(Quadruple("LAB", label, "", ""));
 	tab--;
 }
 
@@ -1093,8 +1117,9 @@ void Parser::assignstate() {
 		cout << "assign statement" << endl;
 	}
 	string exname = "";
+	string name = "";
 	int extype;
-	string offsetname = "";
+	string offsetname = zeroname;
 	if (Lexer::sym != IDSYM) {
 		error(MISSING_IDENT);
 	}
@@ -1209,7 +1234,10 @@ void Parser::casestate(string exp_name, string label) {
 			}
 			else if (Lexer::sym == MINUSSYM) {
 				Lexer::getsym();
-				value = -Lexer::value;
+				value = -1 * Lexer::value;
+			}
+			else {
+				value = Lexer::value;
 			}
 			symbolTable.var_insert(convalue, INTSYM);
 			quadTable.push_back(Quadruple("LODI", convalue, num2str(value), ""));
@@ -1226,7 +1254,7 @@ void Parser::casestate(string exp_name, string label) {
 		if (Lexer::sym != COLON) {
 			error(MISSING_COLON);
 		}
-		quadTable.push_back(Quadruple("BNE", exp_name, convalue, caselab));
+		quadTable.push_back(Quadruple("NEQ", exp_name, convalue, caselab));
 		Lexer::getsym();
 		statement();
 	}
@@ -1393,7 +1421,7 @@ void Parser::returnstate() {
 //＜有返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
 //＜无返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
 //＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
-void Parser::calfunc(string &fac_value) {
+void Parser::calfunc(string &fac_value, int &fac_type) {
 	if (debug) {
 		tab++;
 		tabf();
@@ -1401,10 +1429,12 @@ void Parser::calfunc(string &fac_value) {
 	}
 	int exp_type;
 	string func_name;
-	string para_name,para_value;
-	fac_value = newtmpname();
+	string para_name;
+	fac_value = newtmpname();	
 	if (Lexer::sym == IDSYM) {
 		func_name = Lexer::token;
+		fac_type = symbolTable.find(func_name).type;
+		symbolTable.var_insert(fac_value, fac_type);
 		Lexer::getsym();
 		if (Lexer::sym != LPARENT) {
 			error(MISSING_LPARENT);
@@ -1414,19 +1444,17 @@ void Parser::calfunc(string &fac_value) {
 		int paracount = 0;
 		int maxpara = symbolTable.find(func_name).number;
 		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == NUMTY || Lexer::sym == CHARTY) {
-			
+
 			expression(para_name, exp_type);
-			symbolTable.var_insert(para_name, INTSYM);
+			symbolTable.var_insert(para_name, exp_type);
 			paracount += 1;
-			para_value = num2str(symbolTable.find(para_name).value);
-			quadTable.push_back(Quadruple("PARA", para_value,num2str(paracount),func_name));
+			quadTable.push_back(Quadruple("PARA", para_name, num2str(paracount), func_name));
 			while (Lexer::sym == COMMA) {
 				Lexer::getsym();
 				expression(para_name, exp_type);
-				symbolTable.var_insert(para_name, INTSYM);
+				symbolTable.var_insert(para_name, exp_type);
 				paracount += 1;
-				para_value = num2str(symbolTable.find(para_name).value);
-				quadTable.push_back(Quadruple("PARA", para_value, num2str(paracount), func_name));
+				quadTable.push_back(Quadruple("PARA", para_name, num2str(paracount), func_name));
 			}
 		}
 		if (paracount != maxpara) {
@@ -1441,6 +1469,6 @@ void Parser::calfunc(string &fac_value) {
 	else {
 		error(0);
 	}
-	quadTable.push_back(Quadruple("LODR", fac_value, "$v0", ""));
+	quadTable.push_back(Quadruple("LODR", fac_value, "$v0", ""));	//在函数的返回值(位于$v0)写回到栈中
 	tab--;
 }

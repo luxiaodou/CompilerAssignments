@@ -1,0 +1,140 @@
+const int cona = 1, conb = 2;       
+const int conc = 3, cong = 4;        
+const int conh = 5, coni = 6, conj = 7;        
+int a[10];        
+int c;
+void emptyfunc(){}    
+void emptyfunc2(){;}    
+char testchar(){     
+    return ('0');
+}
+int fibonacci (int n){    
+    const int cona = -1;    
+    char testc;
+    if(n==1) return (1);    
+    if(n!=2) return (+fibonacci(n+-1)+fibonacci(n-2)+0); 
+    return (1);
+}
+void move(char a, char b){        
+    const int testcon1 = 1;        
+    const char testcon2 = '1';
+    printf('M');    
+    printf("OVE ");
+    printf(a);
+    printf(" TO ",b);
+    printf(" ");
+} 
+void hanoi(int han, char l, char m, char r){    
+    if(2>han) {
+        move(l,r);
+        return;
+        printf("RETURN ERROR"); 
+    }
+    hanoi(han, l, r, m);     
+    move(l,r);        
+    hanoi(han, m, l, r);
+}
+int getpower (int n, int le){
+    int move;        
+    if(le>=2){    
+        move = getpower(n,le-1);
+        a[le-1] = move * n;    
+        return (n*move);
+    }
+    if(1<=le){
+        a[le-1] = n;
+        return (n);
+    }
+}
+int getsqr(int n){
+    int _i;
+    _i = 1;
+    while(_i < n / _i) _i = +1 + _i; 
+    if(-n+_i*_i < n-(-1+_i)*(_i-1)) return (_i);    
+    return (_i-1);
+}
+void main(){
+    const char cond = 'A', cone = 'B', conf = 'C';    
+    const char con1 = '+', con2 = '-';    
+    const char con3 = '*';
+    const char Con3 = '/';    
+    const int testcon = 100;    
+    int c;    
+    int num,i;        
+    int fib,testaj[10],sqr;    
+    int testai[100],a_,a_a,a0,a00;    
+    int testai1,testai2,testai3,testai4,testai5,testai6;
+
+    char c1;  
+    char c2,c3;    
+    char c4,c5,c6;        
+    
+    a_a = 1234567891;
+    a_ = cond; 
+    testai[0] = +5;    
+    testai[testai[0]] = 1; 
+    testai[con1] = 2;    
+    scanf(c,num);    
+    switch(c){    
+        case 1:{
+            getpower(num, 10); 
+            i = 0;
+            while(i<10){    
+                printf("NO",i+1);
+                printf(":", a[i]); 
+                printf(" ");
+                printf("");
+                if(1){ 
+                    i=i+1;
+                }
+            }
+        }
+    }
+    switch(c){    
+        case +2: hanoi(num, cond, cone, conf); 
+        case 3: {
+            fib = fibonacci(num);
+            printf(fib);
+        }
+    }
+    switch(c){
+        case 4: {
+            sqr = getsqr(num);
+            printf(sqr);
+        }
+        case 5:{ 
+            printf(testchar());
+            printf(3*2/6*testai[0]);
+        }
+        case 6:{
+            if(testai[0]){         
+                printf("IFCORRECT");
+            }
+            while(testai[0]){    
+                printf(testai[0]);
+                testai[0] = testai[0] - 1;
+            }
+        }
+        case -7: {   
+            scanf(testai1);        
+            scanf(testai2,testai3);
+            scanf(testai4,testai5,testai6);
+            printf(testai1);
+            printf(testai2);
+            printf(testai3);
+            printf(testai4);
+            printf(testai5);
+            printf(testai6);
+        }
+        case 0: {
+            scanf(c1);
+            switch(c1){   
+                case 'a' : printf(1);    
+                case 'b' : printf(2);
+                default: printf(">=",3);
+            }
+        }
+        default: printf("ERROR");
+    }
+    return;
+}

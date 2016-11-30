@@ -20,10 +20,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	strTable["$enter"] = "\\n";
 	//Lexer::getpath();
 	//Lexer::path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
+	//path = "C:/Users/luxiaodou/Desktop/a.txt";
 	Lexer::path = "13071079_test.txt";
 	ofstream midfile;
 	midfile.open("13071079_test_mid.txt");
-	//path = "C:/Users/luxiaodou/Desktop/a.txt";
 	Lexer::init();
 	Parser::program();
 	cout << "Syntax Analyze complete!" << endl;
@@ -37,6 +37,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	Lexer::close();
 	gen.close();
 	midfile.close();
+	//string s20 = "1234567890123";
+	//cout << _atoi64(s20.c_str());
 	return 0;
 }
 

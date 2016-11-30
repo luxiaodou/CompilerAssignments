@@ -5,7 +5,7 @@
 char Lexer::ch;
 string Lexer::token;
 int Lexer::sym;
-int Lexer::value;
+long long Lexer::value;
 string Lexer::inputline;
 string Lexer::path;
 int Lexer::line, Lexer::count, Lexer::ll, Lexer::lc;
@@ -231,7 +231,7 @@ int Lexer::getsym() {
 			cout << "Lex Error: line " << line << ": integer is out of limit! " << endl;
 			return 0;
 		}
-		value = stoi(token);
+		value = _atoi64(token.c_str());	//todo:将这里记录下来， 当作一个教训，不要试用过小的数据结构，给自己找麻烦
 		sym = NUMTY;
 	}
 	else if (ch == '\'')	//处理字符

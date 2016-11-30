@@ -21,12 +21,15 @@ void Generator::quad2asm(Quadruple quad)
 	//todo:先把.data写进去,然后再完成.text,.data需要写入全局量和strtable中的内容
 	//常量声明
 	if (quad.op == "CON") {	//para1 - name, para2 - type para3 - value. all string type
+		string name = quad.para1;
+		string type = quad.para2;
+		string value = quad.para3;
 		if (global) {		//全局常量声明在数据段
-			asmfile << quad.para1 << ": .word " << quad.para3 << endl;
+			asmfile << name << ": .word " << value << endl;
 		}
 		else {		//局部常量存在栈中, 需要从符号表表中获取位置并存入
 			int addr = symbolTable.find(quad.para1).addr;
-			int value = atoi(quad.para2.c_str());
+			int val = atoi(value.c_str());
 			asmfile << "li $t0," << value << endl;
 			asmfile << "sw $t0," << addr << "($sp)" << endl;
 		}
@@ -58,14 +61,15 @@ void Generator::quad2asm(Quadruple quad)
 		}
 	}
 	else if (quad.op == "PARA") {	//给para赋值需要先入栈再退栈
-		string value = quad.para1;
+		string value_name = quad.para1;
 		string count = quad.para2;
 		string funcname = quad.para3;
-		int offset = atoi(count.c_str()) * 4;
+		int addr = symbolTable.find(value_name).addr;
 		int funcsize = symbolTable.find(funcname).value;
+		int offset = atoi(count.c_str()) * 4;
+		asmfile << "lw $t1," << addr << "($sp)" << endl;
 		asmfile << "subi $sp,$sp," << funcsize << endl;
-		asmfile << "li $t0, " << value << endl;
-		asmfile << "sw $t0," << offset << "($sp)" << endl;
+		asmfile << "sw $t1," << offset << "($sp)" << endl;
 		asmfile << "addi $sp,$sp," << funcsize << endl;
 	}
 	else if (quad.op == "FUNC") {
@@ -74,7 +78,7 @@ void Generator::quad2asm(Quadruple quad)
 		symbolTable.curfunction = funcname;
 		symbolTable.curlevel = symbolTable.funcloc[funcname];
 		asmfile << funcname << ":" << endl;		//给出label
-		asmfile << "subi $sp, $sp, " << funcsize << endl;	//开辟栈空间
+		asmfile << "subi $sp, $sp," << funcsize << endl;	//开辟栈空间
 		asmfile << "sw $ra,0($sp)" << endl;		//保存ra
 	}
 	else if (quad.op == "END") {
@@ -95,10 +99,10 @@ void Generator::quad2asm(Quadruple quad)
 		asmfile << "lw $t1," << addr2 << "($sp)" << endl;
 		if (quad.op == "+" || quad.op == "-") {
 			if (quad.op == "+") {	//加法
-				asmfile << "add $t0,$t1,$t2" << endl;
+				asmfile << "add $t2,$t1,$t0" << endl;
 			}
 			else {			//减法
-				asmfile << "sub $t0,$t1,$t2" << endl;
+				asmfile << "sub $t2,$t0,$t1" << endl;
 			}
 			asmfile << "sw $t2," << addre << "($sp)" << endl;
 		}
@@ -115,15 +119,31 @@ void Generator::quad2asm(Quadruple quad)
 
 		}
 	}
-	else if (quad.op == "LODARR") {	// LODARR arrayname index name
+	else if (quad.op == "LODARR") {	// LODARR arrayname indexname name
+		// name = arrayname[indexname] indexname & name are only-local
 		string arrayname = quad.para1;
-		string index = quad.para2;
+		string indexname = quad.para2;
 		string name = quad.para3;
-		int arradd = symbolTable.find(arrayname).addr;
-		int addr = symbolTable.find(name).addr;
-		int offset = atoi(index.c_str()) * 4 + arradd;
-		asmfile << "lw $t0," << offset << "($sp)" << endl;
-		asmfile << "sw $t0," << addr << "($sp)" << endl;
+		int indaddr = symbolTable.find(indexname).addr;
+		int nameaddr = symbolTable.find(name).addr;
+		if (is_not_global(arrayname)) {
+			int arraddr = symbolTable.find(arrayname).addr;
+			asmfile << "lw $t0," << arraddr << "($sp)" << endl;
+			asmfile << "lw $t1," << indaddr << "($sp)" << endl;
+			asmfile << "mul $t1,$t1,4" << endl;
+			asmfile << "add $t1,$t0,$t1" << endl;
+			asmfile << "add $t1,$t1,$sp" << endl;
+			asmfile << "lw $t0,0($t1)" << endl;
+			asmfile << "sw $t0," << nameaddr << "($sp)" << endl;
+		}
+		else {
+			asmfile << "la $t0," << arrayname << endl;
+			asmfile << "lw $t1," << indaddr << "($sp)" << endl;
+			asmfile << "mul $t1,$t1,4" << endl;
+			asmfile << "add $t1,$t1,$t0" << endl;
+			asmfile << "lw $t0,0($t1)" << endl;
+			asmfile << "sw $t0," << nameaddr << "($sp)" << endl;
+		}
 	}
 	else if (quad.op == "LODI") {	//LODI name value ~
 		string name = quad.para1;
@@ -147,40 +167,84 @@ void Generator::quad2asm(Quadruple quad)
 			asmfile << "sw $t0," << addr << "($sp)" << endl;
 		}
 	}
+	else if (quad.op == "LODR") {	// LODR faction_value regi 用于函数值的回写
+		string faction_value = quad.para1;
+		string regi = quad.para2;
+		int addr = symbolTable.find(faction_value).addr;
+		asmfile << "sw " << regi << "," << addr << "($sp)" << endl;
+	}
 	else if (quad.op == "~") {	//~ name
 		string name = quad.para1;
 		int addr = symbolTable.find(name).addr;
 		asmfile << "lw $t0," << addr << "($sp)" << endl;
+		asmfile << "sub $t0,$0,$t0" << endl;
+		asmfile << "sw $t0," << addr << "($sp)" << endl;
 	}
 	else if (quad.op == "=") {	//取地址→赋值→存回原地址  = name offset exname
 		// name[offset] = exname
 		//todo : check here
-		string name = quad.para1, offset = quad.para2, exname = quad.para3;
+		string name = quad.para1;
+		string offsetname = quad.para2;
+		string exname = quad.para3;
 		int addr1 = symbolTable.find(name).addr;
 		int addr2 = symbolTable.find(exname).addr;
-		if (is_not_global(name)) {	//给局部变量赋值
-			addr1 += atoi(offset.c_str());
-			if (is_not_global(name)) {	//值是局部量
-				asmfile << "lw $v0," << addr2 << "($sp)" << endl;
+		int offsetaddr = symbolTable.find(offsetname).addr;
+		int type = symbolTable.find(name).kind;
+		if (type == ARR) {
+			if (is_not_global(name)) {	//给局部变量赋值
+				asmfile << "lw $t0," << offsetaddr << "($sp)" << endl;
+				asmfile << "mul $t0,$t0,4" << endl;
+				asmfile << "addi $t0,$t0," << addr1 << endl;
+				asmfile << "add $t0,$t0,$sp" << endl;	//得到要赋值元素的地址于$t0
+				if (is_not_global(exname)) {	//值是局部量
+					asmfile << "lw $v0," << addr2 << "($sp)" << endl;
+				}
+				else {	//值是全局量
+					asmfile << "la $t2," << exname << endl;
+					asmfile << "lw $v0, 0($t2)" << endl;
+				}
+				asmfile << "sw $v0,0($t0)" << endl;
 			}
-			else {	//值是全局量
-				asmfile << "la $t0," << symbolTable.find(exname).name << endl;
-				asmfile << "lw $v0, 0($t0)" << endl;
+			else {	//给全局变量赋值
+				asmfile << "la $t0," << name << endl;
+				asmfile << "lw $t1," << offsetaddr << "($sp)" << endl;
+				asmfile << "mul $t1,$t1,4" << endl;
+				asmfile << "add $t0,$t0,$t1" << endl;	//得到要赋值元素的地址于$t0
+				if (is_not_global(exname)) {	//值是局部量
+					asmfile << "lw $v0," << addr2 << "($sp)" << endl;
+				}
+				else {	//值是全局量
+					asmfile << "la $t1," << exname << endl;
+					asmfile << "lw $v0,0($t1)" << endl;
+				}
+				asmfile << "sw $v0,0($t0)" << endl;
 			}
-			asmfile << "sw $v0," << addr1 << "($sp)" << endl;
 		}
-		else {	//给全局变量赋值
-			asmfile << "la $t0," << name << endl;
-			int off = atoi(offset.c_str());
-			if (is_not_global(name)) {	//值是局部量
-				int localadd = symbolTable.find(exname).addr;
-				asmfile << "lw $v0," << localadd << "($sp)" << endl;
+		else {
+			if (is_not_global(name)) {
+				if (is_not_global(exname)) {
+					asmfile << "lw $t0," << addr2 << "($sp)" << endl;
+					asmfile << "sw $t0," << addr1 << "($sp)" << endl;
+				}
+				else {
+					asmfile << "la $t0," << exname << endl;
+					asmfile << "lw $t1,0($t0)" <<endl;
+					asmfile << "sw $t1," << addr1 << "($sp)" << endl;
+				}
 			}
-			else {	//值是全局量
-				asmfile << "la $t1," << symbolTable.find(exname).name << endl;
-				asmfile << "lw $v0,0($t1)" << endl;
+			else {
+				if (is_not_global(exname)) {
+					asmfile << "lw $t0," << addr2 << "($sp)" << endl;
+					asmfile << "la $t1," << name << endl;
+					asmfile << "sw $t0,0($t1)" << endl;
+				}
+				else {
+					asmfile << "la $t0," << exname << endl;
+					asmfile << "lw $t1,0($t0)" << endl;
+					asmfile << "la $t0," << name << endl;
+					asmfile << "sw $t1,0($t0)" << endl;
+				}
 			}
-			asmfile << "sw $v0," << off << "($t0)" << endl;
 		}
 	}
 	else if (quad.op == "GTE" || quad.op == "GREAT" || quad.op == "LESS" ||
@@ -226,7 +290,13 @@ void Generator::quad2asm(Quadruple quad)
 		}
 		else if (type == "1") {	//只用exp
 			int addr = symbolTable.find(exname).addr;
-			asmfile << "li $v0, 1" << endl;
+			int type = symbolTable.find(exname).type;
+			if (type == INTSYM) {
+				asmfile << "li $v0, 1" << endl;
+			}
+			else if (type == CHARSYM) {
+				asmfile << "li $v0, 11" << endl;
+			}
 			asmfile << "lw $a0," << addr << "($sp)" << endl;
 			asmfile << "syscall" << endl;
 			asmfile << "li $v0, 4" << endl;
@@ -234,11 +304,17 @@ void Generator::quad2asm(Quadruple quad)
 			asmfile << "syscall" << endl;
 		}
 		else if (type == "2") {	//二者兼有
-			asmfile << "li $v0, 4" << endl;
 			int exaddr = symbolTable.find(exname).addr;
+			int type = symbolTable.find(exname).type;
+			asmfile << "li $v0, 4" << endl;
 			asmfile << "la $a0," << strname << endl;
 			asmfile << "syscall" << endl;
-			asmfile << "li $v0, 1" << endl;
+			if (type == INTSYM) {
+				asmfile << "li $v0, 1" << endl;
+			}
+			else if (type == CHARSYM) {
+				asmfile << "li $v0, 11" << endl;
+			}
 			asmfile << "lw $a0," << exaddr << "($sp)" << endl;
 			asmfile << "syscall" << endl;
 			asmfile << "li $v0, 4" << endl;
@@ -261,7 +337,7 @@ void Generator::quad2asm(Quadruple quad)
 			asmfile << "syscall" << endl;
 			asmfile << "sw $v0," << addr << "($sp)" << endl;	//局部变量的修改保存在栈中	
 		}
-		else {			
+		else {
 			if (t.type == INTSYM) {
 				asmfile << "li $v0,5" << endl;
 			}
@@ -283,13 +359,13 @@ void Generator::quad2asm(Quadruple quad)
 		string label = quad.para1;
 		asmfile << "j " << label << endl;
 	}
-	else if (quad.op == "RET") {
+	else if (quad.op == "RET") {	//RET exp_name ~ ~
 		string name = quad.para1;
-		int value = symbolTable.find(name).value;
+		int addr = symbolTable.find(name).addr;
 		int funcsize = symbolTable.getvalue(symbolTable.curfunction);
-		asmfile << "li $a0," << value << endl;	//todo : maybe not right here
-		asmfile << "lw $ra, 0($sp)";
-		asmfile << "addi $sp, $sp" << funcsize << endl;
+		asmfile << "lw $v0," << addr << "($sp)" << endl;
+		asmfile << "lw $ra, 0($sp)" << endl;
+		asmfile << "addi $sp, $sp," << funcsize << endl;
 		asmfile << "jr $ra" << endl;
 	}
 	else if (quad.op == "GLBSTR") {

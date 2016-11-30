@@ -33,5 +33,5 @@ private:
 	static void printfstate();		//处理printf的递归子程序
 	static void scanfstate();		//处理scanf的递归子程序
 	static void returnstate();	//处理return的递归子程序
-	static void calfunc(string &);	//处理函数调用的递归子程序
+	static void calfunc(string &, int &);	//处理函数调用的递归子程序
 };

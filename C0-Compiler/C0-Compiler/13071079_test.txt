@@ -1,28 +1,141 @@
-const int ca=+15,cb=-30507, cg = 0;	
+const int ca=2147483647,cb=-2147483648, cg = 0;	
 const int CA=-15,CB=-20, CG = 9;	
 const char cc='a',cd='+',ce='*', ch = '0';
 const char cf='_'	;
 
-int va,vd,vb[4];			
-char vc[3];
+int va,vc,vd,arr[10];
+char vb,charr[3];
 
-int func1(int a,int b){	
-	int c;
-	c=+a-b-3*2;
-	c=-a/c*b;	;
-	return (c);	
+void caltest() {
+	int a,b,c,d,e;
+	char f,g,h;
+	a = 13++79;
+	b = -13 +-97;
+	c = 13*-79;
+	d = -79/13;
+	e = 1079 * 18 - +24 *5 +9/-2;
+	f = '0' + '1';
+	g = '0' + 1;
+	h = 'z' + 'z';
+	printf(a);
+	printf(b);
+	printf(c);
+	printf(d);
+	printf(e);	
+	printf(f);	
+	printf(g);	
+	printf(h);	
+	return;
 }
 
-char func3(char d){		
-	char c;
-	c=d;
+void whiletest(){
+	int i;
+	i = 0;
+	while (i < 10){
+		i = i+1;
+		printf("in circle", i);
+	}
+}
+
+int switchtest(int a){
+	switch(a) {
+		case 1 : printf("reached 1");
+		case 2 : {
+			printf("into to brace");
+			return (50);
+		}
+		case 3 : {whiletest(); return(233);}
+		default : printf("default reached!");
+	}
+	return (0);
+}
+
+char relationcover(char c) {
+	int a,count;
+	char b;
+	if(c == 'a') {
+		count = 0;
+		a = 97;
+		b = 'a';
+		if(a == c) {
+			printf("same?");
+			count = count +1;
+		}
+		if (b == c) {
+			printf("still same?");
+			count = count +1;
+		}
+		if(count == 2)
+			printf("EQU is good");
+		a = 111;
+	}
+	if (a != 110) {
+		count = 0;
+		if(c != b){
+			count = count +1;
+			printf("you cant see this");
+		}
+		if(a != 111){
+			count = count +1;
+			printf("cannot see this neither");
+		}
+		if(a != c){
+			count = count +1;
+			printf("maybe this is ok");
+		}
+		if(count == 1){
+		printf("NEQ is good");
+		}
+		a = 100;
+	}
+	if (a > 99) {
+		count =0;
+		if (a > count)
+			count = count +1;
+		if (a > c)
+			count = count +1;
+		if (a > 99)
+			if (a > 98)
+				count = count +1;
+		if(count == 3){
+			printf("Greater is good");
+		}			
+		a = 77;
+	}
+	if (a <88) {
+		count = 0;
+		if(a < c) 
+			count = count +1;
+		if(b < c)
+			count = count +1;
+		if(count < a)
+			count = count +1;
+		if(count == 2)
+			printf("Less is good");
+	}
+	if (a >=66){
+		count = 0;
+		if(a >= 50)
+			count = count +1;
+		if(a >= c)
+			count = count  +1;
+		if(b >=c)
+			count = count +1;
+		if(count ==2)
+			printf("GTE is good");
+	}
+	if (a <= 111) {
+		count = 0;
+		if(c <= a)
+			count =count +1;
+		if (b <=c)
+			count = count +1;
+		if(a <= 1000)
+			count = count +1;
+		if(count ==2)
+			printf("LTE is good");
+	}
 	return (c);
-}
-
-void fprintf(){					
-	printf(" !#$%&'()*+,-./0123456789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
-	printf(+ca+cb);
-	printf("hello world",cf);
 }
 
 int f(int n){		
@@ -37,75 +150,73 @@ int f(int n){
 	return (f(n-1) + f(n-2));
 }
 
-void relationcover(int n){	
-	const char ch = 'b';
-	if (n <=0) {
-		if (ch < 6)
-			printf("LESS");
-		if (ch <= 7)
-			printf("LESSEQU");
-		if (ch == 8)
-			printf("EQU");
-		if (ch > 11)
-			printf("GREAT");
-		if (ch >= 11)
-			printf("GREATEQU");
-		if (ch != 11)
-			printf("NOTEQU");
-	}
-}
-
-void whiletest(){	
-	int temp;
-	int i;
-	i = 0;
-	while (i < 4){
-		vb[i] = i;
-		i= i+1;
-	}
-	while (i < 4){
-		temp = vb[i];
-		i = i +1;
-		printf((temp));
-	}	
-}
-
 void main(){			
-	int flag;
-	int re;
-	char ccal,ccal2;
-	scanf(flag);		
-	scanf(va,vd);
-	vc[0] = 1;
-	ccal = cc + ca;
-	ccal2 = cc + cd - ce;
-	printf(ccal);
-		
-	if (ca != CA)
-		printf("case sensitive!");
-	if (flag == 3)
-		fprintf();
-	if (a-vd){
-		vd=func1(va,vd);
-		printf(-vd);
-	}	
-	switch(flag){		
-		case 0 : {
-			switch(va) {	
-				case 0: 
-				case 1:	{
-					va = func3(cc + 1);
-					printf(va);
-				}
-				case 2: whiletest();
-				default: {
-					va = f(va);
-					printf(va);
-				}
-			}
-		}
-		case 1 : relationcover(va);	
+	int cg,flag1,re3;
+	int re1,para;
+	char flag2;
+	char c,re2;
+	printf("Calculate test start!");
+	caltest();
+	printf("printf test start!");
+	printf(" !#$%&'()*+,-./0123456789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
+	printf("Max & Min integer:",ca);
+	printf(cb);
+	printf("assign test start!");
+	cg = 10;
+	va = CA;
+	arr[0] = 233;
+	charr[1] = cd;
+	vb = charr[cg-9];	
+	printf(va);
+	printf(arr[0]);
+	printf(charr[1]);
+	printf(vb);
+	printf("print char:", ce);
+	printf(cc);
+	printf("print expression");
+	printf(ca + cb);
+	printf(ch + ch);
+	printf(ch + CG);
+	printf(ca + cb);
+	printf("local or global?");
+	if(cg == 0){
+		printf("global");
 	}
-	re = va;	
-	return (re);
+	if(cg == 10){
+		printf("local");
+	}
+	if(CA == ca){
+		printf("not case sensitive!");
+	}
+	if(ca != CA){
+		printf("case sensitive!");
+	}
+	printf("scanf test start! Please input 1 int & 1 char!");
+	scanf(flag1, flag2);	
+	printf("");
+	printf("The first one:",flag1);
+	printf("The latter one:", flag2);
+	printf("start while test!");
+	whiletest();
+	printf("while test finished!\nbegin switchtest!");
+	para = 1;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	para = 2;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	para = 3;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	para = 4;
+	re1 = switchtest(para);
+	printf("get result:",re1);
+	printf("start relationcover!");
+	c = 'a';
+	re2 = relationcover(c);
+	printf(re2);
+	printf("start recursive!");
+	para = 10;
+	re3 = f(para);
+	printf(re3);
 }

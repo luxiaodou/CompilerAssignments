@@ -34,6 +34,19 @@ bool Table::in_table(string iname)
 	return false;
 }
 
+bool Table::in_cur_level(string name)
+{
+	for (int i = curlevel; i < items.size(); i++) {
+		if (items[i].name == name) {
+			return true;
+		}
+		if (items[i].kind == FUNC && i != curlevel) {
+			break;
+		}
+	}
+	return false;
+}
+
 TableItem Table::find(string name)
 {
 	TableItem item;
@@ -156,10 +169,21 @@ int Table::setfuncsize()
 	return 0;
 }
 
+int Table::setzero(string name)
+{
+	for (int i = 0; i < items.size();i++) {
+		if (items[i].name == name) {
+			items[i].addr = 0;
+			items[i].value = 0;
+		}
+	}
+	return 0;
+}
+
 //向符号表中插入常量
 int Table::con_insert(string name, int type, int value)
 {
-	if (in_table(name)) {
+	if (in_cur_level(name)) {
 		return 1;
 	}
 	this->items.push_back(TableItem(name, offset, CON, type, value, 0, curfunction));
@@ -170,7 +194,7 @@ int Table::con_insert(string name, int type, int value)
 //向符号表中插入变量
 int Table::var_insert(string name, int type)
 {
-	if (in_table(name)) {
+	if (in_cur_level(name)) {
 		return 1;
 	}
 	this->items.push_back(TableItem(name, offset, VAR, type, 0, 0, curfunction));
@@ -180,7 +204,7 @@ int Table::var_insert(string name, int type)
 
 int Table::arr_insert(string name, int type, int num)
 {
-	if (in_table(name)) {
+	if (in_cur_level(name)) {
 		return 1;
 	}
 	this->items.push_back(TableItem(name, offset, ARR, type, 0, num, curfunction));
@@ -190,7 +214,7 @@ int Table::arr_insert(string name, int type, int num)
 
 int Table::para_insert(string name, int type)
 {
-	if (in_table(name)) {
+	if (in_cur_level(name)) {
 		return 1;
 	}
 	this->items.push_back(TableItem(name, offset, PARA, type, 0, 0, curfunction));
@@ -200,7 +224,7 @@ int Table::para_insert(string name, int type)
 
 int Table::func_insert(string name, int type, int num)
 {
-	if (in_table(name)) {
+	if (in_cur_level(name)) {
 		return 1;
 	}
 	funcloc[name] = items.size();
