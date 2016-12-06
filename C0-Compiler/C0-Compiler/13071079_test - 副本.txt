@@ -3,7 +3,7 @@ const int CA=-15,CB=-20, CG = 9;
 const char cc='a',cd='+',ce='*', ch = '0';
 const char cf='_'	;
 
-int va,vd,vb[4];			
+int va1,vd,vb[4];			
 char vc[3];
 
 int func1(int a,int b){	
@@ -75,7 +75,7 @@ void main(){
 	int re;
 	char ccal,ccal2;
 	scanf(flag);		
-	scanf(va,vd);
+	scanf(va1,vd);
 	vc[0] = 1;
 	ccal = cc + ca;
 	ccal2 = cc + cd - ce;
@@ -85,27 +85,27 @@ void main(){
 		printf("case sensitive!");
 	if (flag == 3)
 		fprintf();
-	if (va-vd){
-		vd=func1(va,vd);
+	if (va1-vd){
+		vd=func1(va1,vd);
 		printf(-vd);
 	}	
 	switch(flag){		
 		case 0 : {
-			switch(va) {	
+			switch(va1) {	
 				case 0: 
 				case 1:	{
-					va = func3(cc + 1);
-					printf(va);
+					va1 = func3(cc + 1);
+					printf(va1);
 				}
 				case 2: whiletest();
 				default: {
-					va = f(va);
-					printf(va);
+					va1 = f(va1);
+					printf(va1);
 				}
 			}
 		}
-		case 1 : relationcover(va);	
+		case 1 : relationcover(va1);	
 	}
-	re = va;	
+	re = va1;	
 	return (re);
 }

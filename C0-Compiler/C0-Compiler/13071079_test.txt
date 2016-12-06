@@ -8,23 +8,16 @@ char vb,charr[3];
 
 void caltest() {
 	int a,b,c,d,e;
-	char f,g,h;
-	a = 13++79;
-	b = -13 +-97;
+	a = -13++79;
+	b = 13 +-97;
 	c = 13*-79;
-	d = -79/13;
+	d = 79/-13;
 	e = 1079 * 18 - +24 *5 +9/-2;
-	f = '0' + '1';
-	g = '0' + 1;
-	h = 'z' + 'z';
 	printf(a);
 	printf(b);
 	printf(c);
 	printf(d);
 	printf(e);	
-	printf(f);	
-	printf(g);	
-	printf(h);	
 	return;
 }
 
@@ -155,18 +148,18 @@ void main(){
 	int re1,para;
 	char flag2;
 	char c,re2;
-	printf("Calculate test start!");
+	cg = 10;
+	va = CA;
+	arr[0] = 233;
+	charr[1] = cd;
+	vb = charr[1];	
+	printf("Calculate test begin");
 	caltest();
 	printf("printf test start!");
 	printf(" !#$%&'()*+,-./0123456789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
 	printf("Max & Min integer:",ca);
 	printf(cb);
 	printf("assign test start!");
-	cg = 10;
-	va = CA;
-	arr[0] = 233;
-	charr[1] = cd;
-	vb = charr[cg-9];	
 	printf(va);
 	printf(arr[0]);
 	printf(charr[1]);
@@ -191,11 +184,12 @@ void main(){
 	if(ca != CA){
 		printf("case sensitive!");
 	}
-	printf("scanf test start! Please input 1 int & 1 char!");
-	scanf(flag1, flag2);	
+	printf("scanf test start! Please input 1 int then 1 char then another int!");
+	scanf(flag1, flag2,vc);	
 	printf("");
 	printf("The first one:",flag1);
-	printf("The latter one:", flag2);
+	printf("The second one:", flag2);
+	printf("Global is: ",vc);
 	printf("start while test!");
 	whiletest();
 	printf("while test finished!\nbegin switchtest!");

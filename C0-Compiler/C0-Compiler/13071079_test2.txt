@@ -179,16 +179,17 @@ void main(){
 		printf("local");
 	}
 	if(CA == ca){
-		printf("case sensitive!");
-	}
-	if(ca != CA){
 		printf("not case sensitive!");
 	}
-	printf("scanf test start! Please input 1 int & 1 char!");
-	scanf(flag1, flag2);	
+	if(ca != CA){
+		printf("case sensitive!");
+	}
+	printf("scanf test start! Please input 1 int then 1 char then another int!");
+	scanf(flag1, flag2,vc);	
 	printf("");
 	printf("The first one:",flag1);
-	printf("The latter one:", flag2);
+	printf("The second one:", flag2);
+	printf("Global is: ",vc);
 	printf("start while test!");
 	whiletest();
 	printf("while test finished!\nbegin switchtest!");

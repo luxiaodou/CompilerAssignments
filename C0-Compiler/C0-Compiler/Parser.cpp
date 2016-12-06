@@ -1433,7 +1433,7 @@ void Parser::calfunc(string &fac_value, int &fac_type) {
 	fac_value = newtmpname();	
 	if (Lexer::sym == IDSYM) {
 		func_name = Lexer::token;
-		fac_type = symbolTable.find(func_name).type;
+		fac_type = symbolTable.find(func_name).type;	//todo：试着建立一个findf来解决函数与变量重名的问题
 		symbolTable.var_insert(fac_value, fac_type);
 		Lexer::getsym();
 		if (Lexer::sym != LPARENT) {
@@ -1442,7 +1442,7 @@ void Parser::calfunc(string &fac_value, int &fac_type) {
 		Lexer::getsym();
 		//预先设置参数，这里有些不科学= =
 		int paracount = 0;
-		int maxpara = symbolTable.find(func_name).number;
+		int maxpara = symbolTable.find(func_name).number;	//todo：这里或许能通过判断参数是否小于4来进行优化
 		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == NUMTY || Lexer::sym == CHARTY) {
 
 			expression(para_name, exp_type);

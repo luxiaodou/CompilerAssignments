@@ -21,13 +21,13 @@ public:
 	static void backup();
 	static void retrieve();
 	static void init();
+	static void getpath();
 	static void close();
 private:
 	static streampos bookmark;
 	static int bline, bcount, bll, blc, bsym;
 	static string binputline;
 	static bool inquote;
-	static void getpath();
 	static void clearToken();
 	static void getnextline();
 	static void getch();

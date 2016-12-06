@@ -18,7 +18,6 @@ int is_not_global(string name) {
 
 void Generator::quad2asm(Quadruple quad)
 {
-	//todo:先把.data写进去,然后再完成.text,.data需要写入全局量和strtable中的内容
 	//常量声明
 	if (quad.op == "CON") {	//para1 - name, para2 - type para3 - value. all string type
 		string name = quad.para1;
@@ -83,7 +82,6 @@ void Generator::quad2asm(Quadruple quad)
 	}
 	else if (quad.op == "END") {
 		asmfile << "lw $ra,0($sp)" << endl;
-		//todo: 将函数所开辟的空间退栈
 		int funcsize = symbolTable.getvalue(symbolTable.curfunction);
 		asmfile << "addi $sp,$sp," << funcsize << endl;
 		asmfile << "jr $ra" << endl;
@@ -258,22 +256,22 @@ void Generator::quad2asm(Quadruple quad)
 		asmfile << "lw $t1," << addr2 << "($sp)" << endl;
 
 		if (quad.op == "GTE") {
-			asmfile << "BGE $t0,$t1," << label << endl;
+			asmfile << "bge $t0,$t1," << label << endl;
 		}
 		else if (quad.op == "GREAT") {
-			asmfile << "BGT $t0,$t1," << label << endl;
+			asmfile << "bgt $t0,$t1," << label << endl;
 		}
 		else if (quad.op == "LESS") {
-			asmfile << "BLT $t0,$t1," << label << endl;
+			asmfile << "blt $t0,$t1," << label << endl;
 		}
 		else if (quad.op == "LTE") {
-			asmfile << "BLE $t0,$t1," << label << endl;
+			asmfile << "ble $t0,$t1," << label << endl;
 		}
 		else if (quad.op == "EQU") {
-			asmfile << "BEQ $t0,$t1," << label << endl;
+			asmfile << "beq $t0,$t1," << label << endl;
 		}
 		else if (quad.op == "NEQ") {
-			asmfile << "BNE $t0,$t1," << label << endl;
+			asmfile << "bne $t0,$t1," << label << endl;
 		}
 	}
 	else if (quad.op == "PRT") {

@@ -36,7 +36,7 @@ bool Table::in_table(string iname)
 
 bool Table::in_cur_level(string name)
 {
-	for (int i = curlevel; i < items.size(); i++) {
+	for (int i = curlevel + 1; i < items.size(); i++) {	//todo:check here
 		if (items[i].name == name) {
 			return true;
 		}
