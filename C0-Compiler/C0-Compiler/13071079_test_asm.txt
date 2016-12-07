@@ -186,6 +186,9 @@ lw $v0,284($sp)
 lw $ra, 0($sp)
 addi $sp, $sp,100
 jr $ra
+lw $ra,0($sp)
+addi $sp,$sp,100
+jr $ra
 whiletest:
 subi $sp, $sp,32
 sw $ra,0($sp)

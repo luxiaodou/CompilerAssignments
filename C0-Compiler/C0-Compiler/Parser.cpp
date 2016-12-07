@@ -242,7 +242,7 @@ void Parser::program() {
 	}
 	quadTable.push_back(Quadruple("GLBEND", "", "", ""));
 	//存入一个固定量0
-	symbolTable.con_insert(zeroname, INTSYM,0);
+	symbolTable.con_insert(zeroname, INTSYM, 0);
 	symbolTable.setzero(zeroname);
 	//处理函数声明
 	while (Lexer::sym == INTSYM || Lexer::sym == CHARSYM || Lexer::sym == VOIDSYM) {
@@ -707,7 +707,6 @@ void Parser::voidfdef() {
 		tabf();
 		cout << "voidfdef" << endl;
 	}
-	retsign = false;
 	if (Lexer::sym != VOIDSYM) {
 		error(MISSING_VOID);
 	}
@@ -748,9 +747,7 @@ void Parser::voidfdef() {
 		error(MISSING_IDENT);
 	}
 	tab--;
-	if (!retsign) {
-		quadTable.push_back(Quadruple("END", "", "", ""));
-	}
+	quadTable.push_back(Quadruple("END", "", "", ""));
 	symbolTable.setfuncsize();
 }
 
@@ -883,7 +880,7 @@ void Parser::expression(string &exp_name, int &exp_type) {
 	exp_name = "";
 
 	string term_name1 = "", term_name2 = "";
-	int  term_type1=0, term_type2=0;
+	int  term_type1 = 0, term_type2 = 0;
 
 	//正式开始分析语义
 	if (Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
@@ -924,7 +921,7 @@ void Parser::term(string &term_name, int &term_type) {
 		cout << "term" << endl;
 	}
 	string factor_name1 = "", factor_name2 = "";
-	int factor_type1=0, factor_type2=0;
+	int factor_type1 = 0, factor_type2 = 0;
 	term_name = "";
 	term_type = 0;
 
@@ -1245,8 +1242,8 @@ void Parser::casestate(string exp_name, string label) {
 		}
 		else if (Lexer::sym == CHARTY) {
 			Lexer::getsym();
-			symbolTable.var_insert(convalue, INTSYM);
-			quadTable.push_back(Quadruple("LODI", convalue, num2str(value), ""));
+			symbolTable.var_insert(convalue, CHARSYM);
+			quadTable.push_back(Quadruple("LODI", convalue, num2str(Lexer::value), ""));
 		}
 		else {
 			error(CASE_TYPE_ERROR);
@@ -1430,19 +1427,19 @@ void Parser::calfunc(string &fac_value, int &fac_type) {
 	int exp_type;
 	string func_name;
 	string para_name;
-	fac_value = newtmpname();	
+	fac_value = newtmpname();
 	if (Lexer::sym == IDSYM) {
 		func_name = Lexer::token;
-		fac_type = symbolTable.find(func_name).type;	//todo：试着建立一个findf来解决函数与变量重名的问题
+		fac_type = symbolTable.findf(func_name).type;	//todo：试着建立一个findf来解决函数与变量重名的问题
 		symbolTable.var_insert(fac_value, fac_type);
 		Lexer::getsym();
 		if (Lexer::sym != LPARENT) {
 			error(MISSING_LPARENT);
 		}
 		Lexer::getsym();
-		//预先设置参数，这里有些不科学= =
+		//预先设置参数，这有些违反常理
 		int paracount = 0;
-		int maxpara = symbolTable.find(func_name).number;	//todo：这里或许能通过判断参数是否小于4来进行优化
+		int maxpara = symbolTable.findf(func_name).number;	//todo：这里或许能通过判断参数是否小于4来进行优化
 		if (Lexer::sym == IDSYM || Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM || Lexer::sym == LPARENT || Lexer::sym == NUMTY || Lexer::sym == CHARTY) {
 
 			expression(para_name, exp_type);

@@ -63,6 +63,7 @@ PRT  $temp17 1
 LODV $temp18 e 
 PRT  $temp18 1
 RET   
+END   
 FUNC whiletest VOID 
 VAR i INT 
 LODI $temp19 0 

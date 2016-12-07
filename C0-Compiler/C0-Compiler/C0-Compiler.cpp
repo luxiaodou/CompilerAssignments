@@ -39,6 +39,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	midfile.close();
 	//string s20 = "1234567890123";
 	//cout << _atoi64(s20.c_str());
+	
 	return 0;
 }
 

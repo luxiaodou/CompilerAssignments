@@ -24,15 +24,15 @@ void move(char a, char b){
     printf(" TO ",b);
     printf(" ");
 } 
-void hanoi(int han, char l, char m, char r){    
-    if(2>han) {
+void hanoi(int hanoi, char l, char m, char r){    
+    if(2>hanoi) {
         move(l,r);
         return;
         printf("RETURN ERROR"); 
     }
-    hanoi(han, l, r, m);     
+    hanoi(hanoi-1, l, r, m);     
     move(l,r);        
-    hanoi(han, m, l, r);
+    hanoi(hanoi-1, m, l, r);
 }
 int getpower (int n, int le){
     int move;        
@@ -69,7 +69,7 @@ void main(){
     char c2,c3;    
     char c4,c5,c6;        
     
-    a_a = 1234567891;
+    a_a = 12345678912;
     a_ = cond; 
     testai[0] = +5;    
     testai[testai[0]] = 1; 

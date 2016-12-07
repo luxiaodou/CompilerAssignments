@@ -64,7 +64,7 @@ void Generator::quad2asm(Quadruple quad)
 		string count = quad.para2;
 		string funcname = quad.para3;
 		int addr = symbolTable.find(value_name).addr;
-		int funcsize = symbolTable.find(funcname).value;
+		int funcsize = symbolTable.findf(funcname).value;
 		int offset = atoi(count.c_str()) * 4;
 		asmfile << "lw $t1," << addr << "($sp)" << endl;
 		asmfile << "subi $sp,$sp," << funcsize << endl;
@@ -80,11 +80,18 @@ void Generator::quad2asm(Quadruple quad)
 		asmfile << "subi $sp, $sp," << funcsize << endl;	//¿ª±ÙÕ»¿Õ¼ä
 		asmfile << "sw $ra,0($sp)" << endl;		//±£´æra
 	}
-	else if (quad.op == "END") {
+	else if (quad.op == "END") {	//memo: only used when there is no 'return' statement
 		asmfile << "lw $ra,0($sp)" << endl;
-		int funcsize = symbolTable.getvalue(symbolTable.curfunction);
-		asmfile << "addi $sp,$sp," << funcsize << endl;
-		asmfile << "jr $ra" << endl;
+		string curfunc = symbolTable.curfunction;
+		int funcsize = symbolTable.findf(curfunc).value;
+		if (curfunc == "main") {
+			asmfile << "li $v0," << 10 << endl;
+			asmfile << "syscall" << endl;
+		}
+		else {
+			asmfile << "addi $sp,$sp," << funcsize << endl;
+			asmfile << "jr $ra" << endl;
+		}
 	}
 	else if (quad.op == "+" || quad.op == "-" || quad.op == "*" || quad.op == "/") {
 		string op1 = quad.para1;
@@ -118,7 +125,7 @@ void Generator::quad2asm(Quadruple quad)
 		}
 	}
 	else if (quad.op == "LODARR") {	// LODARR arrayname indexname name
-		// name = arrayname[indexname] indexname & name are only-local
+		// name = arrayname[indexname] indexname & name are local-only
 		string arrayname = quad.para1;
 		string indexname = quad.para2;
 		string name = quad.para3;
@@ -126,10 +133,10 @@ void Generator::quad2asm(Quadruple quad)
 		int nameaddr = symbolTable.find(name).addr;
 		if (is_not_global(arrayname)) {
 			int arraddr = symbolTable.find(arrayname).addr;
-			asmfile << "lw $t0," << arraddr << "($sp)" << endl;
+			//asmfile << "lw $t0," << arraddr << "($sp)" << endl;	//todo: changed here
 			asmfile << "lw $t1," << indaddr << "($sp)" << endl;
 			asmfile << "mul $t1,$t1,4" << endl;
-			asmfile << "add $t1,$t0,$t1" << endl;
+			asmfile << "addi $t1,$t1," << arraddr << endl;
 			asmfile << "add $t1,$t1,$sp" << endl;
 			asmfile << "lw $t0,0($t1)" << endl;
 			asmfile << "sw $t0," << nameaddr << "($sp)" << endl;
@@ -360,11 +367,20 @@ void Generator::quad2asm(Quadruple quad)
 	else if (quad.op == "RET") {	//RET exp_name ~ ~
 		string name = quad.para1;
 		int addr = symbolTable.find(name).addr;
-		int funcsize = symbolTable.getvalue(symbolTable.curfunction);
-		asmfile << "lw $v0," << addr << "($sp)" << endl;
-		asmfile << "lw $ra, 0($sp)" << endl;
-		asmfile << "addi $sp, $sp," << funcsize << endl;
-		asmfile << "jr $ra" << endl;
+		string curfunc = symbolTable.curfunction;
+		int funcsize = symbolTable.findf(curfunc).value;
+
+		if (curfunc == "main") {
+			asmfile << "li $v0," << 10 << endl;
+			asmfile << "syscall" << endl;
+		}
+		else {
+			asmfile << "lw $v0," << addr << "($sp)" << endl;
+			asmfile << "lw $ra, 0($sp)" << endl;
+			asmfile << "addi $sp, $sp," << funcsize << endl;
+			asmfile << "jr $ra" << endl;
+		}
+		
 	}
 	else if (quad.op == "GLBSTR") {
 		asmfile << ".data" << endl;

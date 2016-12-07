@@ -26,7 +26,7 @@ bool Table::in_table(string iname)
 			break;
 		}
 	}
-	for (int i = 0; i < items.size(); i++) {
+	for (int i = 1; i < items.size(); i++) {
 		if (items[i].name == iname && items[i].father == topfunction) {
 			return true;
 		}
@@ -51,22 +51,35 @@ TableItem Table::find(string name)
 {
 	TableItem item;
 	int length = items.size();
-	for (int i = curlevel; i < length; i++) {	//查找当前层
+	for (int i = curlevel + 1; i < length; i++) {	//查找当前层
 		item = items[i];
 		if (item.name == name) {
 			return item;
 		}
-		if (item.kind == FUNC && i != curlevel) {
+		if (item.kind == FUNC) {
 			break;
 		}
 	}
-	for (int i = 0; i < length; i++) {	//查找全局变量
+	for (int i = 1; i < length; i++) {	//查找全局变量
 		item = items[i];
 		if (item.name == name && item.father == topfunction) {
 			return item;
 		}		
 	}
 	return item;
+}
+
+TableItem Table::findf(string name)
+{
+	map<string, int>::iterator it;
+	int loc;
+	for (it = funcloc.begin(); it != funcloc.end(); it++) {
+		if (it->first == name) {
+			loc = it->second;
+			break;
+		}
+	}
+	return items[loc];
 }
 
 bool Table::is_con(string name)
@@ -224,7 +237,7 @@ int Table::para_insert(string name, int type)
 
 int Table::func_insert(string name, int type, int num)
 {
-	if (in_cur_level(name)) {
+	if (in_table(name)) {
 		return 1;
 	}
 	funcloc[name] = items.size();
