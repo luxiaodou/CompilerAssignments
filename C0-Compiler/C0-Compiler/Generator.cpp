@@ -39,7 +39,7 @@ void Generator::quad2asm(Quadruple quad)
 				asmfile << quad.para1 << ": .space 4" << endl;
 			}
 			if (quad.para2 == "CHAR") {
-				asmfile << quad.para1 << ": .space 4" << endl;	//todo:将来可以考虑精简char类型的存储空间,现在先保持
+				asmfile << quad.para1 << ": .space 4" << endl;	
 			}
 		}
 		else {
@@ -52,7 +52,7 @@ void Generator::quad2asm(Quadruple quad)
 				asmfile << quad.para1 << ": .word 1:" << quad.para3 << endl;
 			}
 			if (quad.para2 == "CHAR") {
-				asmfile << quad.para1 << ": .word 1:" << quad.para3 << endl;	//todo:char的储存空间是否可优化, 注意使用.word进行数组分配会将数组初始化为1
+				asmfile << quad.para1 << ": .word 1:" << quad.para3 << endl;	//注意使用.word进行数组分配会将数组初始化为1
 			}
 		}
 		else {
@@ -72,8 +72,8 @@ void Generator::quad2asm(Quadruple quad)
 		asmfile << "addi $sp,$sp," << funcsize << endl;
 	}
 	else if (quad.op == "FUNC") {
-		int funcsize = symbolTable.find(quad.para1).value;
-		string funcname = symbolTable.find(quad.para1).name;
+		int funcsize = symbolTable.findf(quad.para1).value;
+		string funcname = symbolTable.findf(quad.para1).name;
 		symbolTable.curfunction = funcname;
 		symbolTable.curlevel = symbolTable.funcloc[funcname];
 		asmfile << funcname << ":" << endl;		//给出label
@@ -187,7 +187,6 @@ void Generator::quad2asm(Quadruple quad)
 	}
 	else if (quad.op == "=") {	//取地址→赋值→存回原地址  = name offset exname
 		// name[offset] = exname
-		//todo : check here
 		string name = quad.para1;
 		string offsetname = quad.para2;
 		string exname = quad.para3;
@@ -275,7 +274,12 @@ void Generator::quad2asm(Quadruple quad)
 			asmfile << "ble $t0,$t1," << label << endl;
 		}
 		else if (quad.op == "EQU") {
-			asmfile << "beq $t0,$t1," << label << endl;
+			if (exp_name2 == "$0") {
+				asmfile << "beq $t0,$0," << label << endl;
+			}
+			else {
+				asmfile << "beq $t0,$t1," << label << endl;
+			}
 		}
 		else if (quad.op == "NEQ") {
 			asmfile << "bne $t0,$t1," << label << endl;
@@ -287,7 +291,7 @@ void Generator::quad2asm(Quadruple quad)
 		string type = quad.para3;
 
 		if (type == "0") {	//只用string
-			asmfile << "li $v0, 4" << endl;			//todo :check 输出字符串是不是v0 = 4
+			asmfile << "li $v0, 4" << endl;			
 			asmfile << "la $a0," << strname << endl;
 			asmfile << "syscall" << endl;
 			asmfile << "la $a0," << "$enter" << endl;

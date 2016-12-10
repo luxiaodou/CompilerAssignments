@@ -1101,7 +1101,7 @@ void Parser::condition(string label)
 		}
 	}
 	else {
-		quadTable.push_back(Quadruple("EQU", exp_name1, "0", label));
+		quadTable.push_back(Quadruple("EQU", exp_name1, "$0", label));
 	}
 	tab--;
 }
@@ -1430,7 +1430,7 @@ void Parser::calfunc(string &fac_value, int &fac_type) {
 	fac_value = newtmpname();
 	if (Lexer::sym == IDSYM) {
 		func_name = Lexer::token;
-		fac_type = symbolTable.findf(func_name).type;	//todo：试着建立一个findf来解决函数与变量重名的问题
+		fac_type = symbolTable.findf(func_name).type;	
 		symbolTable.var_insert(fac_value, fac_type);
 		Lexer::getsym();
 		if (Lexer::sym != LPARENT) {

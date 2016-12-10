@@ -29,7 +29,7 @@ public:
 	int func_insert(string name, int type, int num);	//向符号表中插入函数
 
 	TableItem find(string name);	//取出名字为name的表项
-	TableItem findf(string name);	//取出名字为name的表项
+	TableItem findf(string name);	//取出名字为name的函数
 
 	bool is_con(string name);
 	bool is_var(string name);

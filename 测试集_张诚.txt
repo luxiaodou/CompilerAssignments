@@ -69,7 +69,7 @@ void main(){
     char c2,c3;    
     char c4,c5,c6;        
     
-    a_a = 12345678912;
+    a_a = 123456789;
     a_ = cond; 
     testai[0] = +5;    
     testai[testai[0]] = 1; 
