@@ -192,7 +192,7 @@ lw $ra,0($sp)
 addi $sp,$sp,100
 jr $ra
 whiletest:
-subi $sp, $sp,32
+subi $sp, $sp,36
 sw $ra,0($sp)
 li $t0,0
 sw $t0,8($sp)
@@ -229,8 +229,14 @@ la $a0,$enter
 syscall
 j Lab1
 Lab0:
+li $t0,1
+sw $t0,32($sp)
+lw $v0,32($sp)
+lw $ra, 0($sp)
+addi $sp, $sp,36
+jr $ra
 lw $ra,0($sp)
-addi $sp,$sp,32
+addi $sp,$sp,36
 jr $ra
 switchtest:
 subi $sp, $sp,40

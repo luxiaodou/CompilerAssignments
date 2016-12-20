@@ -28,6 +28,7 @@ void whiletest(){
 		i = i+1;
 		printf("in circle", i);
 	}
+	return (1);
 }
 
 int switchtest(int a){

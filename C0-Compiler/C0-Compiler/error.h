@@ -42,3 +42,5 @@
 #define MISSING_DOUQUOTE	40		//丢失双引号
 #define CASE_TYPE_ERROR		41		//case的声明出错,标识符类型不正确
 #define CONST_TYPE_ERROR	42		//常量类型错误,常量只允许是int或者char类型
+#define FACTOR_ERROR		43		//因子发生错误，请检查是否错误使用运算符
+#define SCANF_ERROR			44		//SCANF使用错误

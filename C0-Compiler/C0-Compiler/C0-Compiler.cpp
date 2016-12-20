@@ -22,23 +22,27 @@ int _tmain(int argc, _TCHAR* argv[])
 	//Lexer::path = "C:/Users/luxiaodou/Desktop/13071079_test.txt";
 	//path = "C:/Users/luxiaodou/Desktop/a.txt";
 	Lexer::path = "13071079_test.txt";
-	ofstream midfile;
-	midfile.open("13071079_test_mid.txt");
+	ofstream midfile;	
 	Lexer::init();
 	Parser::program();
-	cout << "Syntax Analyze complete!" << endl;
-	cout << "err:" << errorNum << endl;
-	for (int i = 0; i < quadTable.size(); i++) {
-		Quadruple q = quadTable[i];
-		midfile << q.op << " " << q.para1 << " "<< q.para2 << " "<< q.para3 << endl;
+	if (errorNum == 0) {
+		midfile.open("13071079_test_mid.txt");
+		cout << "Syntax Analyze complete!" << endl;
+		cout << "err:" << errorNum << endl;
+		for (int i = 0; i < quadTable.size(); i++) {
+			Quadruple q = quadTable[i];
+			midfile << q.op << " " << q.para1 << " " << q.para2 << " " << q.para3 << endl;
+		}
+		Generator gen("13071079_test_asm.txt");
+		gen.work();
+		gen.close();
+		midfile.close();
 	}
-	Generator gen("13071079_test_asm.txt");
-	gen.work();
+	else {
+		cout << "error Number : " << errorNum << endl;
+		cout << "Found some errors! Syntax Analyze abort!" << endl;
+	}	
 	Lexer::close();
-	gen.close();
-	midfile.close();
-	//string s20 = "1234567890123";
-	//cout << _atoi64(s20.c_str());
 	
 	return 0;
 }

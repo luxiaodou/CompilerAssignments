@@ -195,6 +195,12 @@ void Parser::error(int errorid)
 	case ERROR_PARA_NUM:
 		cout << "Parser Error: line" << Lexer::line << ":" << "函数调用时参数数量异常！" << endl;
 		break;
+	case FACTOR_ERROR:
+		cout << "Parser Error: line" << Lexer::line << ":" << "因子部分发生异常，请检查运算符使用是否合法！" << endl;
+		break;
+	case SCANF_ERROR:
+		cout << "Parser Error: line" << Lexer::line << ":" << "Scanf 使用出现错误，请检查赋值的是否为变量类型" << endl;
+		break;
 	default:
 		cout << "Parser Error: line" << Lexer::line << ":" << "发生了未知错误!" << endl;	//理论上永远不可能执行到这里
 		break;
@@ -711,7 +717,7 @@ void Parser::voidfdef() {
 		error(MISSING_VOID);
 	}
 	else {
-		type = Lexer::sym;
+		type = Lexer::sym;	//type = VOIDSYM
 		Lexer::getsym();
 	}
 	if (Lexer::sym == IDSYM) {
@@ -1030,7 +1036,7 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		Lexer::getsym();
 		break;
 	default:
-		error(0);	//正常情况下不可能执行至此分支
+		error(FACTOR_ERROR);	//正常情况下不可能执行至此分支
 		break;
 	}
 	tab--;
@@ -1296,7 +1302,11 @@ void Parser::scanfstate() {
 			if (Lexer::sym != IDSYM) {
 				error(MISSING_IDENT);
 			}
+
 			name = Lexer::token;
+			if (symbolTable.find(name).kind != VAR) {
+				error(SCANF_ERROR);
+			}
 			quadTable.push_back(Quadruple("SCF", name, "", ""));
 			Lexer::getsym();
 			while (Lexer::sym == COMMA) {
@@ -1407,6 +1417,9 @@ void Parser::returnstate() {
 		}
 		quadTable.push_back(Quadruple("RET", exp_name, "", ""));
 		Lexer::getsym();
+		if (symbolTable.findf(symbolTable.curfunction).type == VOIDSYM) {
+			error(RETURN_ERROR);		//void 函数带返回值返回视为错误
+		}
 	}
 	else {	//return后无表达式
 		quadTable.push_back(Quadruple("RET", "", "", ""));
