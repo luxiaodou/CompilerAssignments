@@ -3,8 +3,10 @@ const int CA=-15,CB=-20, CG = 9;
 const char cc='a',cd='+',ce='*', ch = '0';
 const char cf='_'	;
 
-int va,vc,vd,arr[10];
-char vb,charr[3];
+int va;
+char vb;
+int vc,vd,arr[10];
+char charr[3];
 
 void caltest() {
 	int a,b,c,d,e;
@@ -28,7 +30,7 @@ void whiletest(){
 		i = i+1;
 		printf("in circle", i);
 	}
-	return (1);
+	return;
 }
 
 int switchtest(int a){
@@ -165,8 +167,8 @@ void main(){
 	cg = 10;
 	va = CA;
 	arr[0] = 233;
-	charr[1] = cd;
-	cn[3] = ce;
+	charr[1] = 81;
+	cn[3] = 43;
 	vb = charr[1];	
 	printf(va);
 	printf(arr[0]);

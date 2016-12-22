@@ -11,10 +11,10 @@ ce: .word 42
 ch: .word 48
 cf: .word 95
 va: .space 4
+vb: .space 4
 vc: .space 4
 vd: .space 4
 arr: .word 1:10
-vb: .space 4
 charr: .word 1:3
 $enter: .asciiz "\n"
 $string0: .asciiz "in circle"
@@ -192,7 +192,7 @@ lw $ra,0($sp)
 addi $sp,$sp,100
 jr $ra
 whiletest:
-subi $sp, $sp,36
+subi $sp, $sp,32
 sw $ra,0($sp)
 li $t0,0
 sw $t0,8($sp)
@@ -229,14 +229,12 @@ la $a0,$enter
 syscall
 j Lab1
 Lab0:
-li $t0,1
-sw $t0,32($sp)
-lw $v0,32($sp)
+lw $v0,324($sp)
 lw $ra, 0($sp)
-addi $sp, $sp,36
+addi $sp, $sp,32
 jr $ra
 lw $ra,0($sp)
-addi $sp,$sp,36
+addi $sp,$sp,32
 jr $ra
 switchtest:
 subi $sp, $sp,40
@@ -1006,9 +1004,8 @@ lw $v0,84($sp)
 sw $v0,0($t0)
 li $t0,1
 sw $t0,88($sp)
-la $t0,cd
-lw $t1,0($t0)
-sw $t1,92($sp)
+li $t0,81
+sw $t0,92($sp)
 la $t0,charr
 lw $t1,88($sp)
 mul $t1,$t1,4
@@ -1017,9 +1014,8 @@ lw $v0,92($sp)
 sw $v0,0($t0)
 li $t0,3
 sw $t0,96($sp)
-la $t0,ce
-lw $t1,0($t0)
-sw $t1,100($sp)
+li $t0,43
+sw $t0,100($sp)
 lw $t0,96($sp)
 mul $t0,$t0,4
 addi $t0,$t0,36

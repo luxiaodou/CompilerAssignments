@@ -199,7 +199,7 @@ void Parser::error(int errorid)
 		cout << "Parser Error: line" << Lexer::line << ":" << "因子部分发生异常，请检查运算符使用是否合法！" << endl;
 		break;
 	case SCANF_ERROR:
-		cout << "Parser Error: line" << Lexer::line << ":" << "Scanf 使用出现错误，请检查赋值的是否为变量类型" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "Scanf 使用出现错误，请检查输入的标识符是否为变量类型" << endl;
 		break;
 	default:
 		cout << "Parser Error: line" << Lexer::line << ":" << "发生了未知错误!" << endl;	//理论上永远不可能执行到这里
@@ -238,7 +238,7 @@ void Parser::program() {
 		}
 		Lexer::getsym();
 
-		if (Lexer::sym == COMMA || Lexer::sym == LBRACK) {		//变量
+		if (Lexer::sym == COMMA || Lexer::sym == LBRACK || Lexer::sym == SEMICOLON) {		//变量
 			Lexer::retrieve();
 			varstate();		//所有变量声明理应在这里处理完毕
 		}
