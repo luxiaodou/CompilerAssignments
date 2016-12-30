@@ -8,6 +8,11 @@ char vb;
 int vc,vd,arr[10];
 char charr[3];
 
+void tempadd(int w){
+	w = w+1;
+	printf(w);
+}
+
 void caltest() {
 	int a,b,c,d,e;
 	a = -13++79;
@@ -21,6 +26,10 @@ void caltest() {
 	printf(d);
 	printf(e);	
 	return;
+}
+
+char returnq(){
+	return ('Q');
 }
 
 void whiletest(){
@@ -152,12 +161,13 @@ int f(int n){
 	return (f(n-1) + f(n-2));
 }
 
-void main(){			
+void main(){		
 	int cg,flag1,re3;
 	int re1,para;
 	char flag2;
-	char c,re2,cn[6];	
+	char c,re2,cn[6];		
 	printf("Calculate test begin");
+	tempadd(15);
 	caltest();
 	printf("printf test start!");
 	printf(" !#$%&'()*+,-./0123456789:;<=>? @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}");
@@ -177,6 +187,7 @@ void main(){
 	printf(vb);
 	printf("print char:", ce);
 	printf(cc);
+	printf(returnq());
 	printf("print expression");
 	printf(ca + cb);
 	printf(ch + ch);

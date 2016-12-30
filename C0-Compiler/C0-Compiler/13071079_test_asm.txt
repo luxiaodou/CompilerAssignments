@@ -59,6 +59,30 @@ $string8: .asciiz "cannot see this neither"
 $string9: .asciiz "maybe this is ok"
 .text
 j main
+tempadd:
+subi $sp, $sp,20
+sw $ra,0($sp)
+lw $t0,4($sp)
+sw $t0,8($sp)
+li $t0,1
+sw $t0,12($sp)
+lw $t0,8($sp)
+lw $t1,12($sp)
+add $t2,$t1,$t0
+sw $t2,8($sp)
+lw $t0,8($sp)
+sw $t0,4($sp)
+lw $t0,4($sp)
+sw $t0,16($sp)
+li $v0, 1
+lw $a0,16($sp)
+syscall
+li $v0, 4
+la $a0,$enter
+syscall
+lw $ra,0($sp)
+addi $sp,$sp,20
+jr $ra
 caltest:
 subi $sp, $sp,100
 sw $ra,0($sp)
@@ -184,12 +208,21 @@ syscall
 li $v0, 4
 la $a0,$enter
 syscall
-lw $v0,324($sp)
+lw $v0,336($sp)
 lw $ra, 0($sp)
 addi $sp, $sp,100
 jr $ra
 lw $ra,0($sp)
 addi $sp,$sp,100
+jr $ra
+returnq:
+subi $sp, $sp,8
+sw $ra,0($sp)
+li $t0,81
+sw $t0,4($sp)
+lw $v0,4($sp)
+lw $ra, 0($sp)
+addi $sp, $sp,8
 jr $ra
 whiletest:
 subi $sp, $sp,32
@@ -229,7 +262,7 @@ la $a0,$enter
 syscall
 j Lab1
 Lab0:
-lw $v0,324($sp)
+lw $v0,336($sp)
 lw $ra, 0($sp)
 addi $sp, $sp,32
 jr $ra
@@ -817,7 +850,7 @@ Lab31:
 lw $t0,12($sp)
 sw $t0,444($sp)
 lw $t0,444($sp)
-lw $t1,324($sp)
+lw $t1,336($sp)
 beq $t0,$0,Lab36
 lw $t0,8($sp)
 sw $t0,448($sp)
@@ -838,7 +871,7 @@ sw $t0,12($sp)
 lw $t0,12($sp)
 sw $t0,456($sp)
 lw $t0,456($sp)
-lw $t1,324($sp)
+lw $t1,336($sp)
 beq $t0,$0,Lab37
 li $v0, 4
 la $a0,$string16
@@ -867,7 +900,7 @@ la $a0,$string17
 syscall
 la $a0,$enter
 syscall
-lw $v0,324($sp)
+lw $v0,336($sp)
 lw $ra, 0($sp)
 addi $sp, $sp,64
 jr $ra
@@ -937,15 +970,23 @@ lw $ra, 0($sp)
 addi $sp, $sp,64
 jr $ra
 main:
-subi $sp, $sp,328
+subi $sp, $sp,340
 sw $ra,0($sp)
 li $v0, 4
 la $a0,$string18
 syscall
 la $a0,$enter
 syscall
-jal caltest
+li $t0,15
+sw $t0,64($sp)
+lw $t1,64($sp)
+subi $sp,$sp,20
+sw $t1,4($sp)
+addi $sp,$sp,20
+jal tempadd
 sw $v0,60($sp)
+jal caltest
+sw $v0,68($sp)
 li $v0, 4
 la $a0,$string19
 syscall
@@ -958,21 +999,21 @@ la $a0,$enter
 syscall
 la $t0,ca
 lw $t1,0($t0)
-sw $t1,64($sp)
+sw $t1,72($sp)
 li $v0, 4
 la $a0,$string21
 syscall
 li $v0, 1
-lw $a0,64($sp)
+lw $a0,72($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 la $t0,cb
 lw $t1,0($t0)
-sw $t1,68($sp)
+sw $t1,76($sp)
 li $v0, 1
-lw $a0,68($sp)
+lw $a0,76($sp)
 syscall
 li $v0, 4
 la $a0,$enter
@@ -983,99 +1024,85 @@ syscall
 la $a0,$enter
 syscall
 li $t0,10
-sw $t0,72($sp)
-lw $t0,72($sp)
+sw $t0,80($sp)
+lw $t0,80($sp)
 sw $t0,4($sp)
 la $t0,CA
 lw $t1,0($t0)
-sw $t1,76($sp)
-lw $t0,76($sp)
+sw $t1,84($sp)
+lw $t0,84($sp)
 la $t1,va
 sw $t0,0($t1)
 li $t0,0
-sw $t0,80($sp)
-li $t0,233
-sw $t0,84($sp)
-la $t0,arr
-lw $t1,80($sp)
-mul $t1,$t1,4
-add $t0,$t0,$t1
-lw $v0,84($sp)
-sw $v0,0($t0)
-li $t0,1
 sw $t0,88($sp)
-li $t0,81
+li $t0,233
 sw $t0,92($sp)
-la $t0,charr
+la $t0,arr
 lw $t1,88($sp)
 mul $t1,$t1,4
 add $t0,$t0,$t1
 lw $v0,92($sp)
 sw $v0,0($t0)
-li $t0,3
+li $t0,1
 sw $t0,96($sp)
-li $t0,43
+li $t0,81
 sw $t0,100($sp)
-lw $t0,96($sp)
+la $t0,charr
+lw $t1,96($sp)
+mul $t1,$t1,4
+add $t0,$t0,$t1
+lw $v0,100($sp)
+sw $v0,0($t0)
+li $t0,3
+sw $t0,104($sp)
+li $t0,43
+sw $t0,108($sp)
+lw $t0,104($sp)
 mul $t0,$t0,4
 addi $t0,$t0,36
 add $t0,$t0,$sp
-lw $v0,100($sp)
+lw $v0,108($sp)
 sw $v0,0($t0)
 li $t0,1
-sw $t0,108($sp)
+sw $t0,116($sp)
 la $t0,charr
-lw $t1,108($sp)
+lw $t1,116($sp)
 mul $t1,$t1,4
 add $t1,$t1,$t0
 lw $t0,0($t1)
-sw $t0,104($sp)
-lw $t0,104($sp)
+sw $t0,112($sp)
+lw $t0,112($sp)
 la $t1,vb
 sw $t0,0($t1)
 la $t0,va
 lw $t1,0($t0)
-sw $t1,112($sp)
+sw $t1,120($sp)
 li $v0, 1
-lw $a0,112($sp)
+lw $a0,120($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 li $t0,0
-sw $t0,120($sp)
-la $t0,arr
-lw $t1,120($sp)
-mul $t1,$t1,4
-add $t1,$t1,$t0
-lw $t0,0($t1)
-sw $t0,116($sp)
-li $v0, 1
-lw $a0,116($sp)
-syscall
-li $v0, 4
-la $a0,$enter
-syscall
-li $t0,1
 sw $t0,128($sp)
-la $t0,charr
+la $t0,arr
 lw $t1,128($sp)
 mul $t1,$t1,4
 add $t1,$t1,$t0
 lw $t0,0($t1)
 sw $t0,124($sp)
-li $v0, 11
+li $v0, 1
 lw $a0,124($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
-li $t0,3
+li $t0,1
 sw $t0,136($sp)
+la $t0,charr
 lw $t1,136($sp)
 mul $t1,$t1,4
-addi $t1,$t1,36
-add $t1,$t1,$sp
+add $t1,$t1,$t0
 lw $t0,0($t1)
 sw $t0,132($sp)
 li $v0, 11
@@ -1084,32 +1111,54 @@ syscall
 li $v0, 4
 la $a0,$enter
 syscall
-la $t0,vb
-lw $t1,0($t0)
-sw $t1,140($sp)
+li $t0,3
+sw $t0,144($sp)
+lw $t1,144($sp)
+mul $t1,$t1,4
+addi $t1,$t1,36
+add $t1,$t1,$sp
+lw $t0,0($t1)
+sw $t0,140($sp)
 li $v0, 11
 lw $a0,140($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
+la $t0,vb
+lw $t1,0($t0)
+sw $t1,148($sp)
+li $v0, 11
+lw $a0,148($sp)
+syscall
+li $v0, 4
+la $a0,$enter
+syscall
 la $t0,ce
 lw $t1,0($t0)
-sw $t1,144($sp)
+sw $t1,152($sp)
 li $v0, 4
 la $a0,$string23
 syscall
 li $v0, 11
-lw $a0,144($sp)
+lw $a0,152($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 la $t0,cc
 lw $t1,0($t0)
-sw $t1,148($sp)
+sw $t1,156($sp)
 li $v0, 11
-lw $a0,148($sp)
+lw $a0,156($sp)
+syscall
+li $v0, 4
+la $a0,$enter
+syscall
+jal returnq
+sw $v0,160($sp)
+li $v0, 11
+lw $a0,160($sp)
 syscall
 li $v0, 4
 la $a0,$enter
@@ -1121,64 +1170,64 @@ la $a0,$enter
 syscall
 la $t0,ca
 lw $t1,0($t0)
-sw $t1,152($sp)
+sw $t1,164($sp)
 la $t0,cb
 lw $t1,0($t0)
-sw $t1,156($sp)
-lw $t0,152($sp)
-lw $t1,156($sp)
-add $t2,$t1,$t0
-sw $t2,152($sp)
-li $v0, 1
-lw $a0,152($sp)
-syscall
-li $v0, 4
-la $a0,$enter
-syscall
-la $t0,ch
-lw $t1,0($t0)
-sw $t1,160($sp)
-la $t0,ch
-lw $t1,0($t0)
-sw $t1,164($sp)
-lw $t0,160($sp)
-lw $t1,164($sp)
-add $t2,$t1,$t0
-sw $t2,160($sp)
-li $v0, 11
-lw $a0,160($sp)
-syscall
-li $v0, 4
-la $a0,$enter
-syscall
-la $t0,ch
-lw $t1,0($t0)
 sw $t1,168($sp)
-la $t0,CG
+lw $t0,164($sp)
+lw $t1,168($sp)
+add $t2,$t1,$t0
+sw $t2,164($sp)
+li $v0, 1
+lw $a0,164($sp)
+syscall
+li $v0, 4
+la $a0,$enter
+syscall
+la $t0,ch
 lw $t1,0($t0)
 sw $t1,172($sp)
-lw $t0,168($sp)
-lw $t1,172($sp)
+la $t0,ch
+lw $t1,0($t0)
+sw $t1,176($sp)
+lw $t0,172($sp)
+lw $t1,176($sp)
 add $t2,$t1,$t0
-sw $t2,168($sp)
+sw $t2,172($sp)
 li $v0, 11
-lw $a0,168($sp)
+lw $a0,172($sp)
+syscall
+li $v0, 4
+la $a0,$enter
+syscall
+la $t0,ch
+lw $t1,0($t0)
+sw $t1,180($sp)
+la $t0,CG
+lw $t1,0($t0)
+sw $t1,184($sp)
+lw $t0,180($sp)
+lw $t1,184($sp)
+add $t2,$t1,$t0
+sw $t2,180($sp)
+li $v0, 11
+lw $a0,180($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 la $t0,ca
 lw $t1,0($t0)
-sw $t1,176($sp)
+sw $t1,188($sp)
 la $t0,cb
 lw $t1,0($t0)
-sw $t1,180($sp)
-lw $t0,176($sp)
-lw $t1,180($sp)
+sw $t1,192($sp)
+lw $t0,188($sp)
+lw $t1,192($sp)
 add $t2,$t1,$t0
-sw $t2,176($sp)
+sw $t2,188($sp)
 li $v0, 1
-lw $a0,176($sp)
+lw $a0,188($sp)
 syscall
 li $v0, 4
 la $a0,$enter
@@ -1189,11 +1238,11 @@ syscall
 la $a0,$enter
 syscall
 lw $t0,4($sp)
-sw $t0,184($sp)
+sw $t0,196($sp)
 li $t0,0
-sw $t0,188($sp)
-lw $t0,184($sp)
-lw $t1,188($sp)
+sw $t0,200($sp)
+lw $t0,196($sp)
+lw $t1,200($sp)
 bne $t0,$t1,Lab41
 li $v0, 4
 la $a0,$string26
@@ -1202,11 +1251,11 @@ la $a0,$enter
 syscall
 Lab41:
 lw $t0,4($sp)
-sw $t0,192($sp)
+sw $t0,204($sp)
 li $t0,10
-sw $t0,196($sp)
-lw $t0,192($sp)
-lw $t1,196($sp)
+sw $t0,208($sp)
+lw $t0,204($sp)
+lw $t1,208($sp)
 bne $t0,$t1,Lab42
 li $v0, 4
 la $a0,$string27
@@ -1216,12 +1265,12 @@ syscall
 Lab42:
 la $t0,CA
 lw $t1,0($t0)
-sw $t1,200($sp)
+sw $t1,212($sp)
 la $t0,ca
 lw $t1,0($t0)
-sw $t1,204($sp)
-lw $t0,200($sp)
-lw $t1,204($sp)
+sw $t1,216($sp)
+lw $t0,212($sp)
+lw $t1,216($sp)
 bne $t0,$t1,Lab43
 li $v0, 4
 la $a0,$string28
@@ -1231,12 +1280,12 @@ syscall
 Lab43:
 la $t0,ca
 lw $t1,0($t0)
-sw $t1,208($sp)
+sw $t1,220($sp)
 la $t0,CA
 lw $t1,0($t0)
-sw $t1,212($sp)
-lw $t0,208($sp)
-lw $t1,212($sp)
+sw $t1,224($sp)
+lw $t0,220($sp)
+lw $t1,224($sp)
 beq $t0,$t1,Lab44
 li $v0, 4
 la $a0,$string29
@@ -1265,35 +1314,35 @@ syscall
 la $a0,$enter
 syscall
 lw $t0,8($sp)
-sw $t0,216($sp)
+sw $t0,228($sp)
 li $v0, 4
 la $a0,$string32
 syscall
 li $v0, 1
-lw $a0,216($sp)
+lw $a0,228($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 lw $t0,24($sp)
-sw $t0,220($sp)
+sw $t0,232($sp)
 li $v0, 4
 la $a0,$string33
 syscall
 li $v0, 11
-lw $a0,220($sp)
+lw $a0,232($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 la $t0,vc
 lw $t1,0($t0)
-sw $t1,224($sp)
+sw $t1,236($sp)
 li $v0, 4
 la $a0,$string34
 syscall
 li $v0, 1
-lw $a0,224($sp)
+lw $a0,236($sp)
 syscall
 li $v0, 4
 la $a0,$enter
@@ -1304,108 +1353,108 @@ syscall
 la $a0,$enter
 syscall
 jal whiletest
-sw $v0,228($sp)
+sw $v0,240($sp)
 li $v0, 4
 la $a0,$string36
 syscall
 la $a0,$enter
 syscall
 li $t0,1
-sw $t0,232($sp)
-lw $t0,232($sp)
+sw $t0,244($sp)
+lw $t0,244($sp)
 sw $t0,20($sp)
 lw $t0,20($sp)
-sw $t0,240($sp)
-lw $t1,240($sp)
+sw $t0,252($sp)
+lw $t1,252($sp)
 subi $sp,$sp,40
 sw $t1,4($sp)
 addi $sp,$sp,40
 jal switchtest
-sw $v0,236($sp)
-lw $t0,236($sp)
+sw $v0,248($sp)
+lw $t0,248($sp)
 sw $t0,16($sp)
 lw $t0,16($sp)
-sw $t0,244($sp)
+sw $t0,256($sp)
 li $v0, 4
 la $a0,$string37
 syscall
 li $v0, 1
-lw $a0,244($sp)
+lw $a0,256($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 li $t0,2
-sw $t0,248($sp)
-lw $t0,248($sp)
+sw $t0,260($sp)
+lw $t0,260($sp)
 sw $t0,20($sp)
 lw $t0,20($sp)
-sw $t0,256($sp)
-lw $t1,256($sp)
+sw $t0,268($sp)
+lw $t1,268($sp)
 subi $sp,$sp,40
 sw $t1,4($sp)
 addi $sp,$sp,40
 jal switchtest
-sw $v0,252($sp)
-lw $t0,252($sp)
+sw $v0,264($sp)
+lw $t0,264($sp)
 sw $t0,16($sp)
 lw $t0,16($sp)
-sw $t0,260($sp)
+sw $t0,272($sp)
 li $v0, 4
 la $a0,$string37
 syscall
 li $v0, 1
-lw $a0,260($sp)
+lw $a0,272($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 li $t0,3
-sw $t0,264($sp)
-lw $t0,264($sp)
+sw $t0,276($sp)
+lw $t0,276($sp)
 sw $t0,20($sp)
 lw $t0,20($sp)
-sw $t0,272($sp)
-lw $t1,272($sp)
+sw $t0,284($sp)
+lw $t1,284($sp)
 subi $sp,$sp,40
 sw $t1,4($sp)
 addi $sp,$sp,40
 jal switchtest
-sw $v0,268($sp)
-lw $t0,268($sp)
+sw $v0,280($sp)
+lw $t0,280($sp)
 sw $t0,16($sp)
 lw $t0,16($sp)
-sw $t0,276($sp)
+sw $t0,288($sp)
 li $v0, 4
 la $a0,$string37
 syscall
 li $v0, 1
-lw $a0,276($sp)
+lw $a0,288($sp)
 syscall
 li $v0, 4
 la $a0,$enter
 syscall
 li $t0,4
-sw $t0,280($sp)
-lw $t0,280($sp)
+sw $t0,292($sp)
+lw $t0,292($sp)
 sw $t0,20($sp)
 lw $t0,20($sp)
-sw $t0,288($sp)
-lw $t1,288($sp)
+sw $t0,300($sp)
+lw $t1,300($sp)
 subi $sp,$sp,40
 sw $t1,4($sp)
 addi $sp,$sp,40
 jal switchtest
-sw $v0,284($sp)
-lw $t0,284($sp)
+sw $v0,296($sp)
+lw $t0,296($sp)
 sw $t0,16($sp)
 lw $t0,16($sp)
-sw $t0,292($sp)
+sw $t0,304($sp)
 li $v0, 4
 la $a0,$string37
 syscall
 li $v0, 1
-lw $a0,292($sp)
+lw $a0,304($sp)
 syscall
 li $v0, 4
 la $a0,$enter
@@ -1416,23 +1465,23 @@ syscall
 la $a0,$enter
 syscall
 li $t0,97
-sw $t0,296($sp)
-lw $t0,296($sp)
+sw $t0,308($sp)
+lw $t0,308($sp)
 sw $t0,28($sp)
 lw $t0,28($sp)
-sw $t0,304($sp)
-lw $t1,304($sp)
+sw $t0,316($sp)
+lw $t1,316($sp)
 subi $sp,$sp,464
 sw $t1,4($sp)
 addi $sp,$sp,464
 jal relationcover
-sw $v0,300($sp)
-lw $t0,300($sp)
+sw $v0,312($sp)
+lw $t0,312($sp)
 sw $t0,32($sp)
 lw $t0,32($sp)
-sw $t0,308($sp)
+sw $t0,320($sp)
 li $v0, 11
-lw $a0,308($sp)
+lw $a0,320($sp)
 syscall
 li $v0, 4
 la $a0,$enter
@@ -1443,23 +1492,23 @@ syscall
 la $a0,$enter
 syscall
 li $t0,20
-sw $t0,312($sp)
-lw $t0,312($sp)
+sw $t0,324($sp)
+lw $t0,324($sp)
 sw $t0,20($sp)
 lw $t0,20($sp)
-sw $t0,320($sp)
-lw $t1,320($sp)
+sw $t0,332($sp)
+lw $t1,332($sp)
 subi $sp,$sp,64
 sw $t1,4($sp)
 addi $sp,$sp,64
 jal f
-sw $v0,316($sp)
-lw $t0,316($sp)
+sw $v0,328($sp)
+lw $t0,328($sp)
 sw $t0,12($sp)
 lw $t0,12($sp)
-sw $t0,324($sp)
+sw $t0,336($sp)
 li $v0, 1
-lw $a0,324($sp)
+lw $a0,336($sp)
 syscall
 li $v0, 4
 la $a0,$enter

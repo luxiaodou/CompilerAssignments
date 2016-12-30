@@ -16,6 +16,7 @@ Table::~Table()
 {
 }
 
+
 bool Table::in_table(string iname)
 {
 	for (int i = curlevel; i < items.size();i++) {
@@ -28,6 +29,17 @@ bool Table::in_table(string iname)
 	}
 	for (int i = 1; i < items.size(); i++) {
 		if (items[i].name == iname && items[i].father == topfunction) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Table::fin_table(string name)
+{
+	map<string, int>::iterator it;
+	for (it = funcloc.begin(); it != funcloc.end(); it++) {
+		if (it->first == name) {
 			return true;
 		}
 	}
@@ -72,7 +84,7 @@ TableItem Table::find(string name)
 TableItem Table::findf(string name)
 {
 	map<string, int>::iterator it;
-	int loc;
+	int loc = 0;
 	for (it = funcloc.begin(); it != funcloc.end(); it++) {
 		if (it->first == name) {
 			loc = it->second;

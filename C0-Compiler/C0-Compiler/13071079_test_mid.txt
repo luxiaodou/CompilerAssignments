@@ -17,370 +17,381 @@ VAR vd INT
 ARR arr INT 10
 ARR charr CHAR 3
 GLBEND   
+FUNC tempadd VOID 
+LODV $temp0 w 
+LODI $temp1 1 
++ $temp0 $temp1 $temp0
+= w $value0 $temp0
+LODV $temp2 w 
+PRT  $temp2 1
+END   
 FUNC caltest VOID 
 VAR a INT 
 VAR b INT 
 VAR c INT 
 VAR d INT 
 VAR e INT 
-LODI $temp0 13 
-~ $temp0  
-LODI $temp1 79 
-+ $temp0 $temp1 $temp0
-= a $value0 $temp0
-LODI $temp2 13 
-LODI $temp3 -97 
-+ $temp2 $temp3 $temp2
-= b $value0 $temp2
-LODI $temp4 13 
-LODI $temp5 -79 
-* $temp4 $temp5 $temp4
-= c $value0 $temp4
-LODI $temp6 79 
-LODI $temp7 -13 
-/ $temp6 $temp7 $temp6
-= d $value0 $temp6
-LODI $temp8 1079 
-LODI $temp9 18 
-* $temp8 $temp9 $temp8
-LODI $temp10 24 
-LODI $temp11 5 
-* $temp10 $temp11 $temp10
-- $temp8 $temp10 $temp8
-LODI $temp12 9 
-LODI $temp13 -2 
-/ $temp12 $temp13 $temp12
-+ $temp8 $temp12 $temp8
-= e $value0 $temp8
-LODV $temp14 a 
-PRT  $temp14 1
-LODV $temp15 b 
-PRT  $temp15 1
-LODV $temp16 c 
-PRT  $temp16 1
-LODV $temp17 d 
+LODI $temp3 13 
+~ $temp3  
+LODI $temp4 79 
++ $temp3 $temp4 $temp3
+= a $value0 $temp3
+LODI $temp5 13 
+LODI $temp6 -97 
++ $temp5 $temp6 $temp5
+= b $value0 $temp5
+LODI $temp7 13 
+LODI $temp8 -79 
+* $temp7 $temp8 $temp7
+= c $value0 $temp7
+LODI $temp9 79 
+LODI $temp10 -13 
+/ $temp9 $temp10 $temp9
+= d $value0 $temp9
+LODI $temp11 1079 
+LODI $temp12 18 
+* $temp11 $temp12 $temp11
+LODI $temp13 24 
+LODI $temp14 5 
+* $temp13 $temp14 $temp13
+- $temp11 $temp13 $temp11
+LODI $temp15 9 
+LODI $temp16 -2 
+/ $temp15 $temp16 $temp15
++ $temp11 $temp15 $temp11
+= e $value0 $temp11
+LODV $temp17 a 
 PRT  $temp17 1
-LODV $temp18 e 
+LODV $temp18 b 
 PRT  $temp18 1
+LODV $temp19 c 
+PRT  $temp19 1
+LODV $temp20 d 
+PRT  $temp20 1
+LODV $temp21 e 
+PRT  $temp21 1
 RET   
 END   
+FUNC returnq CHAR 
+LODI $temp22 81 
+RET $temp22  
 FUNC whiletest VOID 
 VAR i INT 
-LODI $temp19 0 
-= i $value0 $temp19
+LODI $temp23 0 
+= i $value0 $temp23
 LAB Lab1  
-LODV $temp20 i 
-LODI $temp21 10 
-GTE $temp20 $temp21 Lab0
-LODV $temp22 i 
-LODI $temp23 1 
-+ $temp22 $temp23 $temp22
-= i $value0 $temp22
 LODV $temp24 i 
-PRT $string0 $temp24 2
+LODI $temp25 10 
+GTE $temp24 $temp25 Lab0
+LODV $temp26 i 
+LODI $temp27 1 
++ $temp26 $temp27 $temp26
+= i $value0 $temp26
+LODV $temp28 i 
+PRT $string0 $temp28 2
 JMP Lab1  
 LAB Lab0  
 RET   
 END   
 FUNC switchtest INT 
-LODV $temp25 a 
-LODI $temp26 1 
-NEQ $temp25 $temp26 Lab3
+LODV $temp29 a 
+LODI $temp30 1 
+NEQ $temp29 $temp30 Lab3
 PRT $string1  0
 JMP Lab2  
 LAB Lab3  
-LODI $temp27 2 
-NEQ $temp25 $temp27 Lab4
+LODI $temp31 2 
+NEQ $temp29 $temp31 Lab4
 PRT $string2  0
-LODI $temp28 50 
-RET $temp28  
+LODI $temp32 50 
+RET $temp32  
 JMP Lab2  
 LAB Lab4  
-LODI $temp29 3 
-NEQ $temp25 $temp29 Lab5
+LODI $temp33 3 
+NEQ $temp29 $temp33 Lab5
 CALL whiletest  
-LODR $temp30 $v0 
-LODI $temp31 233 
-RET $temp31  
+LODR $temp34 $v0 
+LODI $temp35 233 
+RET $temp35  
 JMP Lab2  
 LAB Lab5  
 PRT $string3  0
 LAB Lab2  
-LODI $temp32 0 
-RET $temp32  
+LODI $temp36 0 
+RET $temp36  
 FUNC relationcover CHAR 
 VAR a INT 
 VAR count INT 
 VAR b CHAR 
-LODV $temp33 c 
-LODI $temp34 97 
-NEQ $temp33 $temp34 Lab6
-LODI $temp35 0 
-= count $value0 $temp35
-LODI $temp36 97 
-= a $value0 $temp36
-LODI $temp37 97 
-= b $value0 $temp37
-LODV $temp38 a 
-LODV $temp39 c 
-NEQ $temp38 $temp39 Lab7
-PRT $string4  0
-LODV $temp40 count 
-LODI $temp41 1 
-+ $temp40 $temp41 $temp40
-= count $value0 $temp40
-LAB Lab7  
-LODV $temp42 b 
+LODV $temp37 c 
+LODI $temp38 97 
+NEQ $temp37 $temp38 Lab6
+LODI $temp39 0 
+= count $value0 $temp39
+LODI $temp40 97 
+= a $value0 $temp40
+LODI $temp41 97 
+= b $value0 $temp41
+LODV $temp42 a 
 LODV $temp43 c 
-NEQ $temp42 $temp43 Lab8
-PRT $string5  0
+NEQ $temp42 $temp43 Lab7
+PRT $string4  0
 LODV $temp44 count 
 LODI $temp45 1 
 + $temp44 $temp45 $temp44
 = count $value0 $temp44
+LAB Lab7  
+LODV $temp46 b 
+LODV $temp47 c 
+NEQ $temp46 $temp47 Lab8
+PRT $string5  0
+LODV $temp48 count 
+LODI $temp49 1 
++ $temp48 $temp49 $temp48
+= count $value0 $temp48
 LAB Lab8  
-LODV $temp46 count 
-LODI $temp47 2 
-NEQ $temp46 $temp47 Lab9
+LODV $temp50 count 
+LODI $temp51 2 
+NEQ $temp50 $temp51 Lab9
 PRT $string6  0
 LAB Lab9  
-LODI $temp48 111 
-= a $value0 $temp48
+LODI $temp52 111 
+= a $value0 $temp52
 LAB Lab6  
-LODV $temp49 a 
-LODI $temp50 110 
-EQU $temp49 $temp50 Lab10
-LODI $temp51 0 
-= count $value0 $temp51
-LODV $temp52 c 
-LODV $temp53 b 
-EQU $temp52 $temp53 Lab11
-LODV $temp54 count 
-LODI $temp55 1 
-+ $temp54 $temp55 $temp54
-= count $value0 $temp54
-PRT $string7  0
-LAB Lab11  
-LODV $temp56 a 
-LODI $temp57 111 
-EQU $temp56 $temp57 Lab12
+LODV $temp53 a 
+LODI $temp54 110 
+EQU $temp53 $temp54 Lab10
+LODI $temp55 0 
+= count $value0 $temp55
+LODV $temp56 c 
+LODV $temp57 b 
+EQU $temp56 $temp57 Lab11
 LODV $temp58 count 
 LODI $temp59 1 
 + $temp58 $temp59 $temp58
 = count $value0 $temp58
-PRT $string8  0
-LAB Lab12  
+PRT $string7  0
+LAB Lab11  
 LODV $temp60 a 
-LODV $temp61 c 
-EQU $temp60 $temp61 Lab13
+LODI $temp61 111 
+EQU $temp60 $temp61 Lab12
 LODV $temp62 count 
 LODI $temp63 1 
 + $temp62 $temp63 $temp62
 = count $value0 $temp62
+PRT $string8  0
+LAB Lab12  
+LODV $temp64 a 
+LODV $temp65 c 
+EQU $temp64 $temp65 Lab13
+LODV $temp66 count 
+LODI $temp67 1 
++ $temp66 $temp67 $temp66
+= count $value0 $temp66
 PRT $string9  0
 LAB Lab13  
-LODV $temp64 count 
-LODI $temp65 1 
-NEQ $temp64 $temp65 Lab14
+LODV $temp68 count 
+LODI $temp69 1 
+NEQ $temp68 $temp69 Lab14
 PRT $string10  0
 LAB Lab14  
-LODI $temp66 100 
-= a $value0 $temp66
+LODI $temp70 100 
+= a $value0 $temp70
 LAB Lab10  
-LODV $temp67 a 
-LODI $temp68 99 
-LTE $temp67 $temp68 Lab15
-LODI $temp69 0 
-= count $value0 $temp69
-LODV $temp70 a 
-LODV $temp71 count 
-LTE $temp70 $temp71 Lab16
-LODV $temp72 count 
-LODI $temp73 1 
-+ $temp72 $temp73 $temp72
-= count $value0 $temp72
-LAB Lab16  
+LODV $temp71 a 
+LODI $temp72 99 
+LTE $temp71 $temp72 Lab15
+LODI $temp73 0 
+= count $value0 $temp73
 LODV $temp74 a 
-LODV $temp75 c 
-LTE $temp74 $temp75 Lab17
+LODV $temp75 count 
+LTE $temp74 $temp75 Lab16
 LODV $temp76 count 
 LODI $temp77 1 
 + $temp76 $temp77 $temp76
 = count $value0 $temp76
-LAB Lab17  
+LAB Lab16  
 LODV $temp78 a 
-LODI $temp79 99 
-LTE $temp78 $temp79 Lab18
-LODV $temp80 a 
-LODI $temp81 98 
-LTE $temp80 $temp81 Lab19
-LODV $temp82 count 
-LODI $temp83 1 
-+ $temp82 $temp83 $temp82
-= count $value0 $temp82
+LODV $temp79 c 
+LTE $temp78 $temp79 Lab17
+LODV $temp80 count 
+LODI $temp81 1 
++ $temp80 $temp81 $temp80
+= count $value0 $temp80
+LAB Lab17  
+LODV $temp82 a 
+LODI $temp83 99 
+LTE $temp82 $temp83 Lab18
+LODV $temp84 a 
+LODI $temp85 98 
+LTE $temp84 $temp85 Lab19
+LODV $temp86 count 
+LODI $temp87 1 
++ $temp86 $temp87 $temp86
+= count $value0 $temp86
 LAB Lab19  
 LAB Lab18  
-LODV $temp84 count 
-LODI $temp85 3 
-NEQ $temp84 $temp85 Lab20
+LODV $temp88 count 
+LODI $temp89 3 
+NEQ $temp88 $temp89 Lab20
 PRT $string11  0
 LAB Lab20  
-LODI $temp86 77 
-= a $value0 $temp86
+LODI $temp90 77 
+= a $value0 $temp90
 LAB Lab15  
-LODV $temp87 a 
-LODI $temp88 88 
-GTE $temp87 $temp88 Lab21
-LODI $temp89 0 
-= count $value0 $temp89
-LODV $temp90 a 
-LODV $temp91 c 
-GTE $temp90 $temp91 Lab22
-LODV $temp92 count 
-LODI $temp93 1 
-+ $temp92 $temp93 $temp92
-= count $value0 $temp92
-LAB Lab22  
-LODV $temp94 b 
+LODV $temp91 a 
+LODI $temp92 88 
+GTE $temp91 $temp92 Lab21
+LODI $temp93 0 
+= count $value0 $temp93
+LODV $temp94 a 
 LODV $temp95 c 
-GTE $temp94 $temp95 Lab23
+GTE $temp94 $temp95 Lab22
 LODV $temp96 count 
 LODI $temp97 1 
 + $temp96 $temp97 $temp96
 = count $value0 $temp96
-LAB Lab23  
-LODV $temp98 count 
-LODV $temp99 a 
-GTE $temp98 $temp99 Lab24
+LAB Lab22  
+LODV $temp98 b 
+LODV $temp99 c 
+GTE $temp98 $temp99 Lab23
 LODV $temp100 count 
 LODI $temp101 1 
 + $temp100 $temp101 $temp100
 = count $value0 $temp100
-LAB Lab24  
+LAB Lab23  
 LODV $temp102 count 
-LODI $temp103 2 
-NEQ $temp102 $temp103 Lab25
+LODV $temp103 a 
+GTE $temp102 $temp103 Lab24
+LODV $temp104 count 
+LODI $temp105 1 
++ $temp104 $temp105 $temp104
+= count $value0 $temp104
+LAB Lab24  
+LODV $temp106 count 
+LODI $temp107 2 
+NEQ $temp106 $temp107 Lab25
 PRT $string12  0
 LAB Lab25  
 LAB Lab21  
-LODV $temp104 a 
-LODI $temp105 66 
-LESS $temp104 $temp105 Lab26
-LODI $temp106 0 
-= count $value0 $temp106
-LODV $temp107 a 
-LODI $temp108 50 
-LESS $temp107 $temp108 Lab27
-LODV $temp109 count 
-LODI $temp110 1 
-+ $temp109 $temp110 $temp109
-= count $value0 $temp109
-LAB Lab27  
+LODV $temp108 a 
+LODI $temp109 66 
+LESS $temp108 $temp109 Lab26
+LODI $temp110 0 
+= count $value0 $temp110
 LODV $temp111 a 
-LODV $temp112 c 
-LESS $temp111 $temp112 Lab28
+LODI $temp112 50 
+LESS $temp111 $temp112 Lab27
 LODV $temp113 count 
 LODI $temp114 1 
 + $temp113 $temp114 $temp113
 = count $value0 $temp113
-LAB Lab28  
-LODV $temp115 b 
+LAB Lab27  
+LODV $temp115 a 
 LODV $temp116 c 
-LESS $temp115 $temp116 Lab29
+LESS $temp115 $temp116 Lab28
 LODV $temp117 count 
 LODI $temp118 1 
 + $temp117 $temp118 $temp117
 = count $value0 $temp117
+LAB Lab28  
+LODV $temp119 b 
+LODV $temp120 c 
+LESS $temp119 $temp120 Lab29
+LODV $temp121 count 
+LODI $temp122 1 
++ $temp121 $temp122 $temp121
+= count $value0 $temp121
 LAB Lab29  
-LODV $temp119 count 
-LODI $temp120 2 
-NEQ $temp119 $temp120 Lab30
+LODV $temp123 count 
+LODI $temp124 2 
+NEQ $temp123 $temp124 Lab30
 PRT $string13  0
 LAB Lab30  
 LAB Lab26  
-LODV $temp121 a 
-LODI $temp122 111 
-GREAT $temp121 $temp122 Lab31
-LODI $temp123 0 
-= count $value0 $temp123
-LODV $temp124 c 
 LODV $temp125 a 
-GREAT $temp124 $temp125 Lab32
-LODV $temp126 count 
-LODI $temp127 1 
-+ $temp126 $temp127 $temp126
-= count $value0 $temp126
-LAB Lab32  
-LODV $temp128 b 
-LODV $temp129 c 
-GREAT $temp128 $temp129 Lab33
+LODI $temp126 111 
+GREAT $temp125 $temp126 Lab31
+LODI $temp127 0 
+= count $value0 $temp127
+LODV $temp128 c 
+LODV $temp129 a 
+GREAT $temp128 $temp129 Lab32
 LODV $temp130 count 
 LODI $temp131 1 
 + $temp130 $temp131 $temp130
 = count $value0 $temp130
-LAB Lab33  
-LODV $temp132 a 
-LODI $temp133 1000 
-GREAT $temp132 $temp133 Lab34
+LAB Lab32  
+LODV $temp132 b 
+LODV $temp133 c 
+GREAT $temp132 $temp133 Lab33
 LODV $temp134 count 
 LODI $temp135 1 
 + $temp134 $temp135 $temp134
 = count $value0 $temp134
+LAB Lab33  
+LODV $temp136 a 
+LODI $temp137 1000 
+GREAT $temp136 $temp137 Lab34
+LODV $temp138 count 
+LODI $temp139 1 
++ $temp138 $temp139 $temp138
+= count $value0 $temp138
 LAB Lab34  
-LODV $temp136 count 
-LODI $temp137 2 
-NEQ $temp136 $temp137 Lab35
+LODV $temp140 count 
+LODI $temp141 2 
+NEQ $temp140 $temp141 Lab35
 PRT $string14  0
 LAB Lab35  
-LODI $temp138 1 
-= count $value0 $temp138
+LODI $temp142 1 
+= count $value0 $temp142
 LAB Lab31  
-LODV $temp139 count 
-EQU $temp139 $0 Lab36
-LODV $temp140 a 
-PRT $string15 $temp140 2
+LODV $temp143 count 
+EQU $temp143 $0 Lab36
+LODV $temp144 a 
+PRT $string15 $temp144 2
 LAB Lab36  
-LODI $temp141 0 
-= count $value0 $temp141
-LODV $temp142 count 
-EQU $temp142 $0 Lab37
+LODI $temp145 0 
+= count $value0 $temp145
+LODV $temp146 count 
+EQU $temp146 $0 Lab37
 PRT $string16  0
 LAB Lab37  
-LODV $temp143 c 
-RET $temp143  
+LODV $temp147 c 
+RET $temp147  
 FUNC f INT 
-LODV $temp144 n 
-LODI $temp145 0 
-GREAT $temp144 $temp145 Lab38
+LODV $temp148 n 
+LODI $temp149 0 
+GREAT $temp148 $temp149 Lab38
 PRT $string17  0
 RET   
 LAB Lab38  
-LODV $temp146 n 
-LODI $temp147 1 
-NEQ $temp146 $temp147 Lab39
-LODI $temp148 1 
-RET $temp148  
-LAB Lab39  
-LODV $temp149 n 
-LODI $temp150 2 
-NEQ $temp149 $temp150 Lab40
+LODV $temp150 n 
 LODI $temp151 1 
-RET $temp151  
-LAB Lab40  
-LODV $temp153 n 
-LODI $temp154 1 
-- $temp153 $temp154 $temp153
-PARA $temp153 1 f
-CALL f  
-LODR $temp152 $v0 
-LODV $temp156 n 
-LODI $temp157 2 
-- $temp156 $temp157 $temp156
-PARA $temp156 1 f
-CALL f  
-LODR $temp155 $v0 
-+ $temp152 $temp155 $temp152
+NEQ $temp150 $temp151 Lab39
+LODI $temp152 1 
 RET $temp152  
+LAB Lab39  
+LODV $temp153 n 
+LODI $temp154 2 
+NEQ $temp153 $temp154 Lab40
+LODI $temp155 1 
+RET $temp155  
+LAB Lab40  
+LODV $temp157 n 
+LODI $temp158 1 
+- $temp157 $temp158 $temp157
+PARA $temp157 1 f
+CALL f  
+LODR $temp156 $v0 
+LODV $temp160 n 
+LODI $temp161 2 
+- $temp160 $temp161 $temp160
+PARA $temp160 1 f
+CALL f  
+LODR $temp159 $v0 
++ $temp156 $temp159 $temp156
+RET $temp156  
 FUNC main VOID 
 VAR cg INT 
 VAR flag1 INT 
@@ -392,84 +403,91 @@ VAR c CHAR
 VAR re2 CHAR 
 ARR cn CHAR 6
 PRT $string18  0
+LODI $temp163 15 
+PARA $temp163 1 tempadd
+CALL tempadd  
+LODR $temp162 $v0 
 CALL caltest  
-LODR $temp158 $v0 
+LODR $temp164 $v0 
 PRT $string19  0
 PRT $string20  0
-LODV $temp159 ca 
-PRT $string21 $temp159 2
-LODV $temp160 cb 
-PRT  $temp160 1
+LODV $temp165 ca 
+PRT $string21 $temp165 2
+LODV $temp166 cb 
+PRT  $temp166 1
 PRT $string22  0
-LODI $temp161 10 
-= cg $value0 $temp161
-LODV $temp162 CA 
-= va $value0 $temp162
-LODI $temp163 0 
-LODI $temp164 233 
-= arr $temp163 $temp164
-LODI $temp165 1 
-LODI $temp166 81 
-= charr $temp165 $temp166
-LODI $temp167 3 
-LODI $temp168 43 
-= cn $temp167 $temp168
-LODI $temp170 1 
-LODARR charr $temp170 $temp169
-= vb $value0 $temp169
-LODV $temp171 va 
-PRT  $temp171 1
-LODI $temp173 0 
-LODARR arr $temp173 $temp172
-PRT  $temp172 1
-LODI $temp175 1 
-LODARR charr $temp175 $temp174
-PRT  $temp174 1
-LODI $temp177 3 
-LODARR cn $temp177 $temp176
-PRT  $temp176 1
-LODV $temp178 vb 
+LODI $temp167 10 
+= cg $value0 $temp167
+LODV $temp168 CA 
+= va $value0 $temp168
+LODI $temp169 0 
+LODI $temp170 233 
+= arr $temp169 $temp170
+LODI $temp171 1 
+LODI $temp172 81 
+= charr $temp171 $temp172
+LODI $temp173 3 
+LODI $temp174 43 
+= cn $temp173 $temp174
+LODI $temp176 1 
+LODARR charr $temp176 $temp175
+= vb $value0 $temp175
+LODV $temp177 va 
+PRT  $temp177 1
+LODI $temp179 0 
+LODARR arr $temp179 $temp178
 PRT  $temp178 1
-LODV $temp179 ce 
-PRT $string23 $temp179 2
-LODV $temp180 cc 
+LODI $temp181 1 
+LODARR charr $temp181 $temp180
 PRT  $temp180 1
-PRT $string24  0
-LODV $temp181 ca 
-LODV $temp182 cb 
-+ $temp181 $temp182 $temp181
-PRT  $temp181 1
-LODV $temp183 ch 
-LODV $temp184 ch 
-+ $temp183 $temp184 $temp183
-PRT  $temp183 1
-LODV $temp185 ch 
-LODV $temp186 CG 
-+ $temp185 $temp186 $temp185
-PRT  $temp185 1
-LODV $temp187 ca 
-LODV $temp188 cb 
-+ $temp187 $temp188 $temp187
+LODI $temp183 3 
+LODARR cn $temp183 $temp182
+PRT  $temp182 1
+LODV $temp184 vb 
+PRT  $temp184 1
+LODV $temp185 ce 
+PRT $string23 $temp185 2
+LODV $temp186 cc 
+PRT  $temp186 1
+CALL returnq  
+LODR $temp187 $v0 
 PRT  $temp187 1
+PRT $string24  0
+LODV $temp188 ca 
+LODV $temp189 cb 
++ $temp188 $temp189 $temp188
+PRT  $temp188 1
+LODV $temp190 ch 
+LODV $temp191 ch 
++ $temp190 $temp191 $temp190
+PRT  $temp190 1
+LODV $temp192 ch 
+LODV $temp193 CG 
++ $temp192 $temp193 $temp192
+PRT  $temp192 1
+LODV $temp194 ca 
+LODV $temp195 cb 
++ $temp194 $temp195 $temp194
+PRT  $temp194 1
 PRT $string25  0
-LODV $temp189 cg 
-LODI $temp190 0 
-NEQ $temp189 $temp190 Lab41
+LODV $temp196 cg 
+LODI $temp197 0 
+NEQ $temp196 $temp197 Lab41
 PRT $string26  0
 LAB Lab41  
-LODV $temp191 cg 
-LODI $temp192 10 
-NEQ $temp191 $temp192 Lab42
+LODV $temp198 cg 
+LODI $temp199 10 
+NEQ $temp198 $temp199 Lab42
 PRT $string27  0
 LAB Lab42  
-LODV $temp193 CA 
-LODV $temp194 ca 
-NEQ $temp193 $temp194 Lab43
+LODV $temp200 CA 
+LODV $temp201 ca 
+NEQ $temp200 $temp201 Lab43
 PRT $string28  0
 LAB Lab43  
-LODV $temp195 ca 
-LODV $temp196 CA 
-EQU $temp195 $temp196 Lab44
+LODV $temp202 ca 
+LODV $temp203 CA 
+EQU $temp202 $temp203 Lab44
 PRT $string29  0
 LAB Lab44  
 PRT $string30  0
@@ -477,69 +495,69 @@ SCF flag1
 SCF flag2  
 SCF vc  
 PRT $string31  0
-LODV $temp197 flag1 
-PRT $string32 $temp197 2
-LODV $temp198 flag2 
-PRT $string33 $temp198 2
-LODV $temp199 vc 
-PRT $string34 $temp199 2
+LODV $temp204 flag1 
+PRT $string32 $temp204 2
+LODV $temp205 flag2 
+PRT $string33 $temp205 2
+LODV $temp206 vc 
+PRT $string34 $temp206 2
 PRT $string35  0
 CALL whiletest  
-LODR $temp200 $v0 
+LODR $temp207 $v0 
 PRT $string36  0
-LODI $temp201 1 
-= para $value0 $temp201
-LODV $temp203 para 
-PARA $temp203 1 switchtest
+LODI $temp208 1 
+= para $value0 $temp208
+LODV $temp210 para 
+PARA $temp210 1 switchtest
 CALL switchtest  
-LODR $temp202 $v0 
-= re1 $value0 $temp202
-LODV $temp204 re1 
-PRT $string37 $temp204 2
-LODI $temp205 2 
-= para $value0 $temp205
-LODV $temp207 para 
-PARA $temp207 1 switchtest
+LODR $temp209 $v0 
+= re1 $value0 $temp209
+LODV $temp211 re1 
+PRT $string37 $temp211 2
+LODI $temp212 2 
+= para $value0 $temp212
+LODV $temp214 para 
+PARA $temp214 1 switchtest
 CALL switchtest  
-LODR $temp206 $v0 
-= re1 $value0 $temp206
-LODV $temp208 re1 
-PRT $string37 $temp208 2
-LODI $temp209 3 
-= para $value0 $temp209
-LODV $temp211 para 
-PARA $temp211 1 switchtest
+LODR $temp213 $v0 
+= re1 $value0 $temp213
+LODV $temp215 re1 
+PRT $string37 $temp215 2
+LODI $temp216 3 
+= para $value0 $temp216
+LODV $temp218 para 
+PARA $temp218 1 switchtest
 CALL switchtest  
-LODR $temp210 $v0 
-= re1 $value0 $temp210
-LODV $temp212 re1 
-PRT $string37 $temp212 2
-LODI $temp213 4 
-= para $value0 $temp213
-LODV $temp215 para 
-PARA $temp215 1 switchtest
+LODR $temp217 $v0 
+= re1 $value0 $temp217
+LODV $temp219 re1 
+PRT $string37 $temp219 2
+LODI $temp220 4 
+= para $value0 $temp220
+LODV $temp222 para 
+PARA $temp222 1 switchtest
 CALL switchtest  
-LODR $temp214 $v0 
-= re1 $value0 $temp214
-LODV $temp216 re1 
-PRT $string37 $temp216 2
+LODR $temp221 $v0 
+= re1 $value0 $temp221
+LODV $temp223 re1 
+PRT $string37 $temp223 2
 PRT $string38  0
-LODI $temp217 97 
-= c $value0 $temp217
-LODV $temp219 c 
-PARA $temp219 1 relationcover
+LODI $temp224 97 
+= c $value0 $temp224
+LODV $temp226 c 
+PARA $temp226 1 relationcover
 CALL relationcover  
-LODR $temp218 $v0 
-= re2 $value0 $temp218
-LODV $temp220 re2 
-PRT  $temp220 1
+LODR $temp225 $v0 
+= re2 $value0 $temp225
+LODV $temp227 re2 
+PRT  $temp227 1
 PRT $string39  0
-LODI $temp221 20 
-= para $value0 $temp221
-LODV $temp223 para 
-PARA $temp223 1 f
+LODI $temp228 20 
+= para $value0 $temp228
+LODV $temp230 para 
+PARA $temp230 1 f
 CALL f  
-LODR $temp222 $v0 
-= re3 $value0 $temp222
-LODV $temp224 re3 
-PRT  $temp224 1
+LODR $temp229 $v0 
+= re3 $value0 $temp229
+LODV $temp231 re3 
+PRT  $temp231 1

@@ -5,23 +5,13 @@
 #include "defination.h"
 #include "Quadruple.h"
 
-int tab = 0;
-bool debug = false;	//是否开启调试模式,检查Parser中的错误
-//int ttype = 0, tident = 0;
 string name = "";
 string zeroname = "$value0";
 int addr, kind, type, number;
 long long value;
 int temp_index = 0, lab_index = 0;
 bool retsign = false;
-//debug用函数,只是为了console输出更美观,缩进功能
-void tabf() {
-	int i = 0;
-	while (i < tab) {
-		cout << "|---";
-		i++;
-	}
-}
+
 
 //将整数转换为字符串,方便生成四元式
 string num2str(long long n) {
@@ -199,7 +189,43 @@ void Parser::error(int errorid)
 		cout << "Parser Error: line" << Lexer::line << ":" << "因子部分发生异常，请检查运算符使用是否合法！" << endl;
 		break;
 	case SCANF_ERROR:
-		cout << "Parser Error: line" << Lexer::line << ":" << "Scanf 使用出现错误，请检查输入的标识符是否为变量类型" << endl;
+		cout << "Parser Error: line" << Lexer::line << ":" << "Scanf 使用出现错误，请检查输入的标识符是否为变量类型！" << endl;
+		break;
+	case VOID_RETURN_ERROR:
+		cout << "Parser Error: line" << Lexer::line << ":" << "void函数的返回值出现问题，return后面请不要接返回值！" << endl;
+		break;
+	case UNDEF_FUNC:
+		cout << "Parser Error: line" << Lexer::line << ":" << "检查到使用了未定义的函数! 请确保调用函数之前进行了声明！" << endl;
+		break;
+	case VAR_TYPE_ERROR:
+		cout << "Parser Error: line" << Lexer::line << ":" << "变量类型错误,变量只允许是int或者char类型！" << endl;
+		break;
+	case NON_REACH_IF:
+		cout << "Parser Error: line" << Lexer::line << ":" << "if入口处错误！" << endl;
+		break;
+	case NON_REACH_WHILE:
+		cout << "Parser Error: line" << Lexer::line << ":" << "while入口处错误！" << endl;
+		break;
+	case NON_REACH_SWITCH:
+		cout << "Parser Error: line" << Lexer::line << ":" << "switch入口处错误！" << endl;
+		break;
+	case NON_REACH_CASE:
+		cout << "Parser Error: line" << Lexer::line << ":" << "case入口处错误！" << endl;
+		break;
+	case NON_REACH_SCANF:
+		cout << "Parser Error: line" << Lexer::line << ":" << "scanf入口处错误！" << endl;
+		break;
+	case NON_REACH_PRINTF:
+		cout << "Parser Error: line" << Lexer::line << ":" << "printf入口处错误！" << endl;
+		break;
+	case NON_REACH_RETURN:
+		cout << "Parser Error: line" << Lexer::line << ":" << "return入口处错误！" << endl;
+		break;
+	case NON_REACH_FUNC:
+		cout << "Parser Error: line" << Lexer::line << ":" << "function入口处错误！" << endl;
+		break;
+	case NON_REACH_CON:
+		cout << "Parser Error: line" << Lexer::line << ":" << "constate入口处错误！" << endl;
 		break;
 	default:
 		cout << "Parser Error: line" << Lexer::line << ":" << "发生了未知错误!" << endl;	//理论上永远不可能执行到这里
@@ -207,20 +233,17 @@ void Parser::error(int errorid)
 	}
 }
 
-//错误处理的跳读函数,输入需要跳读的符号集,跳过所有符号集中的字符
-void Parser::skip(set<int> symset)
-{
-	while (symset.count(Lexer::sym)) {
-		Lexer::getsym();
-	}
-}
+////错误处理的跳读函数,输入需要跳读的符号集,跳过所有符号集中的字符
+//void Parser::skip(set<int> symset)
+//{
+//	while (symset.count(Lexer::sym)) {
+//		Lexer::getsym();
+//	}
+//}
 
 //＜程序＞::= ［＜常量说明＞］［＜变量说明＞］{＜有返回值函数定义＞|＜无返回值函数定义＞}＜主函数＞
 void Parser::program() {
-	if (debug) {
-		tabf();
-		cout << "program" << endl;
-	}
+
 
 	Lexer::getsym();
 	//处理常量声明
@@ -235,6 +258,9 @@ void Parser::program() {
 		Lexer::getsym();
 		if (Lexer::sym != IDSYM) {
 			error(MISSING_IDENT);
+			while (Lexer::sym != SEMICOLON) {
+				Lexer::getsym();
+			}
 		}
 		Lexer::getsym();
 
@@ -252,7 +278,7 @@ void Parser::program() {
 	symbolTable.setzero(zeroname);
 	//处理函数声明
 	while (Lexer::sym == INTSYM || Lexer::sym == CHARSYM || Lexer::sym == VOIDSYM) {
-		if (Lexer::sym == VOIDSYM) {
+		if (Lexer::sym == VOIDSYM) {	//无返回值的函数声明
 			Lexer::backup();
 			Lexer::getsym();
 			if (Lexer::sym == MAINSYM) {
@@ -261,6 +287,9 @@ void Parser::program() {
 			}
 			if (Lexer::sym != IDSYM) {
 				error(MISSING_IDENT);
+				while (Lexer::sym != RBRACE) {	//跳读至下一函数
+					Lexer::getsym();
+				}
 			}
 			Lexer::getsym();
 			if (Lexer::sym == LPARENT) {
@@ -269,13 +298,20 @@ void Parser::program() {
 			}
 			else {
 				error(MISSING_LPARENT);
+				while (Lexer::sym != RBRACE) {	//跳读至下一个函数
+					Lexer::getsym();
+				}
+				Lexer::getsym();
 			}
 		}
-		else {
+		else {	//有返回值的函数声明
 			Lexer::backup();
 			Lexer::getsym();
 			if (Lexer::sym != IDSYM) {
 				error(MISSING_IDENT);
+				while (Lexer::sym != RBRACE) {	//跳读到下一个函数
+					Lexer::getsym();
+				}
 			}
 			Lexer::getsym();
 			if (Lexer::sym == LPARENT) {
@@ -284,6 +320,10 @@ void Parser::program() {
 			}
 			else {
 				error(MISSING_LPARENT);
+				while (Lexer::sym != RBRACE) {	//跳读至下一个函数
+					Lexer::getsym();
+				}
+				Lexer::getsym();
 			}
 		}
 	}
@@ -293,30 +333,26 @@ void Parser::program() {
 		mainfdef();
 	}
 	else {
-		error(0);
+		error(MISSING_MAIN);	//丢失main函数声明报错
 	}
 }
 
-//＜常量说明＞ ::=  const＜常量定义＞;{ const＜常量定义＞;}	//qfinish
+//＜常量说明＞ ::=  const＜常量定义＞;{ const＜常量定义＞;}	
 void Parser::conststate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "const statement!" << endl;
-	}
-
 	do {
 		if (Lexer::sym != CONSTSYM) {
-			error(0);	//正常程序不可能到达此分支
+			error(NON_REACH_CON);	//正常程序不可能到达此分支
 		}
 		Lexer::getsym();
 		constdef();
 		if (Lexer::sym != SEMICOLON) {
 			error(MISSING_SEMI);
+			while (Lexer::sym != SEMICOLON) {	//跳读到下一个常量定义
+				Lexer::getsym();
+			}
 		}
 		Lexer::getsym();
 	} while (Lexer::sym == CONSTSYM);
-	tab--;
 }
 
 //＜常量定义＞ ::=   int＜标识符＞＝＜整数＞{,＜标识符＞＝＜整数＞}
@@ -324,16 +360,16 @@ void Parser::conststate() {
 void Parser::constdef() {
 	//todo:相同值的常量可以合并成一个,待优化
 	int sign = 1;	//sign == 1 为正数, -1为负数
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "const defination" << endl;
-	}
-
 	if (Lexer::sym == INTSYM) {
 		Lexer::getsym();
 		if (Lexer::sym != IDSYM) {
 			error(MISSING_IDENT);
+			while (Lexer::sym != SEMICOLON && Lexer::sym != IDSYM) {	//跳读到下一个常量定义或下一个变量
+				Lexer::getsym();
+			}
+			if (Lexer::sym == SEMICOLON) {
+				return;
+			}
 		}
 		else {
 			name = Lexer::token;
@@ -341,6 +377,10 @@ void Parser::constdef() {
 		}
 		if (Lexer::sym != ASSIGN) {
 			error(MISSING_ASSIGN);
+			while (Lexer::sym != SEMICOLON) {
+				Lexer::getpath();
+			}
+			return;
 		}
 		Lexer::getsym();
 		if (Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {	//＜加法运算符＞ ::= +｜-
@@ -367,6 +407,12 @@ void Parser::constdef() {
 			Lexer::getsym();
 			if (Lexer::sym != IDSYM) {
 				error(MISSING_IDENT);
+				while (Lexer::sym != SEMICOLON && Lexer::sym != IDSYM) {
+					Lexer::getsym();
+				}
+				if (Lexer::sym == SEMICOLON) {
+					return;
+				}
 			}
 			else {
 				name = Lexer::token;
@@ -374,6 +420,10 @@ void Parser::constdef() {
 			}
 			if (Lexer::sym != ASSIGN) {
 				error(MISSING_ASSIGN);
+				while (Lexer::sym != SEMICOLON) {
+					Lexer::getsym();
+				}
+				return;
 			}
 			Lexer::getsym();
 			if (Lexer::sym == PLUSSYM || Lexer::sym == MINUSSYM) {
@@ -401,11 +451,21 @@ void Parser::constdef() {
 		Lexer::getsym();
 		if (Lexer::sym != IDSYM) {
 			error(MISSING_IDENT);
+			while (Lexer::sym != SEMICOLON && Lexer::sym != IDSYM) {
+				Lexer::getsym();
+			}
+			if (Lexer::sym == SEMICOLON) {
+				return;
+			}
 		}
 		name = Lexer::token;
 		Lexer::getsym();
 		if (Lexer::sym != ASSIGN) {
 			error(MISSING_ASSIGN);
+			while (Lexer::sym != SEMICOLON) {
+				Lexer::getsym();
+			}
+			return;
 		}
 		Lexer::getsym();
 		if (Lexer::sym != CHARTY) {
@@ -425,11 +485,21 @@ void Parser::constdef() {
 			Lexer::getsym();
 			if (Lexer::sym != IDSYM) {
 				error(MISSING_IDENT);
+				while (Lexer::sym != IDSYM && Lexer::sym != SEMICOLON) {
+					Lexer::getsym();
+				}
+				if (Lexer::sym == SEMICOLON) {
+					return;
+				}
 			}
 			name = Lexer::token;
 			Lexer::getsym();
 			if (Lexer::sym != ASSIGN) {
 				error(MISSING_ASSIGN);
+				while (Lexer::sym != SEMICOLON) {
+					Lexer::getsym();
+				}
+				return;
 			}
 			Lexer::getsym();
 			if (Lexer::sym != CHARTY) {
@@ -450,20 +520,17 @@ void Parser::constdef() {
 	else {
 		error(CONST_TYPE_ERROR);	//常量只允许是int或者char类型
 	}
-	tab--;
 }
 
 //＜变量说明＞ ::= ＜变量定义＞;{＜变量定义＞;}	//qfinish
 void Parser::varstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "var statement" << endl;
-	}
 
 	vardef();
 	if (Lexer::sym != SEMICOLON) {
 		error(MISSING_SEMI);
+		while (Lexer::sym != SEMICOLON) {
+			Lexer::getsym();
+		}
 	}
 	Lexer::getsym();
 	while (Lexer::sym == INTSYM || Lexer::sym == CHARSYM) {
@@ -471,6 +538,13 @@ void Parser::varstate() {
 		Lexer::getsym();
 		if (Lexer::sym != IDSYM) {
 			error(MISSING_IDENT);
+			while (Lexer::sym != SEMICOLON && Lexer::sym != IDSYM) {
+				Lexer::getsym();
+			}
+			if (Lexer::sym == SEMICOLON) {
+				Lexer::getsym();
+				continue;
+			}
 		}
 		Lexer::getsym();
 		if (Lexer::sym == COMMA || Lexer::sym == LBRACK || Lexer::sym == SEMICOLON) {	//not proved
@@ -483,20 +557,16 @@ void Parser::varstate() {
 		}
 		if (Lexer::sym != SEMICOLON) {
 			error(MISSING_SEMI);
+			while (Lexer::sym != SEMICOLON) {
+				Lexer::getsym();
+			}
 		}
 		Lexer::getsym();
 	}
-	tab--;
 }
 
 //＜变量定义＞::= ＜类型标识符＞(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’){,(＜标识符＞|＜标识符＞‘[’＜无符号整数＞‘]’ )}	//qfinish
 void Parser::vardef() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "var defination" << endl;
-	}
-
 	if (Lexer::sym == INTSYM || Lexer::sym == CHARSYM) {
 		type = Lexer::sym;
 		Lexer::getsym();
@@ -510,10 +580,16 @@ void Parser::vardef() {
 				}
 				else {
 					number = Lexer::value;	//记录数组长度
+					if (number <=0) {	//声明数组的下标应当为大于零的整数
+						error(ARRAY_LENGTH_ERROR);
+					}
 				}
 				Lexer::getsym();
 				if (Lexer::sym != RBRACK) {
 					error(MISSING_RBRACK);
+				}
+				else {
+					Lexer::getsym();
 				}
 				if (symbolTable.arr_insert(name, type, number)) {
 					error(MULTI_DEF);
@@ -521,7 +597,6 @@ void Parser::vardef() {
 				else {
 					quadTable.push_back(Quadruple("ARR", name, type2str(type), num2str(number)));
 				}
-				Lexer::getsym();
 			}
 			else {	//单一变量声明
 				if (symbolTable.var_insert(name, type)) {
@@ -548,13 +623,15 @@ void Parser::vardef() {
 						if (Lexer::sym != RBRACK) {
 							error(MISSING_RBRACK);
 						}
+						else {
+							Lexer::getsym();
+						}
 						if (symbolTable.arr_insert(name, type, number)) {
 							error(MULTI_DEF);
 						}
 						else {
 							quadTable.push_back(Quadruple("ARR", name, type2str(type), num2str(number)));
 						}
-						Lexer::getsym();
 					}
 					else {	//单一变量声明
 						if (symbolTable.var_insert(name, type)) {
@@ -574,19 +651,12 @@ void Parser::vardef() {
 			error(MISSING_IDENT);
 	}
 	else {
-		error(0);
+		error(VAR_TYPE_ERROR);
 	}
-	tab--;
 }
 
 //＜参数表＞ ::=  ＜类型标识符＞＜标识符＞{,＜类型标识符＞＜标识符＞}| ＜空＞	//qfinish
 void Parser::paralist() {
-	if (debug) {
-
-		tab++;
-		tabf();
-		cout << "paralist" << endl;
-	}
 	number = 0;	//开始记录参数的个数
 	if (Lexer::sym == INTSYM || Lexer::sym == CHARSYM) {
 		type = Lexer::sym;
@@ -598,7 +668,6 @@ void Parser::paralist() {
 			}
 			else {
 				number++;
-				//quadTable.push_back(Quadruple("PARA", name, type2str(type), ""));
 			}
 			Lexer::getsym();
 			while (Lexer::sym == COMMA) {
@@ -617,27 +686,22 @@ void Parser::paralist() {
 					}
 					else {
 						number++;
-						//quadTable.push_back(Quadruple("PARA", name, type2str(type), ""));
 					}
+					Lexer::getsym();
 				}
 				else {
 					error(MISSING_IDENT);
-				}
-				Lexer::getsym();
+					while (Lexer::sym != RPARENT && Lexer::sym != COMMA) {
+						Lexer::getsym();
+					}
+				}				
 			}
 		}
 	}
-	tab--;
 }
 
 //＜复合语句＞ ::= ［＜常量说明＞］［＜变量说明＞］＜语句列＞	//qfinish
 void Parser::compound() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "compound" << endl;
-
-	}
 	if (Lexer::sym == CONSTSYM) {
 		conststate();
 	}
@@ -648,16 +712,10 @@ void Parser::compound() {
 		|| Lexer::sym == IDSYM || Lexer::sym == PRINTFSYM || Lexer::sym == SCANFSYM || Lexer::sym == RETURNSYM || Lexer::sym == SEMICOLON || Lexer::sym == SWITCHSYM) {
 		statement();
 	}
-	tab--;
 }
 
 //＜有返回值函数定义＞:: = ＜声明头部＞‘(’＜参数表＞‘)’ ‘ { ’＜复合语句＞‘ }’
 void Parser::funcdef() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "funcdef" << endl;
-	}
 	retsign = false;
 	if (Lexer::sym == INTSYM || Lexer::sym == CHARSYM) {
 		int ftype = Lexer::sym;
@@ -684,12 +742,16 @@ void Parser::funcdef() {
 		if (Lexer::sym != RPARENT) {
 			error(MISSING_RPARENT);
 		}
-		symbolTable.setfuncnum(fname, number);	//此时给才正式给函数添加符号
-		Lexer::getsym();
+		else {
+			Lexer::getsym();
+		}
+		symbolTable.setfuncnum(fname, number);	//此时给才正式给函数添加符号		
 		if (Lexer::sym != LBRACE) {
 			error(MISSING_LBRACE);
 		}
-		Lexer::getsym();
+		else {
+			Lexer::getsym();
+		}
 		compound();
 		if (Lexer::sym != RBRACE) {
 			error(MISSING_RBRACE);
@@ -703,16 +765,10 @@ void Parser::funcdef() {
 		quadTable.push_back(Quadruple("END", "", "", ""));
 	}
 	symbolTable.setfuncsize();
-	tab--;
 }
 
 //＜无返回值函数定义＞:: = void＜标识符＞‘(’＜参数表＞‘)’‘ { ’＜复合语句＞‘ }’
 void Parser::voidfdef() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "voidfdef" << endl;
-	}
 	if (Lexer::sym != VOIDSYM) {
 		error(MISSING_VOID);
 	}
@@ -751,25 +807,23 @@ void Parser::voidfdef() {
 	}
 	else {
 		error(MISSING_IDENT);
+		while (Lexer::sym != RBRACE) {
+			Lexer::getsym();
+		}
+		Lexer::getsym();
 	}
-	tab--;
 	quadTable.push_back(Quadruple("END", "", "", ""));
 	symbolTable.setfuncsize();
 }
 
 //＜主函数＞ ::= void main‘(’‘)’‘{’＜复合语句＞‘}’
 void Parser::mainfdef() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "main" << endl;
-	}
 	if (Lexer::sym != VOIDSYM) {
 		error(MISSING_VOID);
 	}
 	Lexer::getsym();
 	if (Lexer::sym != MAINSYM) {
-		error(0);
+		error(MISSING_MAIN);
 	}
 	symbolTable.func_insert("main", VOIDSYM, 0);	//主函数只有这一种类型,更新curlevel
 	quadTable.push_back(Quadruple("FUNC", "main", "VOID", ""));	//主函数只有这一种声明格式
@@ -777,31 +831,31 @@ void Parser::mainfdef() {
 	if (Lexer::sym != LPARENT) {
 		error(MISSING_LPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	if (Lexer::sym != RPARENT) {
 		error(MISSING_RPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	if (Lexer::sym != LBRACE) {
 		error(MISSING_LBRACE);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	compound();
 	if (Lexer::sym != RBRACE) {
 		error(MISSING_RBRACE);
 	}
 	symbolTable.setfuncsize();
-	tab--;
 }
 
 //＜语句＞:: = ＜条件语句＞｜＜循环语句＞ | ‘{ ’＜语句列＞‘ }’｜＜有返回值函数调用语句＞;
 //				| ＜无返回值函数调用语句＞; ｜＜赋值语句＞; ｜＜读语句＞; ｜＜写语句＞; ｜＜空＞; | ＜情况语句＞｜＜返回语句＞;
 void Parser::statement() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "statement" << endl;
-	}
 	switch (Lexer::sym) {
 	case IFSYM: //ifstate
 		ifstate();
@@ -818,7 +872,9 @@ void Parser::statement() {
 		if (Lexer::sym != RBRACE) {
 			error(MISSING_RBRACE);
 		}
-		Lexer::getsym();
+		else {
+			Lexer::getsym();
+		}
 		break;
 	case IDSYM:	//assignment or callfunc
 		Lexer::backup();
@@ -835,6 +891,9 @@ void Parser::statement() {
 		}
 		if (Lexer::sym != SEMICOLON) {
 			error(MISSING_SEMI);
+			while (Lexer::sym != SEMICOLON) {
+				Lexer::getsym();
+			}
 		}
 		Lexer::getsym();
 		break;
@@ -869,16 +928,10 @@ void Parser::statement() {
 	default:
 		break;
 	}
-	tab--;
 }
 
 //＜表达式＞ ::= ［＋｜－］＜项＞{＜加法运算符＞＜项＞}
 void Parser::expression(string &exp_name, int &exp_type) {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "expression" << endl;
-	}
 	//声明计算用的相关变量
 	int exp_value = 0;
 	int op = 0;
@@ -915,17 +968,11 @@ void Parser::expression(string &exp_name, int &exp_type) {
 	else {
 		exp_type = CHARSYM;
 	}
-	tab--;
 	exp_name = term_name1;
 }
 
 //＜项＞ ::= ＜因子＞{＜乘法运算符＞＜因子＞}
 void Parser::term(string &term_name, int &term_type) {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "term" << endl;
-	}
 	string factor_name1 = "", factor_name2 = "";
 	int factor_type1 = 0, factor_type2 = 0;
 	term_name = "";
@@ -943,23 +990,17 @@ void Parser::term(string &term_name, int &term_type) {
 			quadTable.push_back(Quadruple("/", factor_name1, factor_name2, factor_name1));
 		}
 	}
-	if (factor_type1 == INTSYM || factor_type2 == INTSYM) {	//给定termtype, 注意只要不是两个CHARSYM相加,结果均为INT型
-		term_type = INTSYM;
-	}
-	else {
+	if (factor_type1 == CHARSYM || factor_type2 == 0) {	//给定termtype, 注意只要不是两个CHARSYM相加,结果均为INT型
 		term_type = CHARSYM;
 	}
+	else {
+		term_type = INTSYM;
+	}
 	term_name = factor_name1;
-	tab--;
 }
 
 //＜因子＞ ::= ＜标识符＞｜＜标识符＞‘[’＜表达式＞‘]’|‘(’＜表达式＞‘)’｜＜整数＞|＜字符＞｜＜有返回值函数调用语句＞ 
 void Parser::factor(string &factor_name, int &factor_type) {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "factor" << endl;
-	}
 	string name = "";
 	factor_name = "";
 	factor_type = 0;
@@ -986,6 +1027,9 @@ void Parser::factor(string &factor_name, int &factor_type) {
 			Lexer::getsym();
 		}
 		else if (Lexer::sym == LPARENT) {	//是函数,在calfunc中生成相关操作
+			if (!symbolTable.fin_table(name)) {
+				error(UNDEF_FUNC);
+			}
 			Lexer::retrieve();
 			calfunc(factor_name, factor_type);
 		}
@@ -1039,43 +1083,35 @@ void Parser::factor(string &factor_name, int &factor_type) {
 		error(FACTOR_ERROR);	//正常情况下不可能执行至此分支
 		break;
 	}
-	tab--;
 }
 
 //＜条件语句＞:: = if ‘(’＜条件＞‘)’＜语句＞
 void Parser::ifstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "if statement" << endl;
-	}
 	if (Lexer::sym != IFSYM) {
-		error(0);	//正常情况下永不可能走到此分支
+		error(NON_REACH_IF);	//正常情况下永不可能走到此分支
 	}
 	Lexer::getsym();
 	if (Lexer::sym != LPARENT) {
 		error(MISSING_LPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	string label = newlab();
 	condition(label);
 	if (Lexer::sym != RPARENT) {
 		error(MISSING_RPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	statement();
 	quadTable.push_back(Quadruple("LAB", label, "", ""));
-	tab--;
 }
 
 //＜条件＞::=  ＜表达式＞＜关系运算符＞＜表达式＞｜＜表达式＞ //表达式为0条件为假，否则为真
 void Parser::condition(string label)
 {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "condition" << endl;
-	}
 	int ctype;
 	string exp_name1 = "", exp_name2 = "";
 	expression(exp_name1, ctype);
@@ -1109,16 +1145,10 @@ void Parser::condition(string label)
 	else {
 		quadTable.push_back(Quadruple("EQU", exp_name1, "$0", label));
 	}
-	tab--;
 }
 
-//＜赋值语句＞:: = ＜标识符＞＝＜表达式＞ | ＜标识符＞‘[’＜表达式＞‘]’ = ＜表达式＞	//todo:finish here
+//＜赋值语句＞:: = ＜标识符＞＝＜表达式＞ | ＜标识符＞‘[’＜表达式＞‘]’ = ＜表达式＞	
 void Parser::assignstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "assign statement" << endl;
-	}
 	string exname = "";
 	string name = "";
 	int extype;
@@ -1128,8 +1158,11 @@ void Parser::assignstate() {
 	}
 	else {
 		name = Lexer::token;
+		if (!symbolTable.in_table(name)) {
+			error(UNDEF_ID);
+		}
 		int kind = symbolTable.getkind(name);
-		if (kind != VAR && kind != ARR) {
+		if (kind != VAR && kind != ARR && kind != PARA) {
 			error(ASSIGN_ERROR);	//给非变量类型赋值
 		}
 	}
@@ -1140,71 +1173,73 @@ void Parser::assignstate() {
 		if (Lexer::sym != RBRACK) {
 			error(MISSING_RBRACK);
 		}
-		Lexer::getsym();
+		else {
+			Lexer::getsym();
+		}
 	}
 	else {
 
 	}
-	if (Lexer::sym != ASSIGN) {
-		error(0);
+	if (Lexer::sym != ASSIGN) {	//丢失等号则忽略这一句
+		error(MISSING_ASSIGN);
+		while (Lexer::sym != SEMICOLON) {
+			Lexer::getsym();
+		}
+		return;
 	}
 	Lexer::getsym();
 	expression(exname, extype);
 	quadTable.push_back(Quadruple("=", name, offsetname, exname));
-	tab--;
 }
 
 //＜循环语句＞:: = while ‘(’＜条件＞‘)’＜语句＞
 void Parser::whilestate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "while statement" << endl;
-	}
 	string label1 = newlab(), label2 = newlab();
 	if (Lexer::sym != WHILESYM) {
-		error(0);	//此分支不可达
+		error(NON_REACH_WHILE);	//此分支不可达
 	}
 	quadTable.push_back(Quadruple("LAB", label2, "", ""));
 	Lexer::getsym();
 	if (Lexer::sym != LPARENT) {
 		error(MISSING_LPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	condition(label1);
 	if (Lexer::sym != RPARENT) {
 		error(MISSING_RPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	statement();
 	quadTable.push_back(Quadruple("JMP", label2, "", ""));
 	quadTable.push_back(Quadruple("LAB", label1, "", ""));
-	tab--;
 }
 
 //＜情况语句＞:: = switch ‘(’＜表达式＞‘)’ ‘ { ’＜情况表＞＜缺省＞ ‘ }’
 void Parser::switchstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "switch statement" << endl;
-	}
 	int exp_type;
 	string exp_name = "";
 	string labfin = newlab();
 	if (Lexer::sym != SWITCHSYM) {
-		error(0);	//此分支不可达
+		error(NON_REACH_SWITCH);	//此分支不可达
 	}
 	Lexer::getsym();
 	if (Lexer::sym != LPARENT) {
 		error(MISSING_LPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	expression(exp_name, exp_type);
 	if (Lexer::sym != RPARENT) {
 		error(MISSING_RPARENT);
 	}
-	Lexer::getsym();
+	else {
+		Lexer::getsym();
+	}
 	if (Lexer::sym == LBRACE) {		//＜情况表＞::=  ＜情况子语句＞{＜情况子语句＞}
 		Lexer::getsym();
 		while (Lexer::sym == CASESYM) {
@@ -1216,16 +1251,10 @@ void Parser::switchstate() {
 		error(MISSING_RBRACE);
 	}
 	quadTable.push_back(Quadruple("LAB", labfin, "", ""));
-	tab--;
 }
 
 //＜情况子语句＞:: = case＜常量＞：＜语句＞
 void Parser::casestate(string exp_name, string label) {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "case statement" << endl;
-	}
 	string caselab = newlab();
 	string convalue = newtmpname();
 	if (Lexer::sym == CASESYM) {
@@ -1257,43 +1286,35 @@ void Parser::casestate(string exp_name, string label) {
 		if (Lexer::sym != COLON) {
 			error(MISSING_COLON);
 		}
+		else {
+			Lexer::getsym();
+		}
 		quadTable.push_back(Quadruple("NEQ", exp_name, convalue, caselab));
-		Lexer::getsym();
 		statement();
 	}
 	else {
-		error(0);	//没有case
+		error(NON_REACH_CASE);	//没有case
 	}
 	quadTable.push_back(Quadruple("JMP", label, "", ""));
 	quadTable.push_back(Quadruple("LAB", caselab, "", ""));
-	tab--;
 }
 
 //＜缺省＞::=  default : ＜语句＞|＜空＞
 void Parser::defaultstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "default statement" << endl;
-	}
 	if (Lexer::sym == DEFAULTSYM) {
 		Lexer::getsym();
 		if (Lexer::sym != COLON) {
 			error(MISSING_COLON);
 		}
-		Lexer::getsym();
+		else {
+			Lexer::getsym();
+		}
 		statement();
 	}
-	tab--;
 }
 
 //＜读语句＞::=  scanf ‘(’＜标识符＞{,＜标识符＞}‘)’
 void Parser::scanfstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "scanf statement" << endl;
-	}
 	string name = "";
 	if (Lexer::sym == SCANFSYM) {
 		Lexer::getsym();
@@ -1301,10 +1322,12 @@ void Parser::scanfstate() {
 			Lexer::getsym();
 			if (Lexer::sym != IDSYM) {
 				error(MISSING_IDENT);
+				while (Lexer::sym != IDSYM) {
+					Lexer::getsym();
+				}
 			}
-
 			name = Lexer::token;
-			if (symbolTable.find(name).kind != VAR) {
+			if (symbolTable.find(name).kind != VAR) {	//值能够给变量类型的量赋值，数组都不行
 				error(SCANF_ERROR);
 			}
 			quadTable.push_back(Quadruple("SCF", name, "", ""));
@@ -1313,6 +1336,12 @@ void Parser::scanfstate() {
 				Lexer::getsym();
 				if (Lexer::sym != IDSYM) {
 					error(MISSING_IDENT);
+					while (Lexer::sym != IDSYM && Lexer::sym != COMMA) {
+						Lexer::getsym();
+					}
+					if (Lexer::sym == COMMA) {
+						continue;
+					}
 				}
 				name = Lexer::token;
 				quadTable.push_back(Quadruple("SCF", name, "", ""));
@@ -1328,24 +1357,18 @@ void Parser::scanfstate() {
 		}
 	}
 	else {
-		error(0);
+		error(NON_REACH_SCANF);	
 	}
-	tab--;
 }
 
 //＜写语句＞::= printf ‘(’ ＜字符串＞,＜表达式＞ ‘)’| printf ‘(’＜字符串＞ ‘)’
 //				| printf ‘(’＜表达式＞‘)’
 void Parser::printfstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "printf statement" << endl;
-	}
 	string str = "", exp_name = "", type = "";
 	int exp_type;
 	Quadruple q;
 	if (Lexer::sym != PRINTFSYM) {
-		error(0);	//正常情况不可能走到此分支
+		error(NON_REACH_PRINTF);	//正常情况不可能走到此分支
 	}
 	Lexer::getsym();
 	if (Lexer::sym != LPARENT) {
@@ -1393,20 +1416,14 @@ void Parser::printfstate() {
 	}
 	q.fill("PRT", str, exp_name, type);
 	quadTable.push_back(q);
-	tab--;
 }
 
 //＜返回语句＞::=  return[‘(’＜表达式＞‘)’]     
 void Parser::returnstate() {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "return statement" << endl;
-	}
 	string exp_name = "";
 	int exp_type;
 	if (Lexer::sym != RETURNSYM) {
-		error(0);	//正常情况无法达到此分支
+		error(NON_REACH_RETURN);	//正常情况无法达到此分支
 	}
 	Lexer::getsym();
 	if (Lexer::sym == LPARENT) {
@@ -1418,38 +1435,37 @@ void Parser::returnstate() {
 		quadTable.push_back(Quadruple("RET", exp_name, "", ""));
 		Lexer::getsym();
 		if (symbolTable.findf(symbolTable.curfunction).type == VOIDSYM) {
-			error(RETURN_ERROR);		//void 函数带返回值返回视为错误
+			error(VOID_RETURN_ERROR);		//void 函数带返回值返回视为错误
 		}
 	}
 	else {	//return后无表达式
 		quadTable.push_back(Quadruple("RET", "", "", ""));
 	}
 	retsign = true;
-	tab--;
 }
 
 //＜有返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
 //＜无返回值函数调用语句＞ :: = ＜标识符＞‘(’＜值参数表＞‘)’
 //＜值参数表＞ ::= ＜表达式＞{,＜表达式＞}｜＜空＞
 void Parser::calfunc(string &fac_value, int &fac_type) {
-	if (debug) {
-		tab++;
-		tabf();
-		cout << "call function" << endl;
-	}
 	int exp_type;
 	string func_name;
 	string para_name;
 	fac_value = newtmpname();
 	if (Lexer::sym == IDSYM) {
 		func_name = Lexer::token;
-		fac_type = symbolTable.findf(func_name).type;	
+		if (!symbolTable.fin_table(func_name)) {
+			error(UNDEF_FUNC);
+		}
+		fac_type = symbolTable.findf(func_name).type;
 		symbolTable.var_insert(fac_value, fac_type);
 		Lexer::getsym();
 		if (Lexer::sym != LPARENT) {
 			error(MISSING_LPARENT);
 		}
-		Lexer::getsym();
+		else {
+			Lexer::getsym();
+		}
 		//预先设置参数，这有些违反常理
 		int paracount = 0;
 		int maxpara = symbolTable.findf(func_name).number;	//todo：这里或许能通过判断参数是否小于4来进行优化
@@ -1473,12 +1489,13 @@ void Parser::calfunc(string &fac_value, int &fac_type) {
 		if (Lexer::sym != RPARENT) {
 			error(MISSING_RPARENT);
 		}
-		Lexer::getsym();
+		else {
+			Lexer::getsym();
+		}
 		quadTable.push_back(Quadruple("CALL", func_name, "", ""));
 	}
 	else {
-		error(0);
+		error(NON_REACH_FUNC);
 	}
 	quadTable.push_back(Quadruple("LODR", fac_value, "$v0", ""));	//在函数的返回值(位于$v0)写回到栈中
-	tab--;
 }

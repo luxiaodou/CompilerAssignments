@@ -44,3 +44,18 @@
 #define CONST_TYPE_ERROR	42		//常量类型错误,常量只允许是int或者char类型
 #define FACTOR_ERROR		43		//因子发生错误，请检查是否错误使用运算符
 #define SCANF_ERROR			44		//SCANF使用错误
+#define VOID_RETURN_ERROR	45		//void函数中return非空值
+#define UNDEF_FUNC			46		//使用了未定义的函数
+#define VAR_TYPE_ERROR		47		//变量类型错误，变量只允许是int或者char类型
+#define ARRAY_LENGTH_ERROR	48		//数组变量声明的时候发生错误
+
+//不能够达到的错误分支
+#define NON_REACH_IF		100		
+#define NON_REACH_WHILE		101		
+#define NON_REACH_SWITCH	102
+#define NON_REACH_CASE		103
+#define NON_REACH_SCANF		104
+#define NON_REACH_PRINTF	105
+#define NON_REACH_RETURN	106
+#define NON_REACH_FUNC		107
+#define NON_REACH_CON		108

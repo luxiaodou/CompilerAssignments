@@ -20,8 +20,9 @@ public:
 
 	//建表
 	bool in_table(string name);	//检查name是否已经存在于符号表中(当前层或者全局变量)	
+	bool fin_table(string name); //检查是否存在函数名为name的函数
 	bool in_cur_level(string name);;	//检查当前层有没有name变量
-	bool value_in_table(int val);	//检查常量表中是否存在value为val的项
+	bool value_in_table(int val);	//检查表中是否存在value为val的项
 	int con_insert(string name, int type, int value);	//向符号表中添加常量,返回0表示添加成功,1表示添加失败,下同
 	int var_insert(string name, int type);				//向符号表中插入单一变量
 	int arr_insert(string name, int type, int num);		//向符号表中插入数组变量,此文法中仅限一维数组
